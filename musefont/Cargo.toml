@@ -5,4 +5,8 @@ authors = ["Egor Dmitriev <egordmitriev2@gmail.com>"]
 edition = "2018"
 
 [dependencies]
-font-kit = "0.5.0"
+enum-primitive-derive = "^0.1"
+num-traits = "^0.1"
+font-kit = "^0.5"
+euclid = "0.20.7"
+json = "0.12.0"

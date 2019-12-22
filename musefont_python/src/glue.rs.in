@@ -1,5 +1,6 @@
 use musefont::*;
 
+/*
 foreigner_class!(
     /// Hello world.
     class HelloWorld {
@@ -7,4 +8,4 @@ foreigner_class!(
         constructor HelloWorld::new() -> HelloWorld;
         method HelloWorld::hello_world(&self) -> String;
     }
-);
+);*/
