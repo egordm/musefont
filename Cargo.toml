@@ -1,0 +1,5 @@
+[workspace]
+members = [
+    "musefont",
+    "musefont_python",
+]

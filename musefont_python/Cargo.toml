@@ -1,0 +1,17 @@
+[package]
+name = "musefont_python"
+version = "0.1.0"
+authors = ["Egor Dmitriev <egordmitriev2@gmail.com>"]
+build = "build.rs"
+edition = "2018"
+
+[lib]
+name = "musefont_python"
+crate-type = ["cdylib"]
+
+[dependencies]
+musefont = { path = "../musefont" }
+cpython = { version = "0.3", features = ["extension-module"] }
+
+[build-dependencies]
+rust_swig = { git = "https://github.com/Dushistov/rust_swig.git"}
