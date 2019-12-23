@@ -2,7 +2,7 @@ use std::{collections::HashMap, path::Path};
 use num_traits::FromPrimitive;
 use crate::*;
 
-type SymLut = HashMap<&'static str, SymId>;
+pub type SymLut = HashMap<&'static str, SymIdent>;
 
 pub struct FontConfig {
 	pub(crate) sym_lut: SymLut,
@@ -10,6 +10,10 @@ pub struct FontConfig {
 }
 
 type Error = FontLoadingError;
+
+impl Default for FontConfig {
+	fn default() -> Self { Self { sym_lut: SymLut::new(), sym_codes: vec![0; SYMBOL_COUNT]}}
+}
 
 impl FontConfig {
 	pub fn new(path: &Path) -> Result<Self, Error> {
@@ -27,12 +31,20 @@ impl FontConfig {
 
 		Ok(Self { sym_lut, sym_codes})
 	}
+
+	pub fn get_symid(&self, name: &str) -> SymId {
+		self.get_symident(name).id()
+	}
+
+	pub fn get_symident(&self, name: &str) -> SymIdent {
+		self.sym_lut.get(name).cloned().unwrap_or(SymIdent::NoSym)
+	}
 }
 
 fn sym_lut() -> SymLut {
 	SYMBOL_NAMES.iter().cloned()
 		.zip(
 			(0..SYMBOL_COUNT).into_iter()
-				.map(|x| SymId::from_usize(x).unwrap())
+				.map(|x| SymIdent::from_usize(x).unwrap())
 		).collect()
 }

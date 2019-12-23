@@ -1,6 +1,9 @@
+use crate::num_traits::FromPrimitive;
+
+pub type SymId = u32;
 
 #[derive(Clone, Copy, Debug, Primitive, PartialEq, Eq, Hash)]
-pub enum SymId {
+pub enum SymIdent {
 	NoSym = 0,
 	FourStringTabClef = 1,
 	SixStringTabClef = 2,
@@ -2627,11 +2630,26 @@ pub enum SymId {
 	LastSym = 2617,
 }
 
-impl SymId {
+impl SymIdent {
 	pub fn name(self) -> &'static str { SYMBOL_NAMES[self as usize] }
+
+	pub fn id(self) -> u32 { self as u32 }
 }
 
-pub const SYMBOL_COUNT: usize = SymId::LastSym as usize;
+impl PartialEq<u32> for SymIdent {
+	fn eq(&self, other: &u32) -> bool { self.id() == *other }
+}
+
+impl Into<u32> for SymIdent {
+	fn into(self) -> u32 { self as u32}
+}
+
+impl From<u32> for SymIdent {
+	fn from(i: u32) -> Self { Self::from_u32(i).unwrap_or(SymIdent::NoSym) }
+}
+
+
+pub const SYMBOL_COUNT: usize = SymIdent::LastSym as usize;
 
 pub const SYMBOL_NAMES: [&str; SYMBOL_COUNT] = {
 	[
@@ -5251,7 +5269,7 @@ pub const SYMBOL_NAMES: [&str; SYMBOL_COUNT] = {
 		"ornamentUpPrall",            // ornamentPrecompSlideTrillDAnglebert ?
 		"ornamentUpMordent",          // ornamentPrecompSlideTrillBach ?
 		"ornamentPrallDown",          // ornamentPrecompTrillLowerSuffix ?
-//      "ornamentDownPrall",        // -> SymId::ornamentPrecompMordentUpperPrefix },
+//      "ornamentDownPrall",        // -> SymIdent::ornamentPrecompMordentUpperPrefix },
 		"ornamentDownMordent",        // ornamentPrecompTurnTrillBach ?
 		"ornamentPrallUp",            // ornamentPrecompTrillSuffixDandrieu ?
 		"ornamentLinePrall",          // ornamentPRecompAppoggTrill ?
@@ -5266,49 +5284,49 @@ pub const SYMBOL_NAMES: [&str; SYMBOL_COUNT] = {
 	]
 };
 
-pub const COMPOSED_SYMBOLS: [(SymId, &[SymId]); 7] = {[
-	(SymId::OrnamentPrallMordent, &[
-		SymId::OrnamentZigZagLineNoRightEnd,
-		SymId::OrnamentZigZagLineNoRightEnd,
-		SymId::OrnamentMiddleVerticalStroke,
-		SymId::OrnamentZigZagLineWithRightEnd,
+pub const COMPOSED_SYMBOLS: [(SymIdent, &[SymIdent]); 7] = {[
+	(SymIdent::OrnamentPrallMordent, &[
+		SymIdent::OrnamentZigZagLineNoRightEnd,
+		SymIdent::OrnamentZigZagLineNoRightEnd,
+		SymIdent::OrnamentMiddleVerticalStroke,
+		SymIdent::OrnamentZigZagLineWithRightEnd,
 	]),
-	(SymId::OrnamentUpPrall, &[
-		SymId::OrnamentBottomLeftConcaveStroke,
-		SymId::OrnamentZigZagLineNoRightEnd,
-		SymId::OrnamentZigZagLineNoRightEnd,
-		SymId::OrnamentZigZagLineWithRightEnd,
+	(SymIdent::OrnamentUpPrall, &[
+		SymIdent::OrnamentBottomLeftConcaveStroke,
+		SymIdent::OrnamentZigZagLineNoRightEnd,
+		SymIdent::OrnamentZigZagLineNoRightEnd,
+		SymIdent::OrnamentZigZagLineWithRightEnd,
 	]),
-	(SymId::OrnamentUpMordent, &[
-		SymId::OrnamentBottomLeftConcaveStroke,
-		SymId::OrnamentZigZagLineNoRightEnd,
-		SymId::OrnamentZigZagLineNoRightEnd,
-		SymId::OrnamentMiddleVerticalStroke,
-		SymId::OrnamentZigZagLineWithRightEnd,
+	(SymIdent::OrnamentUpMordent, &[
+		SymIdent::OrnamentBottomLeftConcaveStroke,
+		SymIdent::OrnamentZigZagLineNoRightEnd,
+		SymIdent::OrnamentZigZagLineNoRightEnd,
+		SymIdent::OrnamentMiddleVerticalStroke,
+		SymIdent::OrnamentZigZagLineWithRightEnd,
 	]),
-	(SymId::OrnamentPrallDown, &[
-		SymId::OrnamentZigZagLineNoRightEnd,
-		SymId::OrnamentZigZagLineNoRightEnd,
-		SymId::OrnamentZigZagLineNoRightEnd,
-		SymId::OrnamentBottomRightConcaveStroke,
+	(SymIdent::OrnamentPrallDown, &[
+		SymIdent::OrnamentZigZagLineNoRightEnd,
+		SymIdent::OrnamentZigZagLineNoRightEnd,
+		SymIdent::OrnamentZigZagLineNoRightEnd,
+		SymIdent::OrnamentBottomRightConcaveStroke,
 	]),
-	(SymId::OrnamentDownMordent, &[
-		SymId::OrnamentLeftVerticalStroke,
-		SymId::OrnamentZigZagLineNoRightEnd,
-		SymId::OrnamentZigZagLineNoRightEnd,
-		SymId::OrnamentMiddleVerticalStroke,
-		SymId::OrnamentZigZagLineWithRightEnd
+	(SymIdent::OrnamentDownMordent, &[
+		SymIdent::OrnamentLeftVerticalStroke,
+		SymIdent::OrnamentZigZagLineNoRightEnd,
+		SymIdent::OrnamentZigZagLineNoRightEnd,
+		SymIdent::OrnamentMiddleVerticalStroke,
+		SymIdent::OrnamentZigZagLineWithRightEnd
 	]),
-	(SymId::OrnamentPrallUp, &[
-		SymId::OrnamentZigZagLineNoRightEnd,
-		SymId::OrnamentZigZagLineNoRightEnd,
-		SymId::OrnamentZigZagLineNoRightEnd,
-		SymId::OrnamentTopRightConvexStroke,
+	(SymIdent::OrnamentPrallUp, &[
+		SymIdent::OrnamentZigZagLineNoRightEnd,
+		SymIdent::OrnamentZigZagLineNoRightEnd,
+		SymIdent::OrnamentZigZagLineNoRightEnd,
+		SymIdent::OrnamentTopRightConvexStroke,
 	]),
-	(SymId::OrnamentLinePrall, &[
-		SymId::OrnamentLeftVerticalStroke,
-		SymId::OrnamentZigZagLineNoRightEnd,
-		SymId::OrnamentZigZagLineNoRightEnd,
-		SymId::OrnamentZigZagLineWithRightEnd
+	(SymIdent::OrnamentLinePrall, &[
+		SymIdent::OrnamentLeftVerticalStroke,
+		SymIdent::OrnamentZigZagLineNoRightEnd,
+		SymIdent::OrnamentZigZagLineNoRightEnd,
+		SymIdent::OrnamentZigZagLineWithRightEnd
 	]),
 ]};

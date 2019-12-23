@@ -4,7 +4,7 @@ use crate::*;
 
 type Error = FontLoadingError;
 
-pub fn load(path: &Path, filename: &str, config: &FontConfig) -> Result<ScoreFont, Error> {
+pub fn load_font(path: &Path, filename: &str, config: &FontConfig) -> Result<ScoreFont, Error> {
 	let mut font_file = File::open(path.join(filename)).map_err(Error::IO)?;
 	let font = Font::from_file(&mut font_file, 0).map_err(Error::Font)?;
 	let mut font = ScoreFont::new(font);
@@ -20,9 +20,9 @@ pub fn load(path: &Path, filename: &str, config: &FontConfig) -> Result<ScoreFon
 	let meta = json::parse(&meta_str).map_err(Error::Json)?;
 
 	// Load symbol data
-	for (ident, v) in meta["glyphsWithAnchors"].entries() {
-		let sym_id = config.sym_lut.get(ident).cloned().unwrap_or(SymId::NoSym);
-		if sym_id == SymId::NoSym { continue; }
+	for (sym_name, v) in meta["glyphsWithAnchors"].entries() {
+		let sym_id = config.get_symid(sym_name);
+		if SymIdent::NoSym == sym_id { continue; }
 		parse_sym(&mut font.symbols[sym_id as usize], v)?;
 	}
 
@@ -31,9 +31,9 @@ pub fn load(path: &Path, filename: &str, config: &FontConfig) -> Result<ScoreFon
 	// Load compound data and recalculte the bounding boxes
 	for (sym_id, children) in COMPOSED_SYMBOLS.iter().cloned() {
 		if !font.symbols[sym_id as usize].is_valid() {
-			let bb = font.bounding_box_combined(children.iter().cloned(), &Size2F::new(1., 1.));
+			let bb = font.bounding_box_combined(children.iter().cloned().map(SymIdent::id), &Size2F::new(1., 1.));
 			let sym = &mut font.symbols[sym_id as usize];
-			sym.compound_ids = children.iter().cloned().collect();
+			sym.compound_ids = children.iter().cloned().map(SymIdent::id).collect();
 			sym.bbox = bb;
 
 		}
@@ -41,7 +41,7 @@ pub fn load(path: &Path, filename: &str, config: &FontConfig) -> Result<ScoreFon
 
 	// TODO: style
 
-	compute_metrics(&mut font.symbols[SymId::Space as usize], 32, &font.font)?;
+	compute_metrics(&mut font.symbols[SymIdent::Space as usize], 32, &font.font)?;
 	Ok(font)
 }
 

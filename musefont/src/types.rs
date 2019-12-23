@@ -32,6 +32,7 @@ pub enum FontLoadingError {
 	Font(font_kit::error::FontLoadingError),
 	Glyph(font_kit::error::GlyphLoadingError),
 	Json(json::Error),
+	Other(String),
 }
 
 impl std::error::Error for FontLoadingError {}
@@ -41,5 +42,6 @@ impl_display! { FontLoadingError, {
         Font(e) => format!("Font loading error: {}", e),
         Glyph(e) => format!("Glyph loading error: {}", e),
         Json(e) => format!("Json loading error: {}", e),
+        Other(e) => format!("Error occurred: {}", e),
     }
 }

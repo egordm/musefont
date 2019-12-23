@@ -1,0 +1,54 @@
+use musefont::*;
+
+foreign_enum!(
+enum Format {
+    Rgba32 = Format::Rgba32,
+    Rgb24 = Format::Rgb24,
+    A8 = Format::A8,
+});
+
+foreign_enum!(
+enum RasterizationOptions {
+    Bilevel = RasterizationOptions::Bilevel,
+    GrayscaleAa = RasterizationOptions::GrayscaleAa,
+    SubpixelAa = RasterizationOptions::SubpixelAa,
+});
+
+foreign_class!(
+#[derive(Clone)]
+class Point2F {
+	self_type Point2F;
+	constructor Point2F::new(x: f32, y: f32) -> Point2F;
+	fn Point2F::to_tuple(&self) -> (f32, f32);
+});
+
+foreign_class!(
+#[derive(Clone)]
+class Vec2F {
+	self_type Vec2F;
+	constructor Vec2F::new(x: f32, y: f32) -> Vec2F;
+	fn Vec2F::to_tuple(&self) -> (f32, f32);
+});
+
+foreign_class!(
+#[derive(Clone)]
+class Size2F {
+	self_type Size2F;
+	constructor Size2F::new(width: f32, height: f32) -> Size2F;
+	fn Size2F::to_tuple(&self) -> (f32, f32);
+});
+
+foreign_class!(
+#[derive(Clone)]
+class Size2U {
+	self_type Size2U;
+	constructor Size2U::new(width: u32, height: u32) -> Size2U;
+	fn Size2U::to_tuple(&self) -> (u32, u32);
+});
+
+foreign_class!(
+#[derive(Clone)]
+class RectF {
+	self_type RectF;
+	constructor RectF::new(origin: Point2F, size: Size2F) -> RectF;
+});

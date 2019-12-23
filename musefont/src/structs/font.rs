@@ -1,6 +1,7 @@
 use font_kit::{loaders::freetype::Font, canvas::Canvas, hinting::HintingOptions, loader::FontTransform};
 use crate::*;
 
+#[derive(Clone)]
 pub struct ScoreFont {
 	pub(crate) name: String,
 	pub(crate) family: String,
@@ -8,6 +9,8 @@ pub struct ScoreFont {
 	pub(crate) cache: GlyphCache,
 	pub(crate) font: Font,
 }
+
+unsafe impl Send for ScoreFont {}
 
 impl ScoreFont {
 	pub fn new(font: Font) -> Self {
@@ -23,9 +26,9 @@ impl ScoreFont {
 		}
 	}
 
-	pub fn name(&self) -> &str { &self.name }
+	pub fn name(&self) -> &String { &self.name }
 
-	pub fn family(&self) -> &str { &self.family }
+	pub fn family(&self) -> &String { &self.family }
 
 	pub fn sym(&self, id: SymId) -> &Sym {
 		&self.symbols[id as usize]
