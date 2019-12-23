@@ -1,5 +1,3 @@
-use std::collections::HashMap;
-use num_traits::FromPrimitive;
 
 #[derive(Clone, Copy, Debug, Primitive, PartialEq, Eq, Hash)]
 pub enum SymId {

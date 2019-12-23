@@ -13,6 +13,12 @@ pub struct GlyphKey {
 	scale: f32,
 }
 
+impl GlyphKey {
+	pub fn new(id: GlyphId, size: Size2F, scale: f32) -> GlyphKey {
+		GlyphKey { id, size, scale }
+	}
+}
+
 impl Eq for GlyphKey {}
 
 impl Hash for GlyphKey {
@@ -26,6 +32,16 @@ impl Hash for GlyphKey {
 pub struct GlyphPixmap {
 	canvas: Canvas,
 	offset: Point2F,
+}
+
+impl GlyphPixmap {
+	pub fn new(canvas: Canvas, offset: Point2F) -> Self {
+		Self { canvas, offset }
+	}
+
+	pub fn canvas(&self) -> &Canvas { &self.canvas }
+
+	pub fn offset(&self) -> &Point2F { &self.offset }
 }
 
 pub type GlyphCache = HashMap<GlyphKey, GlyphPixmap>;

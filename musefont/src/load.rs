@@ -1,28 +1,27 @@
 use font_kit::loaders::freetype::Font;
-use num_traits::FromPrimitive;
-use std::{path::Path, fs::File, collections::HashMap};
+use std::{path::Path, fs::File};
 use crate::*;
 
 type Error = FontLoadingError;
 
-pub fn load(path: &Path, filename: &str, state: &FontState) -> Result<ScoreFont, Error> {
+pub fn load(path: &Path, filename: &str, config: &FontConfig) -> Result<ScoreFont, Error> {
 	let mut font_file = File::open(path.join(filename)).map_err(Error::IO)?;
 	let font = Font::from_file(&mut font_file, 0).map_err(Error::Font)?;
 	let mut font = ScoreFont::new(font);
+	font.name = font.font.full_name();
+	font.family = font.font.family_name();
 
 	// Compute metrics for all symbols
-	for (id, code) in state.sym_codes.iter().cloned().enumerate() {
+	for (id, code) in config.sym_codes.iter().cloned().enumerate() {
 		compute_metrics(&mut font.symbols[id], code, &font.font)?;
 	}
 
-	let mut meta_str = std::fs::read_to_string(path.join("metadata.json")).map_err(Error::IO)?;
+	let meta_str = std::fs::read_to_string(path.join("metadata.json")).map_err(Error::IO)?;
 	let meta = json::parse(&meta_str).map_err(Error::Json)?;
-
-	let symbol_lut = sym_lut();
 
 	// Load symbol data
 	for (ident, v) in meta["glyphsWithAnchors"].entries() {
-		let sym_id = symbol_lut.get(ident).cloned().unwrap_or(SymId::NoSym);
+		let sym_id = config.sym_lut.get(ident).cloned().unwrap_or(SymId::NoSym);
 		if sym_id == SymId::NoSym { continue; }
 		parse_sym(&mut font.symbols[sym_id as usize], v)?;
 	}
@@ -47,22 +46,15 @@ pub fn load(path: &Path, filename: &str, state: &FontState) -> Result<ScoreFont,
 }
 
 fn compute_metrics(sym: &mut Sym, code: u32, font: &Font) -> Result<(), Error> {
-	const M: f32 = 640.0 / DPI_F;
-
 	if let Some(char) = std::char::from_u32(code) {
 		if let Some(glyph_id) = font.glyph_for_char(char) {
 			let bb = font.typographic_bounds(glyph_id).map_err(Error::Glyph)?;
-			let bb = RectF::new(
-				Point2F::new(bb.origin.x, -(bb.origin.y + bb.size.height)),
-				bb.size
-			) / M;
 			sym.code = code as i32;
 			sym.index = glyph_id;
 			sym.bbox = bb;
-			sym.advance = font.advance(glyph_id).map_err(Error::Glyph)?.x * DPI_F/ 655360.0;
+			sym.advance = font.advance(glyph_id).map_err(Error::Glyph)?.x;
 		}
 	}
-
 	Ok(())
 }
 
@@ -105,16 +97,38 @@ fn parse_sym(sym: &mut Sym, data: &json::JsonValue) -> Result<(), Error> {
 mod test {
 	use std::path::PathBuf;
 	use crate::load::load;
-	use crate::{SymId, FontState};
+	use crate::*;
 
 	#[test]
 	pub fn test_load() {
+		let config = PathBuf::from("./assets/fonts/smufl");
 		let path = PathBuf::from("./assets/fonts/gootville");
 		let filename = "gootville.otf";
-		let state = FontState::new().unwrap();
-		let font = load(&path, filename, &state).unwrap();
+		let config = FontConfig::new(&config).unwrap();
+		let mut font = load(&path, filename, &config).unwrap();
 
 		let test = font.sym(SymId::NoteheadBlack);
+		pretty_print(&mut font, SymId::NoteheadBlack);
+		pretty_print(&mut font, SymId::Rest32nd);
 		let i = 0;
+	}
+
+	pub fn pretty_print(font: &mut ScoreFont, sym_id: SymId) {
+		let pixels = font.pixmap(sym_id, &SIZE_ONE, 64.).unwrap();
+
+		let mut res = String::new();
+		for y in 0..pixels.size.height as usize {
+			for x in 0..pixels.size.width as usize {
+				let idx = x + y * pixels.stride;
+				if pixels.pixels[idx] > 0 {
+					res.push('#');
+				} else {
+					res.push('.');
+				}
+			}
+			res.push('\n');
+		}
+		println!("{}", res);
+
 	}
 }
