@@ -5,6 +5,7 @@ pub struct Sym {
 	pub(crate) code: i32,
 	pub(crate) index: u32,
 	pub(crate) bbox: RectF,
+	pub(crate) advance: f32,
 	pub(crate) stem_down_nw: Point2F,
 	pub(crate) stem_up_se: Point2F,
 	pub(crate) cut_out_ne: Point2F,
@@ -20,6 +21,7 @@ impl Default for Sym {
 			code: -1,
 			index: 0,
 			bbox: RectF::default(),
+			advance: 0.,
 			stem_down_nw: Point2F::default(),
 			stem_up_se: Point2F::default(),
 			cut_out_ne: Point2F::default(),
@@ -39,6 +41,8 @@ impl Sym {
 	pub const fn index(&self) -> u32 { self.index }
 
 	pub const fn bbox(&self) -> &RectF { &self.bbox }
+
+	pub const fn advance(&self) -> f32 { self.advance }
 
 	pub const fn stem_down_nw(&self) -> &Point2F { &self.stem_down_nw }
 

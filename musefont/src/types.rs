@@ -22,6 +22,7 @@ macro_rules! impl_display {
 pub enum FontLoadingError {
 	IO(std::io::Error),
 	Font(font_kit::error::FontLoadingError),
+	Glyph(font_kit::error::GlyphLoadingError),
 	Json(json::Error),
 }
 
@@ -30,6 +31,7 @@ impl std::error::Error for FontLoadingError {}
 impl_display! { FontLoadingError, {
         IO(e) => format!("IO error: {}", e),
         Font(e) => format!("Font loading error: {}", e),
+        Glyph(e) => format!("Glyph loading error: {}", e),
         Json(e) => format!("Json loading error: {}", e),
     }
 }

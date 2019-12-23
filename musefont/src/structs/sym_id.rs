@@ -1,5 +1,7 @@
+use std::collections::HashMap;
+use num_traits::FromPrimitive;
 
-#[derive(Clone, Copy, Debug, Primitive, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Primitive, PartialEq, Eq, Hash)]
 pub enum SymId {
 	NoSym = 0,
 	FourStringTabClef = 1,
@@ -2628,12 +2630,13 @@ pub enum SymId {
 }
 
 impl SymId {
-	pub fn name(self) -> &'static str { SYMBOL_NAMES[self as usize]}
+	pub fn name(self) -> &'static str { SYMBOL_NAMES[self as usize] }
 }
 
 pub const SYMBOL_COUNT: usize = SymId::LastSym as usize;
 
-pub const SYMBOL_NAMES: [&str; SYMBOL_COUNT] = {[
+pub const SYMBOL_NAMES: [&str; SYMBOL_COUNT] = {
+	[
 		"noSym",
 		"4stringTabClef",
 		"6stringTabClef",
@@ -5264,3 +5267,50 @@ pub const SYMBOL_NAMES: [&str; SYMBOL_COUNT] = {[
 		"space"
 	]
 };
+
+pub const COMPOSED_SYMBOLS: [(SymId, &[SymId]); 7] = {[
+	(SymId::OrnamentPrallMordent, &[
+		SymId::OrnamentZigZagLineNoRightEnd,
+		SymId::OrnamentZigZagLineNoRightEnd,
+		SymId::OrnamentMiddleVerticalStroke,
+		SymId::OrnamentZigZagLineWithRightEnd,
+	]),
+	(SymId::OrnamentUpPrall, &[
+		SymId::OrnamentBottomLeftConcaveStroke,
+		SymId::OrnamentZigZagLineNoRightEnd,
+		SymId::OrnamentZigZagLineNoRightEnd,
+		SymId::OrnamentZigZagLineWithRightEnd,
+	]),
+	(SymId::OrnamentUpMordent, &[
+		SymId::OrnamentBottomLeftConcaveStroke,
+		SymId::OrnamentZigZagLineNoRightEnd,
+		SymId::OrnamentZigZagLineNoRightEnd,
+		SymId::OrnamentMiddleVerticalStroke,
+		SymId::OrnamentZigZagLineWithRightEnd,
+	]),
+	(SymId::OrnamentPrallDown, &[
+		SymId::OrnamentZigZagLineNoRightEnd,
+		SymId::OrnamentZigZagLineNoRightEnd,
+		SymId::OrnamentZigZagLineNoRightEnd,
+		SymId::OrnamentBottomRightConcaveStroke,
+	]),
+	(SymId::OrnamentDownMordent, &[
+		SymId::OrnamentLeftVerticalStroke,
+		SymId::OrnamentZigZagLineNoRightEnd,
+		SymId::OrnamentZigZagLineNoRightEnd,
+		SymId::OrnamentMiddleVerticalStroke,
+		SymId::OrnamentZigZagLineWithRightEnd
+	]),
+	(SymId::OrnamentPrallUp, &[
+		SymId::OrnamentZigZagLineNoRightEnd,
+		SymId::OrnamentZigZagLineNoRightEnd,
+		SymId::OrnamentZigZagLineNoRightEnd,
+		SymId::OrnamentTopRightConvexStroke,
+	]),
+	(SymId::OrnamentLinePrall, &[
+		SymId::OrnamentLeftVerticalStroke,
+		SymId::OrnamentZigZagLineNoRightEnd,
+		SymId::OrnamentZigZagLineNoRightEnd,
+		SymId::OrnamentZigZagLineWithRightEnd
+	]),
+]};
