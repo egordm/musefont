@@ -1,4 +1,4 @@
-use font_kit::{loaders::freetype::Font, canvas::{Canvas, Format, RasterizationOptions}, hinting::HintingOptions, loader::FontTransform};
+use font_kit::{loaders::freetype::Font, canvas::Canvas, hinting::HintingOptions, loader::FontTransform};
 use crate::*;
 
 pub struct ScoreFont {
@@ -29,34 +29,6 @@ impl ScoreFont {
 
 	pub fn sym(&self, id: SymId) -> &Sym {
 		&self.symbols[id as usize]
-	}
-
-	pub fn pixmap(&mut self, id: SymId, mag: &Size2F, point_size: f32) -> Option<&Canvas> {
-		let key = GlyphKey::new(id, *mag, point_size);
-		if !self.cache.contains_key(&key) && self.sym(id).is_valid() {
-			let glyph_id = self.sym(id).index;
-			let transform = FontTransform::new(mag.width, 0., 0., mag.height);
-			let hinting_options = HintingOptions::None;
-			let rasterization_options = RasterizationOptions::GrayscaleAa;
-
-			let bounds = self.font.raster_bounds(
-				glyph_id, point_size, &transform, &POINT_ZERO,
-				hinting_options, rasterization_options,
-			).ok()?;
-
-			let size = Size2U::new(bounds.size.width as u32, bounds.size.height as u32);
-			let origin = Point2F::new(bounds.origin.x as f32, -bounds.origin.y as f32);
-			let mut canvas = Canvas::new(&size, Format::A8);
-
-			self.font.rasterize_glyph(
-				&mut canvas, glyph_id, point_size, &transform, &origin,
-				hinting_options, rasterization_options,
-			).ok()?;
-			let glyph = GlyphPixmap::new(canvas, Point2F::new(origin.x, -origin.y));
-			self.cache.insert(key.clone(), glyph);
-		}
-
-		self.cache.get(&key).map(GlyphPixmap::canvas)
 	}
 
 	pub fn bounding_box(&self, id: SymId, mag: &Size2F) -> RectF {
@@ -106,5 +78,33 @@ impl ScoreFont {
 
 	pub fn cut_out_sw(&self, id: SymId, mag: f32) -> Point2F {
 		*self.sym(id).cut_out_se() * mag
+	}
+
+	pub fn pixmap(&mut self, id: SymId, scale: &Size2F, point_size: f32, rasterization_options: RasterizationOptions, format: Format) -> Option<&GlyphPixmap> {
+		let key = GlyphKey::new(id, *scale, point_size);
+		if !self.cache.contains_key(&key) && self.sym(id).is_valid() {
+			let glyph_id = self.sym(id).index;
+			let transform = FontTransform::new(scale.width, 0., 0., scale.height);
+			let hinting_options = HintingOptions::None;
+
+			let bounds = self.font.raster_bounds(
+				glyph_id, point_size, &transform, &POINT_ZERO,
+				hinting_options, rasterization_options,
+			).ok()?;
+
+			let size = Size2U::new(bounds.size.width as u32, bounds.size.height as u32);
+			let origin = Point2F::new(bounds.origin.x as f32, -bounds.origin.y as f32);
+			let mut canvas = Canvas::new(&size, format);
+
+			self.font.rasterize_glyph(
+				&mut canvas, glyph_id, point_size, &transform, &origin,
+				hinting_options, rasterization_options,
+			).ok()?;
+
+			let glyph = GlyphPixmap::new(canvas, Point2F::new(origin.x, -origin.y));
+			self.cache.insert(key.clone(), glyph);
+		}
+
+		self.cache.get(&key)
 	}
 }

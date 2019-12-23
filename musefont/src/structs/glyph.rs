@@ -9,13 +9,13 @@ pub type GlyphId = SymId;
 #[derive(Clone, Debug, PartialEq)]
 pub struct GlyphKey {
 	id: GlyphId,
-	size: Size2F,
-	scale: f32,
+	scale: Size2F,
+	point_size: f32,
 }
 
 impl GlyphKey {
-	pub fn new(id: GlyphId, size: Size2F, scale: f32) -> GlyphKey {
-		GlyphKey { id, size, scale }
+	pub fn new(id: GlyphId, scale: Size2F, point_size: f32) -> GlyphKey {
+		GlyphKey { id, scale, point_size }
 	}
 }
 
@@ -23,7 +23,7 @@ impl Eq for GlyphKey {}
 
 impl Hash for GlyphKey {
 	fn hash<H: Hasher>(&self, state: &mut H) {
-		let h = ((self.id as u64) << 16) + (((self.size.width * 100.) as u64) << 8) + (self.size.height as u64);
+		let h = ((self.id as u64) << 16) + (((self.scale.width * 100.) as u64) << 8) + (self.scale.height as u64);
 		state.write_u64(h);
 	}
 }

@@ -7,6 +7,9 @@ pub type RectF = euclid::default::Rect<f32>;
 pub const POINT_ZERO: Point2F = Point2F::new(0., 0.);
 pub const SIZE_ONE: Size2F = Size2F::new(1., 1.);
 
+pub type RasterizationOptions = font_kit::canvas::RasterizationOptions;
+pub type Format = font_kit::canvas::Format;
+
 macro_rules! impl_display {
     ($enum:ident, {$($variant:pat => $fmt_string:expr),+$(,)* }) => {
 
