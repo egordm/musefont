@@ -29,6 +29,8 @@ class GlyphPixmap {
 	fn GlyphPixmap::offset(&self) -> &Point2F;
 	fn GlyphPixmap::stride(&self) -> usize;
 	fn GlyphPixmap::size(&self) -> Size2U;
+	fn GlyphPixmap::width(&self) -> u32;
+	fn GlyphPixmap::height(&self) -> u32;
 	fn GlyphPixmap::format(&self) -> Format;
 	fn GlyphPixmap::pixels(&self) -> &Vec<u8>;
 });

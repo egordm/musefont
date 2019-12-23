@@ -62,6 +62,10 @@ impl GlyphPixmap {
 
 	pub fn size(&self) -> Size2U { self.canvas.size }
 
+	pub fn width(&self) -> u32 { self.canvas.size.width }
+
+	pub fn height(&self) -> u32 { self.canvas.size.height }
+
 	pub fn format(&self) -> Format { self.canvas.format }
 
 	pub fn pixels(&self) -> &Vec<u8> { &self.canvas.pixels }
