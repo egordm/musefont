@@ -1,7 +1,13 @@
 use crate::*;
 
+pub const FRET_NONE: i32 = -1;
+pub const STRING_NONE: i32 = -1;
+pub const INVALID_LINE: i32 = -10000;
+
+
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Value {
+	pitch: i32,
 	line: i32,
 	fret: i32,
 	string: i32,
@@ -10,9 +16,10 @@ pub struct Value {
 impl Default for Value {
 	fn default() -> Self {
 		Self {
-			line: 0,
-			fret: 0,
-			string: 0,
+			pitch: -1,
+			line: INVALID_LINE,
+			fret: FRET_NONE,
+			string: STRING_NONE,
 		}
 	}
 }
@@ -20,8 +27,9 @@ impl Default for Value {
 #[derive(Clone)]
 pub struct Note {
 	element: Element,
-	head_group: HeadGroup,
-	head_type: HeadType,
+	duration: Duration,
+	head_group: notehead::Group,
+	head_type: notehead::Type,
 	ghost: bool,
 
 	accidental: Accidental,
@@ -42,8 +50,9 @@ impl Default for Note {
 	fn default() -> Self {
 		Self {
 			element: Element::default(),
-			head_group: HeadGroup::Normal,
-			head_type: HeadType::Auto,
+			duration: Duration::default(),
+			head_group: notehead::Group::Normal,
+			head_type: notehead::Type::Auto,
 			ghost: false,
 			accidental: Accidental::default(),
 			dots: Vec::new(),
@@ -56,92 +65,31 @@ impl Default for Note {
 	}
 }
 
+impl Note {
+	pub fn note_head(&self) -> SymId {
+		// TODO: check if correspond to a chord && override
+		let dir = DirectionV::Up;
+		let mut head = self.duration.ty().note_head();
+
+		if self.head_type != notehead::Type::Auto { head = self.head_type }
+
+		let key = Key::C;
+		let scheme = notehead::Scheme::Normal;
+		// TODO: override
+
+		let ret = head.get_symid(dir, self.head_group, scheme, 0, key);
+		if SymIdent::NoSym == ret {
+			head.get_symid(dir, notehead::Group::Normal, scheme, 0, key)
+		} else {
+			ret
+		}
+	}
+}
+
 impl ElementTrait for Note {
 	fn el(&self) -> &Element { &self.element }
 
 	fn el_mut(&mut self) -> &mut Element { &mut self.element }
-}
 
-
-#[derive(Clone, Copy, Debug, Primitive, PartialEq, Eq, Hash)]
-pub enum HeadGroup {
-	Normal = 0,
-	Cross = 1,
-	Plus = 2,
-	XCircle = 3,
-	Withx = 4,
-	TriangleUp = 5,
-	TriangleDown = 6,
-	Slashed1 = 7,
-	Slashed2 = 8,
-	Diamond = 9,
-	DiamondOld = 10,
-	Circled = 11,
-	CircledLarge = 12,
-	LargeArrow = 13,
-	BrevisAlt = 14,
-
-	Slash = 15,
-
-	Sol = 16,
-	La = 17,
-	Fa = 18,
-	Mi = 19,
-	Do = 20,
-	Re = 21,
-	Ti = 22,
-
-	DoWalker = 23,
-	ReWalker = 24,
-	TiWalker = 25,
-	DoFunk = 26,
-	ReFunk = 27,
-	TiFunk = 28,
-
-	DoName = 29,
-	ReName = 30,
-	MiName = 31,
-	FaName = 32,
-	SolName = 33,
-	LaName = 34,
-	TiName = 35,
-	SiName = 36,
-
-	ASharp = 37,
-	A = 38,
-	AFlat = 39,
-	BSharp = 40,
-	B = 41,
-	BFlat = 42,
-	CSharp = 43,
-	C = 44,
-	CFlat = 45,
-	DSharp = 46,
-	D = 47,
-	DFlat = 48,
-	ESharp = 49,
-	E = 50,
-	EFlat = 51,
-	FSharp = 52,
-	F = 53,
-	FFlat = 54,
-	GSharp = 55,
-	G = 56,
-	GFlat = 57,
-	H = 58,
-	HSharp = 59,
-
-	Custom = 60,
-	Groups = 61,
-	Invalid = 62,
-}
-
-#[derive(Clone, Copy, Debug, Primitive, PartialEq, Eq, Hash)]
-pub enum HeadType {
-	Auto = 0,
-	Whole = 1,
-	Half = 2,
-	Quarter = 3,
-	Brevis = 4,
-	Types = 5,
+	fn element_type(&self) -> ElementType { ElementType::Note }
 }

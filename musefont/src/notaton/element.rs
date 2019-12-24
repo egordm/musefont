@@ -1,6 +1,20 @@
 use crate::*;
 use std::rc::Rc;
 
+pub enum ElementType {
+	Invalid,
+	Note,
+	Stem,
+	Clef,
+	Rest,
+	Tie,
+	Beam,
+	NoteHead,
+	NoteDot,
+	Symbol,
+	Accidental,
+}
+
 #[derive(Clone)]
 pub struct Element {
 	parent: Option<Rc<dyn ElementTrait>>,
@@ -28,11 +42,15 @@ impl ElementTrait for Element {
 	fn el(&self) -> &Element { self }
 
 	fn el_mut(&mut self) -> &mut Element { self }
+
+	fn element_type(&self) -> ElementType { ElementType::Invalid }
 }
 
 pub trait ElementTrait {
 	fn el(&self) -> &Element;
 	fn el_mut(&mut self) -> &mut Element;
+
+	fn element_type(&self) -> ElementType;
 
 	fn ipos(&self) -> &Point2F { &self.el().pos }
 	fn pos(&self) -> Point2F { self.el().pos + self.el().offset.to_vector() }

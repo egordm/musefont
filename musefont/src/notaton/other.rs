@@ -1,13 +1,13 @@
 #[derive(Clone, Copy, Debug, Primitive, PartialEq, Eq, Hash)]
 pub enum DirectionH {
-	Auto = 0,
-	Left = 1,
-	Right = 2
+	Left = 0,
+	Right = 1,
+	Auto = 2,
 }
 
 #[derive(Clone, Copy, Debug, Primitive, PartialEq, Eq, Hash)]
 pub enum DirectionV {
-	Auto = 0,
+	Down = 0,
 	Up = 1,
-	Down = 2
+	Auto = 2,
 }
