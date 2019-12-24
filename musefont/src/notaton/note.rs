@@ -24,7 +24,7 @@ impl Default for Value {
 	}
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Note {
 	element: Element,
 	duration: Duration,
@@ -66,6 +66,8 @@ impl Default for Note {
 }
 
 impl Note {
+	pub fn value(&self) -> &Value { &self.value }
+
 	pub fn note_head(&self) -> SymId {
 		// TODO: check if correspond to a chord && override
 		let dir = DirectionV::Up;
@@ -77,9 +79,9 @@ impl Note {
 		let scheme = notehead::Scheme::Normal;
 		// TODO: override
 
-		let ret = head.get_symid(dir, self.head_group, scheme, 0, key);
+		let ret = head.get_keyed_symid(dir, self.head_group, scheme, 0, key);
 		if SymIdent::NoSym == ret {
-			head.get_symid(dir, notehead::Group::Normal, scheme, 0, key)
+			head.get_keyed_symid(dir, notehead::Group::Normal, scheme, 0, key)
 		} else {
 			ret
 		}

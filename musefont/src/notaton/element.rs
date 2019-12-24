@@ -1,6 +1,9 @@
 use crate::*;
 use std::rc::Rc;
+use downcast_rs::Downcast;
+use std::borrow::Borrow;
 
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum ElementType {
 	Invalid,
 	Note,
@@ -12,12 +15,40 @@ pub enum ElementType {
 	NoteHead,
 	NoteDot,
 	Symbol,
+	Group,
 	Accidental,
 }
 
 #[derive(Clone)]
+pub struct ElementRef(Rc<dyn ElementTrait>);
+
+impl std::fmt::Debug for ElementRef {
+	fn fmt(&self, f: &mut std::fmt::Formatter) -> Result<(), std::fmt::Error> {
+		let el: &dyn ElementTrait = Rc::borrow(&self.0);
+		f.debug_struct("Element")
+			.field("type", &el.element_type())
+			.field("data", &el.el())
+			.finish()
+	}
+}
+
+impl ElementRef {
+	pub fn downcast_ref<T: 'static + ElementTrait>(&self) -> Option<&T> {
+		self.0.as_any().downcast_ref()
+	}
+
+	pub fn downcast_mut<T: 'static + ElementTrait>(&mut self) -> Option<&mut T> {
+		self.0.as_any_mut().downcast_mut()
+	}
+
+	pub fn downcast<T: 'static + ElementTrait>(&self) -> Option<Rc<T>> {
+		self.0.clone().into_any_rc().downcast().ok()
+	}
+}
+
+#[derive(Clone, Debug)]
 pub struct Element {
-	parent: Option<Rc<dyn ElementTrait>>,
+	parent: Option<ElementRef>,
 	bbox: RectF,
 	scale: Size2F,
 	pos: Point2F,
@@ -46,11 +77,12 @@ impl ElementTrait for Element {
 	fn element_type(&self) -> ElementType { ElementType::Invalid }
 }
 
-pub trait ElementTrait {
+pub trait ElementTrait: Downcast {
 	fn el(&self) -> &Element;
 	fn el_mut(&mut self) -> &mut Element;
 
 	fn element_type(&self) -> ElementType;
+	fn parent(&self) -> &Option<ElementRef> { &self.el().parent }
 
 	fn ipos(&self) -> &Point2F { &self.el().pos }
 	fn pos(&self) -> Point2F { self.el().pos + self.el().offset.to_vector() }
@@ -78,4 +110,18 @@ pub trait ElementTrait {
 	fn baseline(&self) -> f32 { -self.height() }
 
 	// TOOD: part, voice, staff, bar
+}
+
+#[derive(Clone, Debug)]
+pub struct ElementGroup {
+	element: Element,
+	leafs: Vec<ElementRef>,
+}
+
+impl ElementTrait for ElementGroup {
+	fn el(&self) -> &Element { &self.element }
+
+	fn el_mut(&mut self) -> &mut Element { &mut self.element }
+
+	fn element_type(&self) -> ElementType { ElementType::Group }
 }

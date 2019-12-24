@@ -10,7 +10,11 @@ pub enum Type {
 }
 
 impl Type {
-	pub fn get_symid(&self, dir: DirectionV, group: Group, scheme: Scheme, tpc: i32, key: Key) -> SymId {
+	pub fn get_symid(&self, dir: DirectionV, group: Group) -> SymId {
+		self.get_keyed_symid(dir, group, Scheme::Normal, 0, Key::C)
+	}
+
+	pub fn get_keyed_symid(&self, dir: DirectionV, group: Group, scheme: Scheme, tpc: i32, key: Key) -> SymId {
 		(match scheme {
 			Scheme::Normal => NOTE_HEADS[dir as usize][group as usize][*self as usize],
 			Scheme::Pitchname | Scheme::PitchnameGerman => unimplemented!(),
