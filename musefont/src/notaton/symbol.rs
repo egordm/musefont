@@ -1,8 +1,8 @@
-use crate::{ElementRef, Element, ElementGroup, SymId, ElementTrait, ElementType};
+use crate::*;
 
 #[derive(Clone, Debug)]
 pub struct Symbol {
-	element: ElementGroup,
+	element: SymbolGroup,
 	sym: SymId,
 }
 

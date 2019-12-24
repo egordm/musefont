@@ -1,5 +1,7 @@
 pub mod other;
 pub mod element;
+pub mod element_type;
+pub mod element_group;
 pub mod symbol;
 pub mod note;
 pub mod notedot;
@@ -12,6 +14,8 @@ pub mod fraction;
 
 pub use other::*;
 pub use element::*;
+pub use element_type::*;
+pub use element_group::*;
 pub use symbol::Symbol;
 pub use note::Note;
 pub use notedot::NoteDot;

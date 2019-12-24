@@ -1,6 +1,6 @@
 use crate::*;
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Accidental {
 	element: Element,
 	accidental_type: Type,
