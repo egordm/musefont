@@ -63,3 +63,13 @@ pub trait ElementTrait: Downcast {
 
 	// TOOD: part, voice, staff, bar
 }
+
+macro_rules! impl_elem {
+	($t:ident, $el_ty:expr) => {
+		impl ElementTrait for $t {
+			fn el(&self) -> &Element { &self.element }
+			fn el_mut(&mut self) -> &mut Element { &mut self.element }
+			fn element_type(&self) -> ElementType { $el_ty }
+		}
+	}
+}

@@ -13,6 +13,10 @@ pub struct Value {
 	string: i32,
 }
 
+impl Value {
+	pub fn line(&self) -> i32 { self.line }
+}
+
 impl Default for Value {
 	fn default() -> Self {
 		Self {
@@ -65,6 +69,13 @@ impl Default for Note {
 	}
 }
 
+//impl_elem!(Note, ElementType::Note);
+impl ElementTrait for Note {
+	fn el(&self) -> &Element { &self.element }
+	fn el_mut(&mut self) -> &mut Element { &mut self.element }
+	fn element_type(&self) -> ElementType { ElementType::Note }
+}
+
 impl Note {
 	pub fn value(&self) -> &Value { &self.value }
 
@@ -88,10 +99,18 @@ impl Note {
 	}
 }
 
-impl ElementTrait for Note {
-	fn el(&self) -> &Element { &self.element }
+impl Note {
+	pub fn head_width(&self, data: &LayoutData) -> f32 {
+		data.font().width(self.note_head(), self.scale().width)
+	}
+}
 
-	fn el_mut(&mut self) -> &mut Element { &mut self.element }
+impl Drawable for Note {
+	fn layout(&mut self, data: &LayoutData) {
+		unimplemented!()
+	}
 
-	fn element_type(&self) -> ElementType { ElementType::Note }
+	fn draw(&self, painter: PainterRef) {
+		painter.draw(DrawData::new(self.note_head(), *self.scale(), self.pos()))
+	}
 }

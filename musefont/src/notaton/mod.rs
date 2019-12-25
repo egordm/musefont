@@ -1,4 +1,5 @@
 pub mod other;
+#[macro_use]
 pub mod element;
 pub mod element_type;
 pub mod element_group;
@@ -11,6 +12,8 @@ pub mod rest;
 pub mod key;
 pub mod duration;
 pub mod fraction;
+pub mod drawable;
+pub mod chord;
 
 pub use other::*;
 pub use element::*;
@@ -23,3 +26,5 @@ pub use accidental::Accidental;
 pub use key::Key;
 pub use duration::{Duration, DurationType};
 pub use fraction::Fraction;
+pub use chord::Chord;
+pub use drawable::*;

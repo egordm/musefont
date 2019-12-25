@@ -64,11 +64,12 @@ fn parse_sym(sym: &mut Sym, data: &json::JsonValue) -> Result<(), Error> {
 		match k {
 			"stemDownNW" => {
 				let (x, y) = (v[0].as_f32().unwrap_or_default(), v[1].as_f32().unwrap_or_default());
-				sym.stem_down_nw = Point2F::new(4.0 * DPI_F * x, 4.0 * DPI_F * -y);
+				// Converting to [0, 1] range with 64 since its the base fmt
+				sym.stem_down_nw = Point2F::new(4.0 * DPI_F * x / 64., 4.0 * DPI_F * -y / 64.);
 			},
 			"stemUpSE" => {
 				let (x, y) = (v[0].as_f32().unwrap_or_default(), v[1].as_f32().unwrap_or_default());
-				sym.stem_up_se = Point2F::new(4.0 * DPI_F * x, 4.0 * DPI_F * -y);
+				sym.stem_up_se = Point2F::new(4.0 * DPI_F * x / 64., 4.0 * DPI_F * -y / 64.);
 			},
 			"cutOutNE" => {
 				let (x, y) = (v[0].as_f32().unwrap_or_default(), v[1].as_f32().unwrap_or_default());

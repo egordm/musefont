@@ -35,6 +35,9 @@ mod test {
 	}
 
 	pub fn pretty_print(font: &mut ScoreFont, sym_id: SymIdent) {
+		let std = font.stem_down_nw(sym_id as SymId, 1.) * 64.;
+		let stu = font.stem_up_se(sym_id as SymId, 1.) * 64.;
+
 		let pixels = font.pixmap(sym_id as SymId, &SIZE_ONE, 64., RasterizationOptions::GrayscaleAa, Format::A8).unwrap().canvas();
 
 		let mut res = String::new();
@@ -50,6 +53,5 @@ mod test {
 			res.push('\n');
 		}
 		println!("{}", res);
-
 	}
 }
