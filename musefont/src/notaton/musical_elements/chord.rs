@@ -3,12 +3,12 @@ use crate::*;
 #[derive(Clone, Debug)]
 pub struct Chord {
 	element: Element,
-	notes: Vec<Note>,
-	grace_notes: Vec<Chord>,
-	stem: Symbol,
-	stem_slash: Symbol,
+	notes: Vec<ElemId>,
+	grace_notes: Vec<ElemId>,
+	stem: ElemId,
+	stem_slash: ElemId,
 	stem_direction: DirectionH,
-	hook: Symbol,
+	hook: ElemId,
 }
 
 //impl_elem!(Chord, ElementType::Chord);
@@ -20,18 +20,27 @@ impl ElementTrait for Chord {
 }
 
 impl Chord {
+	pub fn notes(&self) -> impl Iterator<Item=&Note> {
+		TypedElementIter::new(self.notes.iter().cloned(), self.score().expect("Element must be attached"))
+	}
+	pub fn grace_notes(&self) -> impl Iterator<Item=&Note> {
+		TypedElementIter::new(self.grace_notes.iter().cloned(), self.score().expect("Element must be attached"))
+	}
+	//pub fn stem(&self) -> &Stem { self.expect_neighbor(self.stem) }
+	//pub fn stem_slash(&self) -> &StemSlash { self.expect_neighbor(self.stem_slash) }
+	//pub fn hook(&self) -> &Hook { self.expect_neighbor(self.hook) }
+
 	pub fn low_note(&self) -> &Note {
-		self.notes.iter()
-			.min_by(|a, b| a.value().line().cmp(&b.value().line()))
-			.unwrap()
+		self.notes().min_by(|a, b| a.line().cmp(&b.line()))
+			.expect("Chord by must have least one note.")
 	}
 
 	pub fn high_note(&self) -> &Note {
-		self.notes.iter()
-			.max_by(|a, b| a.value().line().cmp(&b.value().line()))
-			.unwrap()
+		self.notes().max_by(|a, b| a.line().cmp(&b.line()))
+			.expect("Chord by must have least one note.")
 	}
 }
+/*
 
 impl Drawable for Chord {
 	fn layout(&mut self, data: &LayoutData) {
@@ -57,4 +66,4 @@ impl Drawable for Chord {
 	fn draw(&self, painter: PainterRef) {
 		unimplemented!()
 	}
-}
+}*/

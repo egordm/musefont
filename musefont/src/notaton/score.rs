@@ -1,4 +1,4 @@
-use std::{cell::{RefCell, Ref, RefMut}, rc::Rc};
+use std::{cell::RefCell, rc::Rc};
 use generational_arena::{Arena, Index};
 use crate::*;
 
@@ -18,18 +18,18 @@ impl std::fmt::Debug for Score {
 impl Score {
 	pub fn new() -> Self { Self { inner: Rc::new(RefCell::new(InnerScore::default()))} }
 
-	fn inner(&self) -> Ref<InnerScore> { RefCell::borrow(&self.inner) }
-	fn inner_mut(&self) -> RefMut<InnerScore> { RefCell::borrow_mut(&self.inner) }
+	fn inner(&self) -> &InnerScore { unsafe { &*RefCell::as_ptr(&self.inner) } }
+	fn inner_mut(&self) -> &mut InnerScore { unsafe { &mut *RefCell::as_ptr(&self.inner) } }
 
-	pub fn add_element<T: ElementTrait>(&mut self, e: T) -> Option<ElementRef> {
+	pub fn add_element<T: ElementTrait>(&mut self, e: T) -> Option<&ElementRef> {
 		let id = self.inner_mut().elements.insert(e.into_ref()?);
-		let mut ret = self.get_element(id)?;
+		let mut ret = self.get_element(id)?.clone();
 		ret.attach(Some((self.clone(), id)));
-		Some(ret)
+		self.get_element(id)
 	}
 
-	pub fn get_element(&self, id: ElemId) -> Option<ElementRef> {
-		self.inner().elements.get(id).cloned()
+	pub fn get_element(&self, id: ElemId) -> Option<&ElementRef> {
+		self.inner().elements.get(id)
 	}
 }
 

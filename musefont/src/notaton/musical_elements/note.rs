@@ -4,17 +4,18 @@ pub const FRET_NONE: i32 = -1;
 pub const STRING_NONE: i32 = -1;
 pub const INVALID_LINE: i32 = -10000;
 
+pub type Line = i32;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Value {
 	pitch: i32,
-	line: i32,
+	line: Line,
 	fret: i32,
 	string: i32,
 }
 
 impl Value {
-	pub fn line(&self) -> i32 { self.line }
+	pub fn line(&self) -> Line { self.line }
 }
 
 impl Default for Value {
@@ -78,6 +79,7 @@ impl ElementTrait for Note {
 
 impl Note {
 	pub fn value(&self) -> &Value { &self.value }
+	pub fn line(&self) -> Line { self.value().line }
 
 	pub fn note_head(&self) -> SymId {
 		// TODO: check if correspond to a chord && override
