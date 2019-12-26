@@ -16,7 +16,7 @@ pub struct Chord {
 impl ElementTrait for Chord {
 	fn el(&self) -> &Element { &self.element }
 	fn el_mut(&mut self) -> &mut Element { &mut self.element }
-	fn element_type() -> ElementType { ElementType::Chord }
+	fn element_type(&self) -> ElementType { ElementType::Chord }
 }
 
 impl Chord {

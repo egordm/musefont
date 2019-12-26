@@ -8,5 +8,5 @@ pub struct NoteDot {
 impl ElementTrait for NoteDot {
 	fn el(&self) -> &Element { &self.element }
 	fn el_mut(&mut self) -> &mut Element { &mut self.element }
-	fn element_type() -> ElementType { ElementType::NoteDot }
+	fn element_type(&self) -> ElementType { ElementType::NoteDot }
 }

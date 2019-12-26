@@ -1,6 +1,5 @@
 use std::{rc::Rc, cell::RefCell};
 use crate::*;
-use downcast_rs::Downcast;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum ElementType {
@@ -19,37 +18,88 @@ pub enum ElementType {
 	Accidental,
 }
 
-/// Strong reference to an element
-pub struct ElementRef<T: ElementTraitDyn + ?Sized>(Rc<RefCell<T>>);
+macro_rules! decl_elem_ref {
+	{$($Variant:ident($Type:ty)),* $(,)*} => {
+		#[derive(Clone)]
+		pub enum ElementRef {
+			$(
+				$Variant(Rc<RefCell<$Type>>)
+			),*
+		}
 
-impl<T: ElementTraitDyn + ?Sized> Clone for ElementRef<T> {
-	fn clone(&self) -> Self { Self(self.0.clone())}
+		impl ElementRef {
+			fn to_el(&self) -> &Element {
+				match self {$(
+				    ElementRef::$Variant(rc) => { Self::to_ref(rc).el() },
+				)*}
+			}
+
+			fn to_el_mut(&self) -> &mut Element {
+				match self {$(
+				    ElementRef::$Variant(rc) => { Self::to_mut(rc).el_mut() },
+				)*}
+			}
+		}
+
+		$(impl RefableElement for $Type {
+			fn from_ref(r: &ElementRef) -> Option<&Self> {
+				if let ElementRef::$Variant(s) = r { Some(ElementRef::to_ref(s)) }
+				else { None }
+			}
+			fn from_ref_mut(r: &mut ElementRef) -> Option<&mut Self> {
+				if let ElementRef::$Variant(s) = r { Some(ElementRef::to_mut(s)) }
+				else { None }
+			}
+			fn into_ref(self) -> Option<ElementRef> {
+				Some(ElementRef::$Variant(Rc::new(RefCell::new(self))))
+			}
+		})*
+	}
 }
 
-impl<T: ElementTraitDyn + ?Sized> std::fmt::Debug for ElementRef<T> {
+decl_elem_ref!{
+	Symbol(Symbol),
+	SymbolGroup(SymbolGroup),
+	Accidental(Accidental),
+//	Beam(Beam),
+	Chord(Chord),
+//	Hook(Hook),
+	Note(Note),
+	NoteDot(NoteDot),
+//	Rest(Rest),
+//	Slur(Slur),
+//	Stem(Stem),
+//	StemSlash(StemSlash),
+//	Tie(Tie),
+}
+
+pub trait RefableElement {
+	fn from_ref(r: &ElementRef) -> Option<&Self>;
+	fn from_ref_mut(r: &mut ElementRef) -> Option<&mut Self>;
+	fn into_ref(self) -> Option<ElementRef>;
+}
+
+impl ElementRef {
+	fn to_ref<T: ElementTrait>(e: &Rc<RefCell<T>>) -> &T { unsafe { &*RefCell::as_ptr(e) } }
+	fn to_mut<T: ElementTrait>(e: &Rc<RefCell<T>>) -> &mut T { unsafe { &mut *RefCell::as_ptr(e) } }
+}
+
+impl std::fmt::Debug for ElementRef {
 	fn fmt(&self, f: &mut std::fmt::Formatter) -> Result<(), std::fmt::Error> {
-		let el = RefCell::borrow(&self.0);
 		f.debug_struct("Element")
-			.field("type", &el.element_type_dyn())
+			.field("type", &self.element_type())
 			.finish()
 	}
 }
 
-impl<T: ElementTraitDyn + ?Sized> ElementRef<T> {
-	pub fn val(&self) -> &T { unsafe { &*RefCell::as_ptr(&self.0) } }
-	pub fn val_mut(&mut self) -> &mut T { unsafe { &mut *RefCell::as_ptr(&self.0) } }
+impl ElementTrait for ElementRef {
+	fn el(&self) -> &Element { self.to_el() }
+	fn el_mut(&mut self) -> &mut Element { self.to_el_mut() }
+	fn element_type(&self) -> ElementType where Self: Sized { ElementType::Invalid }
 }
 
-impl<T: ElementTraitDyn + ?Sized> ElementTrait for ElementRef<T> {
-	fn el(&self) -> &Element { self.val().el() }
-	fn el_mut(&mut self) -> &mut Element { self.val_mut().el_mut() }
-	fn element_type() -> ElementType where Self: Sized { ElementType::Invalid }
-}
-
-// Strong reference to a generic element
-pub type ElementTRef = ElementRef<dyn ElementTraitDyn>;
-
-impl ElementRef<dyn ElementTraitDyn> {
-	pub fn downcast_ref<T: 'static + ElementTraitDyn>(&self) -> Option<&T> { self.0.as_any().downcast_ref() }
-	pub fn downcast_mut<T: 'static + ElementTraitDyn>(&mut self) -> Option<&mut T> { self.0.as_any_mut().downcast_mut() }
+impl RefableElement for ElementRef {
+	fn from_ref(r: &ElementRef) -> Option<&Self> { Some(r) }
+	fn from_ref_mut(r: &mut ElementRef) -> Option<&mut Self> { Some(r) }
+	fn into_ref(self) -> Option<ElementRef> { Some(self) }
 }

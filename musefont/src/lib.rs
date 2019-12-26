@@ -1,7 +1,6 @@
 #[macro_use]
 extern crate enum_primitive_derive;
 extern crate num_traits;
-extern crate downcast_rs;
 
 pub mod types;
 pub mod constants;

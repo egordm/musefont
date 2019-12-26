@@ -1,5 +1,4 @@
 use crate::*;
-use downcast_rs::Downcast;
 
 #[derive(Clone, Debug)]
 pub struct Element {
@@ -27,15 +26,20 @@ impl Default for Element {
 impl ElementTrait for Element {
 	fn el(&self) -> &Element { self }
 	fn el_mut(&mut self) -> &mut Element { self }
-
-	fn element_type() -> ElementType { ElementType::Invalid }
+	fn element_type(&self) -> ElementType { ElementType::Invalid }
 }
 
-pub trait ElementTrait: Downcast {
+impl RefableElement for Element {
+	fn from_ref(_r: &ElementRef) -> Option<&Self> { None }
+	fn from_ref_mut(_r: &mut ElementRef) -> Option<&mut Self> { None }
+	fn into_ref(self) -> Option<ElementRef> { None }
+}
+
+pub trait ElementTrait: RefableElement + ScoreElementTrait {
 	fn el(&self) -> &Element;
 	fn el_mut(&mut self) -> &mut Element;
 
-	fn element_type() -> ElementType where Self: Sized;
+	fn element_type(&self) -> ElementType;
 
 	fn ipos(&self) -> &Point2F { &self.el().pos }
 	fn pos(&self) -> Point2F { self.el().pos + self.el().offset.to_vector() }
@@ -65,16 +69,8 @@ pub trait ElementTrait: Downcast {
 	// TOOD: part, voice, staff, bar
 }
 
-pub trait ElementTraitDyn: ElementTrait {
-	fn element_type_dyn(&self) -> ElementType;
-}
-
-impl<T: ElementTrait> ElementTraitDyn for T {
-	fn element_type_dyn(&self) -> ElementType { T::element_type() }
-}
-
 impl<T: ElementTrait> ScoreElementTrait for T {
-	fn sc_el(&self) -> &ScoreElement { &self.el().sc_element}
+	fn sc_el(&self) -> &ScoreElement { &self.el().sc_element }
 	fn sc_el_mut(&mut self) -> &mut ScoreElement { &mut self.el_mut().sc_element }
 }
 

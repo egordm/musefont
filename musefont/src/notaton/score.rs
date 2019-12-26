@@ -1,8 +1,8 @@
-use std::{cell::RefCell, rc::Rc, collections::HashMap};
+use std::{cell::{RefCell, Ref, RefMut}, rc::Rc};
+use generational_arena::{Arena, Index};
 use crate::*;
 
-pub type ElemId = u32;
-pub const ELEMENTID_NONE: ElemId = 0;
+pub type ElemId = Index;
 
 #[derive(Clone)]
 pub struct Score {
@@ -18,19 +18,27 @@ impl std::fmt::Debug for Score {
 impl Score {
 	pub fn new() -> Self { Self { inner: Rc::new(RefCell::new(InnerScore::default()))} }
 
-	/*pub fn add_element<T: ElementTrait>(&mut self, e: T) -> ElementTRef {
+	fn inner(&self) -> Ref<InnerScore> { RefCell::borrow(&self.inner) }
+	fn inner_mut(&self) -> RefMut<InnerScore> { RefCell::borrow_mut(&self.inner) }
 
-	}*/
+	pub fn add_element<T: ElementTrait>(&mut self, e: T) -> Option<ElementRef> {
+		let id = self.inner_mut().elements.insert(e.into_ref()?);
+		let mut ret = self.get_element(id)?;
+		ret.attach(Some((self.clone(), id)));
+		Some(ret)
+	}
+
+	pub fn get_element(&self, id: ElemId) -> Option<ElementRef> {
+		self.inner().elements.get(id).cloned()
+	}
 }
 
 pub struct InnerScore {
-	elements: HashMap<ElemId, ElementTRef>,
-	element_cursor: ElemId,
+	elements: Arena<ElementRef>,
 }
 
 impl Default for InnerScore {
 	fn default() -> Self { Self {
-		elements: HashMap::new(),
-		element_cursor: ELEMENTID_NONE + 1,
+		elements: Arena::new(),
 	}}
 }

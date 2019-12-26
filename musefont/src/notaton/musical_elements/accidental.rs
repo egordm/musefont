@@ -22,7 +22,7 @@ impl Default for Accidental {
 impl ElementTrait for Accidental {
 	fn el(&self) -> &Element { &self.element }
 	fn el_mut(&mut self) -> &mut Element { &mut self.element }
-	fn element_type() -> ElementType { ElementType::Accidental }
+	fn element_type(&self) -> ElementType { ElementType::Accidental }
 }
 
 #[derive(Clone, Copy, Debug, Primitive, PartialEq, Eq, Hash)]
