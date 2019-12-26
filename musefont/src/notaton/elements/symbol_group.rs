@@ -25,5 +25,5 @@ impl ElementTrait for SymbolGroup {
 
 	fn el_mut(&mut self) -> &mut Element { &mut self.element }
 
-	fn element_type(&self) -> ElementType { ElementType::Group }
+	fn element_type() -> ElementType { ElementType::Group }
 }

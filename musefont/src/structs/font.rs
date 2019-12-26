@@ -86,7 +86,6 @@ impl ScoreFont {
 	pub fn pixmap(&mut self, id: SymId, scale: &Size2F, point_size: f32, rasterization_options: RasterizationOptions, format: Format) -> Option<&GlyphPixmap> {
 		let key = GlyphKey::new(id, *scale, point_size);
 		if !self.cache.contains_key(&key) && self.sym(id).is_valid() {
-			let test = self.sym(id);
 			let glyph_id = self.sym(id).index;
 			let transform = FontTransform::new(scale.width, 0., 0., scale.height);
 			let hinting_options = HintingOptions::None;

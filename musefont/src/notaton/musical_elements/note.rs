@@ -73,7 +73,7 @@ impl Default for Note {
 impl ElementTrait for Note {
 	fn el(&self) -> &Element { &self.element }
 	fn el_mut(&mut self) -> &mut Element { &mut self.element }
-	fn element_type(&self) -> ElementType { ElementType::Note }
+	fn element_type() -> ElementType { ElementType::Note }
 }
 
 impl Note {

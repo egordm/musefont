@@ -9,3 +9,4 @@ pub use elements::*;
 pub use musical_elements::*;
 pub use structs::*;
 pub use drawable::*;
+pub use score::*;
