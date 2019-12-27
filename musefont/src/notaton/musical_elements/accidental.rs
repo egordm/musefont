@@ -8,14 +8,14 @@ pub struct Accidental {
 	bracket: Bracket,
 }
 
-impl Default for Accidental {
-	fn default() -> Self {
-		Self {
-			element: Element::default(),
+impl Accidental {
+	pub fn new(score: Score) -> Elem<Self> {
+		Elem::new(Self {
+			element: Element::new(score),
 			accidental_type: Type::None,
 			small: false,
 			bracket: Bracket::None
-		}
+		})
 	}
 }
 

@@ -37,10 +37,10 @@ pub struct Note {
 	head_type: notehead::Type,
 	ghost: bool,
 
-	accidental: Accidental,
+	accidental: Option<Elem<Accidental>>,
 	//tie_for: Tie,
 	//tie_back: Tie,
-	dots: Vec<NoteDot>,
+	dots: Vec<Elem<NoteDot>>,
 
 	user_mirror: DirectionH,
 	user_dot_pos: DirectionV,
@@ -51,22 +51,24 @@ pub struct Note {
 	cache_notehead_sym: SymId,
 }
 
-impl Default for Note {
-	fn default() -> Self {
-		Self {
-			element: Element::default(),
+
+
+impl Note {
+	pub fn new(score: Score) -> Elem<Self> {
+		Elem::new(Self {
+			element: Element::new(score),
 			duration: Duration::default(),
 			head_group: notehead::Group::Normal,
 			head_type: notehead::Type::Auto,
 			ghost: false,
-			accidental: Accidental::default(),
+			accidental: None,
 			dots: Vec::new(),
 			user_mirror: DirectionH::Auto,
 			user_dot_pos: DirectionV::Auto,
 			articulations: 0,
 			value: Value::default(),
 			cache_notehead_sym: SymIdent::NoSym.id()
-		}
+		})
 	}
 }
 

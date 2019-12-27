@@ -10,17 +10,15 @@ pub struct Element {
 	min_dist: f32,
 }
 
-impl Default for Element {
-	fn default() -> Self {
-		Self {
-			sc_element: ScoreElement::default(),
+impl Element {
+	pub fn new(score: Score) -> Self { Self {
+			sc_element: ScoreElement::new(score),
 			bbox: RectF::default(),
 			scale: SIZE_ONE,
 			pos: Point2F::default(),
 			offset: Point2F::default(),
 			min_dist: 0.
-		}
-	}
+	}}
 }
 
 impl ElementTrait for Element {
@@ -30,8 +28,7 @@ impl ElementTrait for Element {
 }
 
 impl RefableElement for Element {
-	fn from_ref(_r: &ElementRef) -> Option<&Self> { None }
-	fn from_ref_mut(_r: &mut ElementRef) -> Option<&mut Self> { None }
+	fn from_ref_rc(_r: &ElementRef) -> Option<&Elem<Self>> { None }
 	fn into_ref(self) -> Option<ElementRef> { None }
 }
 
@@ -73,14 +70,3 @@ impl<T: ElementTrait> ScoreElementTrait for T {
 	fn sc_el(&self) -> &ScoreElement { &self.el().sc_element }
 	fn sc_el_mut(&mut self) -> &mut ScoreElement { &mut self.el_mut().sc_element }
 }
-
-/*
-macro_rules! impl_elem {
-	($t:ident, $el_ty:expr) => {
-		impl ElementTrait for $t {
-			fn el(&self) -> &Element { &self.element }
-			fn el_mut(&mut self) -> &mut Element { &mut self.element }
-			fn element_type(&self) -> ElementType { $el_ty }
-		}
-	}
-}*/

@@ -3,15 +3,13 @@ use crate::*;
 #[derive(Clone, Debug)]
 pub struct Chord {
 	element: Element,
-	notes: Vec<ElemId>,
-	grace_notes: Vec<ElemId>,
-	stem: ElemId,
-	stem_slash: ElemId,
+	notes: Vec<Elem<Note>>,
+	grace_notes: Vec<Elem<Note>>,
+	//stem: Elem<Stem>,
+	//stem_slash: Elem<StemSlash>,
 	stem_direction: DirectionH,
-	hook: ElemId,
+	//hook: Elem<Hook>,
 }
-
-//impl_elem!(Chord, ElementType::Chord);
 
 impl ElementTrait for Chord {
 	fn el(&self) -> &Element { &self.element }
@@ -20,24 +18,15 @@ impl ElementTrait for Chord {
 }
 
 impl Chord {
-	pub fn notes(&self) -> impl Iterator<Item=&Note> {
-		TypedElementIter::new(self.notes.iter().cloned(), self.score().expect("Element must be attached"))
-	}
-	pub fn grace_notes(&self) -> impl Iterator<Item=&Note> {
-		TypedElementIter::new(self.grace_notes.iter().cloned(), self.score().expect("Element must be attached"))
-	}
 	//pub fn stem(&self) -> &Stem { self.expect_neighbor(self.stem) }
 	//pub fn stem_slash(&self) -> &StemSlash { self.expect_neighbor(self.stem_slash) }
 	//pub fn hook(&self) -> &Hook { self.expect_neighbor(self.hook) }
 
-	pub fn low_note(&self) -> &Note {
-		self.notes().min_by(|a, b| a.line().cmp(&b.line()))
-			.expect("Chord by must have least one note.")
+	pub fn low_note(&self) -> Option<&Elem<Note>> {
+		self.notes.iter().min_by(|a, b| a.borrow().line().cmp(&b.borrow().line()))
 	}
-
-	pub fn high_note(&self) -> &Note {
-		self.notes().max_by(|a, b| a.line().cmp(&b.line()))
-			.expect("Chord by must have least one note.")
+	pub fn high_note(&self) -> Option<&Elem<Note>> {
+		self.notes.iter().max_by(|a, b| a.borrow().line().cmp(&b.borrow().line()))
 	}
 }
 /*
