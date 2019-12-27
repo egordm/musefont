@@ -1,0 +1,9 @@
+[package]
+name = "musefont_render"
+version = "0.1.0"
+authors = ["Egor Dmitriev <egordmitriev2@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+musefont = { path = "../musefont" }
+piston_window = "0.98.0"

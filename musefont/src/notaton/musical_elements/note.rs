@@ -80,6 +80,8 @@ impl ElementTrait for Note {
 }
 
 impl Note {
+	pub fn duration(&self) -> &Duration { &self.duration }
+	pub fn set_duration(&mut self, duration: Duration) { self.duration = duration }
 	pub fn value(&self) -> &Value { &self.value }
 	pub fn line(&self) -> Line { self.value().line }
 

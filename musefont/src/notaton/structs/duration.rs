@@ -65,6 +65,10 @@ pub struct Duration {
 	dots: u8,
 }
 
+impl Duration {
+	pub fn new(duration_type: DurationType, dots: u8) -> Self { Self { duration_type, dots } }
+}
+
 impl Default for Duration {
 	fn default() -> Self { Self { duration_type: DurationType::Quarter, dots: 0 } }
 }

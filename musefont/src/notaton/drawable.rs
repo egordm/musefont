@@ -10,6 +10,10 @@ pub struct DrawData {
 
 impl DrawData {
 	pub fn new(symid: SymId, scale: Size2F, pos: Point2F) -> Self { Self { symid, scale, pos }}
+
+	pub fn symid(&self) -> SymId { self.symid }
+	pub fn scale(&self) -> Size2F { self.scale }
+	pub fn pos(&self) -> Point2F { self.pos }
 }
 
 pub struct LayoutData<'a> {

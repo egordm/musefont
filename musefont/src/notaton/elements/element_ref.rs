@@ -38,6 +38,15 @@ impl<T: RefableElement> RefableElement for Elem<T> {
 	fn into_ref(self) -> Option<ElementRef> { None }
 }
 
+impl<T: Drawable> Drawable for Elem<T> {
+	fn layout(&mut self, data: &LayoutData) {
+		self.borrow_mut().layout(data)
+	}
+	fn draw(&self, painter: PainterRef) {
+		self.borrow_mut().draw(painter)
+	}
+}
+
 macro_rules! decl_elem_ref {
 	{$($Variant:ident($Type:ty)),* $(,)*} => {
 		#[derive(Clone)]
@@ -121,7 +130,6 @@ impl std::fmt::Debug for ElementWeakRef {
 		std::fmt::Debug::fmt(&self.upgrade(), f)
 	}
 }
-
 
 impl std::fmt::Debug for ElementRef {
 	fn fmt(&self, f: &mut std::fmt::Formatter) -> Result<(), std::fmt::Error> {
