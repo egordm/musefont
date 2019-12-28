@@ -4,7 +4,7 @@ use crate::*;
 pub struct Element {
 	sc_element: ScoreElement,
 	bbox: RectF,
-	scale: Size2F,
+	scale: f32,
 	pos: Point2F,
 	offset: Point2F,
 	min_dist: f32,
@@ -14,7 +14,7 @@ impl Element {
 	pub fn new(score: Score) -> Self { Self {
 			sc_element: ScoreElement::new(score),
 			bbox: RectF::default(),
-			scale: SIZE_ONE,
+			scale: 1.,
 			pos: Point2F::default(),
 			offset: Point2F::default(),
 			min_dist: 0.
@@ -30,6 +30,7 @@ impl ElementTrait for Element {
 impl RefableElement for Element {
 	fn from_ref_rc(_r: &ElementRef) -> Option<&Elem<Self>> { None }
 	fn into_ref(self) -> Option<ElementRef> { None }
+	fn transform_ref(r: Elem<Self>) -> Option<ElementRef> { None }
 }
 
 pub trait ElementTrait: RefableElement + ScoreElementTrait {
@@ -42,17 +43,17 @@ pub trait ElementTrait: RefableElement + ScoreElementTrait {
 	fn pos(&self) -> Point2F { self.el().pos + self.el().offset.to_vector() }
 	fn x(&self) -> f32 { self.el().pos.x + self.el().offset.x }
 	fn y(&self) -> f32 { self.el().pos.y + self.el().offset.y }
-	fn set_pos(&mut self, pos: &Point2F) { self.el_mut().pos = *pos; }
+	fn set_pos(&mut self, pos: Point2F) { self.el_mut().pos = pos; }
 	fn move_pos(&mut self, dt: &Point2F) { self.el_mut().pos += dt.to_vector(); }
 
-	fn scale(&self) -> &Size2F { &self.el().scale }
-	fn set_scale(&mut self, scale: &Size2F) { self.el_mut().scale = *scale; }
+	fn scale(&self) -> f32 { self.el().scale }
+	fn set_scale(&mut self, scale: f32) { self.el_mut().scale = scale; }
 
 	fn offset(&self) -> &Point2F { &self.el().offset }
 	fn set_offset(&mut self, v: &Point2F) { self.el_mut().offset = *v; }
 
 	fn bbox(&self) -> &RectF { &self.el().bbox }
-	fn set_bbox(&mut self, v: &RectF) { self.el_mut().bbox = *v; }
+	fn set_bbox(&mut self, v: RectF) { self.el_mut().bbox = v; }
 	fn add_bbox(&mut self, v: &RectF) { self.el_mut().bbox = self.el_mut().bbox.union(v); }
 	fn width(&self) -> f32 { self.el().bbox.size.width }
 	fn set_width(&mut self, v: f32) { self.el_mut().bbox.size.width = v; }

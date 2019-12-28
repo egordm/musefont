@@ -7,15 +7,27 @@ pub trait RefableElement: Sized {
 	fn from_ref_mut(r: &mut ElementRef) -> Option<&mut Self> { Self::from_ref_rc(r).map(|e| e.as_mut()) }
 	fn from_ref_rc(r: &ElementRef) -> Option<&Elem<Self>>;
 	fn into_ref(self) -> Option<ElementRef>;
+	fn transform_ref(r: Elem<Self>) -> Option<ElementRef>;
 }
 
 #[derive(Clone)]
 pub struct Elem<T>(Rc<RefCell<T>>);
 
+impl<T: ElementTrait + Clone> Elem<T> {
+	pub fn new(e: T) -> Self {
+		let mut ret = Self(Rc::new(RefCell::new(e)));
+		let aa = ret.clone();
+		let self_ref = aa.into_ref().expect("Element should return a valid ref").downgrade();
+		ret.set_self_ref(self_ref);
+		ret
+	}
+}
+
 impl<T> Elem<T> {
-	pub fn new(e: T) -> Self { Self(Rc::new(RefCell::new(e))) }
-	pub fn borrow(&self) -> Ref<T> { RefCell::borrow(&self.0) }
-	pub fn borrow_mut(&self) -> RefMut<T> { RefCell::borrow_mut(&self.0) }
+	pub fn borrow(&self) -> &T { self.as_ref() }
+	pub fn borrow_mut(&self) -> &mut T { self.as_mut() }
+//	pub fn borrow(&self) -> Ref<T> { RefCell::borrow(&self.0) }
+//	pub fn borrow_mut(&self) -> RefMut<T> { RefCell::borrow_mut(&self.0) }
 
 	fn as_ref(&self) -> &T { unsafe { &*RefCell::as_ptr(&self.0) } }
 	fn as_mut(&self) -> &mut T { unsafe { &mut *RefCell::as_ptr(&self.0) } }
@@ -35,12 +47,13 @@ impl<T: ElementTrait> ElementTrait for Elem<T> {
 
 impl<T: RefableElement> RefableElement for Elem<T> {
 	fn from_ref_rc(_r: &ElementRef) -> Option<&Elem<Self>> { None }
-	fn into_ref(self) -> Option<ElementRef> { None }
+	fn into_ref(self) -> Option<ElementRef> { T::transform_ref(self) }
+	fn transform_ref(r: Elem<Self>) -> Option<ElementRef> { None }
 }
 
 impl<T: Drawable> Drawable for Elem<T> {
-	fn layout(&mut self, data: &LayoutData) {
-		self.borrow_mut().layout(data)
+	fn layout(&mut self) {
+		self.borrow_mut().layout()
 	}
 	fn draw(&self, painter: PainterRef) {
 		self.borrow_mut().draw(painter)
@@ -105,6 +118,9 @@ macro_rules! decl_elem_ref {
 			fn into_ref(self) -> Option<ElementRef> {
 				Some(ElementRef::$Variant(Elem::new(self)))
 			}
+			fn transform_ref(r: Elem<Self>) -> Option<ElementRef> {
+				Some(ElementRef::$Variant(r))
+			 }
 		})*
 	}
 }
@@ -120,7 +136,7 @@ decl_elem_ref! {
 	NoteDot(NoteDot),
 //	Rest(Rest),
 //	Slur(Slur),
-//	Stem(Stem),
+	Stem(Stem),
 //	StemSlash(StemSlash),
 //	Tie(Tie),
 }
@@ -148,4 +164,5 @@ impl ElementTrait for ElementRef {
 impl RefableElement for ElementRef {
 	fn from_ref_rc(_r: &ElementRef) -> Option<&Elem<Self>> { None }
 	fn into_ref(self) -> Option<ElementRef> { Some(self) }
+	fn transform_ref(r: Elem<Self>) -> Option<ElementRef> { None }
 }

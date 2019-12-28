@@ -20,6 +20,6 @@ pub use notedot::NoteDot;
 pub use notehead::Type as NoteheadType;
 //pub use rest::Rest;
 //pub use slur::Slur;
-//pub use stem::Stem;
+pub use stem::Stem;
 //pub use stem_slash::StemSlash;
 //pub use tie::Tie;

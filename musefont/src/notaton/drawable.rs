@@ -2,30 +2,13 @@ use crate::*;
 
 
 #[derive(Clone, Debug)]
-pub struct DrawData {
-	symid: SymId,
-	scale: Size2F,
-	pos: Point2F,
-}
-
-impl DrawData {
-	pub fn new(symid: SymId, scale: Size2F, pos: Point2F) -> Self { Self { symid, scale, pos }}
-
-	pub fn symid(&self) -> SymId { self.symid }
-	pub fn scale(&self) -> Size2F { self.scale }
-	pub fn pos(&self) -> Point2F { self.pos }
-}
-
-pub struct LayoutData<'a> {
-	font: &'a ScoreFont
-}
-
-impl<'a> LayoutData<'a> {
-	pub fn font(&self) -> &ScoreFont { self.font }
+pub enum DrawIns {
+	Symbol(SymId, Size2F, Point2F),
+	Line(LineF, f32),
 }
 
 pub trait Painter {
-	fn draw(&mut self, data: DrawData);
+	fn draw(&mut self, data: DrawIns);
 
 	fn translate(&mut self, pt: Vec2F);
 }
@@ -33,7 +16,7 @@ pub trait Painter {
 pub type PainterRef<'a> = &'a mut dyn Painter;
 
 pub trait Drawable: ElementTrait {
-	fn layout(&mut self, data: &LayoutData);
+	fn layout(&mut self);
 
 	fn draw(&self, painter: PainterRef);
 }

@@ -5,7 +5,7 @@ use musefont::*;
 use std::path::{PathBuf};
 
 struct PaintContext {
-	instructions: Vec<DrawData>,
+	instructions: Vec<DrawIns>,
 	pos: Vec2F
 }
 
@@ -14,8 +14,17 @@ impl PaintContext {
 }
 
 impl Painter for PaintContext {
-	fn draw(&mut self, data: DrawData) {
-		self.instructions.push(DrawData::new(data.symid(), data.scale(), data.pos() + self.pos))
+	fn draw(&mut self, data: DrawIns) {
+		let scale_global = Size2F::new(1., -1.);
+
+		self.instructions.push(match data {
+			DrawIns::Symbol(id, scale, pos) => {
+				DrawIns::Symbol(id, scale, scale_pos((pos + self.pos), scale_global))
+			},
+			DrawIns::Line(line, width) => {
+				DrawIns::Line((line + self.pos) * scale_global, width)
+			},
+		});
 	}
 
 	fn translate(&mut self, pt: Vec2F) {
@@ -26,20 +35,33 @@ impl Painter for PaintContext {
 impl PaintContext {
 	pub fn render(&self, score: &Score, ctx: &Context, tx_ctx: &mut G2dTextureContext, gfx_ctx: &mut G2d) {
 		let point_size = 64.;
+		let point_size = 128.;
 
 		let font = score.font_mut();
-		for ins in &self.instructions {
-			let img = font.pixmap(ins.symid(), &ins.scale(), 64.,
-			            RasterizationOptions::GrayscaleAa, Format::A8).expect("Failed rendering image");
+		let matrix: math::Matrix2d = ctx.transform.trans(0., 480.0);//.scale(1., -1.);//;
+		for ins in self.instructions.iter().cloned() {
+			match ins {
+				DrawIns::Symbol(symid, scale, pos) => {
+					let img = font.pixmap(symid, &scale, point_size,
+					                      RasterizationOptions::GrayscaleAa,
+					                      Format::A8).expect("Failed rendering image");
 
-			let tex = Texture::from_memory_alpha(
-				tx_ctx, img.pixels(), img.width(), img.height(),
-				&TextureSettings::new()
-			).unwrap() as G2dTexture;
+					let tex = Texture::from_memory_alpha(
+						tx_ctx, img.pixels(), img.width(), img.height(),
+						&TextureSettings::new()
+					).unwrap() as G2dTexture;
 
-			let rel_pos = ins.pos() * point_size;
-			let pos = ctx.transform.trans(200., 200.).trans(rel_pos.x as f64, rel_pos.y as f64);
-			image(&tex, pos, gfx_ctx);
+					let rel_pos = pos * point_size;
+					let pos = matrix.trans(rel_pos.x as f64, rel_pos.y as f64);
+					image(&tex, pos, gfx_ctx);
+				},
+				DrawIns::Line(line, width) => {
+					let line = line * point_size;
+					let p1 = [line.p1.x as f64, line.p1.y as f64];
+					let p2 = [line.p2.x as f64, line.p2.y as f64];
+					line_from_to([1., 1., 1., 1.], (width * point_size) as f64, p1, p2, matrix, gfx_ctx);
+				},
+			}
 		}
 	}
 }
@@ -52,19 +74,22 @@ fn main() {
 	let font = load_font(&path, filename, &config).unwrap();
 	let score = Score::new(font);
 
-	let note_m = Note::new(score.clone());
-	let mut note = note_m.borrow_mut();
-	note.set_duration(Duration::new(DurationType::Whole, 0));
+	let mut chord = Chord::new(score.clone());
+	chord.set_pos(Point2F::new(1.5, 1.5));
+	{
+		let note = Note::new(score.clone());
+		note.borrow_mut().set_duration(Duration::new(DurationType::Quarter, 0));
+		chord.borrow_mut().add_note(note);
+	}
 
 	let mut window: PistonWindow =
 		WindowSettings::new("Musefont Render", [640, 480])
 			.exit_on_esc(true).build().unwrap();
 	let mut tex_context = window.create_texture_context();
 
-
 	let mut painter = PaintContext::new();
-	note.draw(&mut painter);
-
+	chord.borrow_mut().layout();
+	chord.draw(&mut painter);
 
 	while let Some(event) = window.next() {
 		window.draw_2d(&event, |context, graphics, _device| {

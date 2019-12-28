@@ -72,7 +72,6 @@ impl Note {
 	}
 }
 
-//impl_elem!(Note, ElementType::Note);
 impl ElementTrait for Note {
 	fn el(&self) -> &Element { &self.element }
 	fn el_mut(&mut self) -> &mut Element { &mut self.element }
@@ -106,17 +105,25 @@ impl Note {
 }
 
 impl Note {
-	pub fn head_width(&self, data: &LayoutData) -> f32 {
-		data.font().width(self.note_head(), self.scale().width)
+	pub fn head_width(&self) -> f32 {
+		self.score().font().width(self.note_head(), self.scale())
+	}
+
+	pub fn stem_down_nw(&self) -> Point2F {
+		self.score().font().stem_down_nw(self.note_head(), self.scale())
+	}
+	pub fn stem_up_se(&self) -> Point2F {
+		self.score().font().stem_up_se(self.note_head(), self.scale())
 	}
 }
 
 impl Drawable for Note {
-	fn layout(&mut self, data: &LayoutData) {
-		unimplemented!()
+	fn layout(&mut self) {
+		// TODO: layout the dots
 	}
 
 	fn draw(&self, painter: PainterRef) {
-		painter.draw(DrawData::new(self.note_head(), *self.scale(), self.pos()))
+
+		painter.draw(DrawIns::Symbol(self.note_head(), Size2F::new(self.scale(), self.scale()), self.pos()))
 	}
 }

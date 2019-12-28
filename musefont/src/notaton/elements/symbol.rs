@@ -13,11 +13,11 @@ impl ElementTrait for Symbol {
 }
 
 impl Drawable for Symbol {
-	fn layout(&mut self, data: &LayoutData) {
+	fn layout(&mut self) {
 		unimplemented!()
 	}
 
 	fn draw(&self, painter: PainterRef) {
-		painter.draw(DrawData::new(self.sym, *self.scale(), self.pos()))
+		painter.draw(DrawIns::Symbol(self.sym, Size2F::new(self.scale(), self.scale()), self.pos()))
 	}
 }
