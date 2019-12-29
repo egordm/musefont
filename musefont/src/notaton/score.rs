@@ -1,5 +1,5 @@
 use std::{cell::RefCell, rc::Rc};
-use crate::ScoreFont;
+use crate::*;
 
 #[derive(Clone)]
 pub struct Score(Rc<RefCell<InnerScore>>);
@@ -12,7 +12,8 @@ impl std::fmt::Debug for Score {
 
 impl Score {
 	pub fn new(font: ScoreFont) -> Self {
-		Self(Rc::new(RefCell::new(InnerScore { font })))
+		let note_head_width = font.width(SymIdent::NoteheadBlack as SymId, 1.); // TODO: spatium / spatium20
+		Self(Rc::new(RefCell::new(InnerScore { font, note_head_width })))
 	}
 
 	fn inner(&self) -> &InnerScore { unsafe { &*RefCell::as_ptr(&self.0) } }
@@ -20,8 +21,11 @@ impl Score {
 
 	pub fn font(&self) -> &ScoreFont { &self.inner().font }
 	pub fn font_mut(&self) -> &mut ScoreFont { &mut self.inner_mut().font }
+
+	pub fn note_head_width(&self) -> f32 { self.inner().note_head_width }
 }
 
 pub struct InnerScore {
 	font: ScoreFont,
+	note_head_width: f32,
 }

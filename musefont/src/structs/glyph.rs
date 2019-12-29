@@ -10,12 +10,11 @@ pub type GlyphId = SymId;
 pub struct GlyphKey {
 	id: GlyphId,
 	scale: Size2F,
-	point_size: f32,
 }
 
 impl GlyphKey {
-	pub fn new(id: GlyphId, scale: Size2F, point_size: f32) -> GlyphKey {
-		GlyphKey { id, scale, point_size }
+	pub fn new(id: GlyphId, scale: Size2F) -> GlyphKey {
+		GlyphKey { id, scale }
 	}
 }
 

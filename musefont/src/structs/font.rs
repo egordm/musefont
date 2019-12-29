@@ -60,11 +60,11 @@ impl ScoreFont {
 	// TODO: fallback font
 
 	pub fn stem_down_nw(&self, id: SymId, mag: f32) -> Point2F {
-		*self.sym(id).stem_down_nw() * mag
+		self.sym(id).stem_down_nw() * mag
 	}
 
 	pub fn stem_up_se(&self, id: SymId, mag: f32) -> Point2F {
-		*self.sym(id).stem_up_se() * mag
+		self.sym(id).stem_up_se() * mag
 	}
 
 	pub fn cut_out_ne(&self, id: SymId, mag: f32) -> Point2F {
@@ -83,12 +83,13 @@ impl ScoreFont {
 		*self.sym(id).cut_out_se() * mag
 	}
 
-	pub fn pixmap(&mut self, id: SymId, scale: &Size2F, point_size: f32, rasterization_options: RasterizationOptions, format: Format) -> Option<&GlyphPixmap> {
-		let key = GlyphKey::new(id, *scale, point_size);
+	pub fn pixmap(&mut self, id: SymId, scale: &Size2F, rasterization_options: RasterizationOptions, format: Format) -> Option<&GlyphPixmap> {
+		let key = GlyphKey::new(id, *scale);
 		if !self.cache.contains_key(&key) && self.sym(id).is_valid() {
 			let glyph_id = self.sym(id).index;
 			let transform = FontTransform::new(scale.width, 0., 0., scale.height);
 			let hinting_options = HintingOptions::None;
+			let point_size = self.font.metrics().units_per_em as f32 / 10.;
 
 			let bounds = self.font.raster_bounds(
 				glyph_id, point_size, &transform, &POINT_ZERO,

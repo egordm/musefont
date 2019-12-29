@@ -8,5 +8,6 @@ edition = "2018"
 enum-primitive-derive = "^0.1"
 num-traits = "^0.1"
 font-kit = "^0.5"
+#font-kit = { path = "../libs/font-kit" }
 euclid = "0.20.7"
 json = "0.12.0"

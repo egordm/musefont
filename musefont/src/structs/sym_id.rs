@@ -2649,8 +2649,6 @@ impl From<u32> for SymIdent {
 }
 
 
-pub const SYMBOL_COUNT: usize = SymIdent::LastSym as usize;
-
 pub const SYMBOL_NAMES: [&str; SYMBOL_COUNT] = {
 	[
 		"noSym",
@@ -5283,6 +5281,8 @@ pub const SYMBOL_NAMES: [&str; SYMBOL_COUNT] = {
 		"space"
 	]
 };
+
+pub const SYMBOL_COUNT: usize = SymIdent::LastSym as usize;
 
 pub const COMPOSED_SYMBOLS: [(SymIdent, &[SymIdent]); 7] = {[
 	(SymIdent::OrnamentPrallMordent, &[

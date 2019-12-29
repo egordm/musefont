@@ -58,11 +58,11 @@ impl Chord {
 	pub fn notehead_width(&self) -> f32 {
 		// TODO: check is grace note
 		// TODO: Style graceNoteMag
-		self.notes[0].borrow().head_width() * self.scale()
+		self.score().note_head_width() * self.scale()
 	}
 	pub fn default_stem_len(&self) -> f32 {
 		if let (Some(un), Some(dn)) = (self.high_note(), self.low_note()) {
-			let shortest = 1.;
+			let shortest = 80.;
 			let ul = un.borrow().line() as f32;
 			let dn = dn.borrow().line() as f32;
 			((ul - dn) * 0.5).max(shortest)
@@ -97,9 +97,9 @@ impl Drawable for Chord {
 		if self.duration.has_stem() {
 			self.stem().borrow_mut().set_len(self.default_stem_len());
 			self.stem().borrow_mut().layout();
-			let stem_offset = self.stem().borrow().width() * -0.6 * self.scale();
+			let stem_offset = self.stem().borrow().width() * -1. * self.scale();
 			let stem_pos = self.stem().borrow().pos();
-			self.stem().borrow_mut().set_pos(Point2F::new(self.stem_x() + stem_offset, stem_pos.y - 0.05));
+			self.stem().borrow_mut().set_pos(Point2F::new(self.stem_x() + stem_offset, stem_pos.y));
 		}
 
 		// TODO: ledger lines

@@ -12,7 +12,7 @@ impl Stem {
 	pub fn new(score: Score) -> Elem<Self> { Elem::new(Self {
 		element: Element::new(score),
 		line: LineF::new(Point2F::default(), Point2F::default()),
-		line_width: 0.02,
+		line_width: 2.,
 		len: 0.0
 	})}
 }
@@ -62,7 +62,8 @@ impl Drawable for Stem {
 			// move stem start to note attach point
 			let chord = chord.borrow();
 			if let Some(note) = if up { chord.low_note() } else { chord.high_note() } {
-				y1 += if up { note.borrow().stem_up_se().y } else { note.borrow().stem_down_nw().y };
+				// TODO: Glyphs have flipped y axis. FIx that
+				y1 += if up { -note.borrow().stem_up_se().y } else { -note.borrow().stem_down_nw().y };
 				self.set_pos(Point2F::new(self.x(), note.y()));
 			}
 		}

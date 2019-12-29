@@ -34,16 +34,12 @@ impl Painter for PaintContext {
 
 impl PaintContext {
 	pub fn render(&self, score: &Score, ctx: &Context, tx_ctx: &mut G2dTextureContext, gfx_ctx: &mut G2d) {
-		let point_size = 64.;
-		let point_size = 128.;
-
 		let font = score.font_mut();
 		let matrix: math::Matrix2d = ctx.transform.trans(0., 480.0);//.scale(1., -1.);//;
 		for ins in self.instructions.iter().cloned() {
 			match ins {
 				DrawIns::Symbol(symid, scale, pos) => {
-					let img = font.pixmap(symid, &scale, point_size,
-					                      RasterizationOptions::GrayscaleAa,
+					let img = font.pixmap(symid, &scale, RasterizationOptions::GrayscaleAa,
 					                      Format::A8).expect("Failed rendering image");
 
 					let tex = Texture::from_memory_alpha(
@@ -51,15 +47,15 @@ impl PaintContext {
 						&TextureSettings::new()
 					).unwrap() as G2dTexture;
 
-					let rel_pos = pos * point_size;
+					let rel_pos = pos;
 					let pos = matrix.trans(rel_pos.x as f64, rel_pos.y as f64);
 					image(&tex, pos, gfx_ctx);
 				},
 				DrawIns::Line(line, width) => {
-					let line = line * point_size;
+					let line = line;
 					let p1 = [line.p1.x as f64, line.p1.y as f64];
 					let p2 = [line.p2.x as f64, line.p2.y as f64];
-					line_from_to([1., 1., 1., 1.], (width * point_size) as f64, p1, p2, matrix, gfx_ctx);
+					line_from_to([1., 1., 1., 1.], (width) as f64, p1, p2, matrix, gfx_ctx);
 				},
 			}
 		}
@@ -75,7 +71,7 @@ fn main() {
 	let score = Score::new(font);
 
 	let mut chord = Chord::new(score.clone());
-	chord.set_pos(Point2F::new(1.5, 1.5));
+	chord.set_pos(Point2F::new(100., 100.5));
 	{
 		let note = Note::new(score.clone());
 		note.borrow_mut().set_duration(Duration::new(DurationType::Quarter, 0));

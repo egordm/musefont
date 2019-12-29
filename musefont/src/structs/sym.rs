@@ -44,9 +44,9 @@ impl Sym {
 
 	pub const fn advance(&self) -> f32 { self.advance }
 
-	pub const fn stem_down_nw(&self) -> &Point2F { &self.stem_down_nw }
+	pub fn stem_down_nw(&self) -> Point2F { self.stem_down_nw - self.bbox.origin.to_vector() }
 
-	pub const fn stem_up_se(&self) -> &Point2F { &self.stem_up_se }
+	pub fn stem_up_se(&self) -> Point2F { self.stem_up_se - self.bbox.origin.to_vector() }
 
 	pub const fn cut_out_ne(&self) -> &Point2F { &self.cut_out_ne }
 
