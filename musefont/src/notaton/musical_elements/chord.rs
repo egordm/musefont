@@ -1,5 +1,4 @@
 use crate::*;
-use std::borrow::Borrow;
 
 #[derive(Clone, Debug)]
 pub struct Chord {
@@ -97,7 +96,7 @@ impl Drawable for Chord {
 		if self.duration.has_stem() {
 			self.stem().borrow_mut().set_len(self.default_stem_len());
 			self.stem().borrow_mut().layout();
-			let stem_offset = self.stem().borrow().width() * -1. * self.scale();
+			let stem_offset = self.stem().borrow().line_width() * -1.0 * self.scale();
 			let stem_pos = self.stem().borrow().pos();
 			self.stem().borrow_mut().set_pos(Point2F::new(self.stem_x() + stem_offset, stem_pos.y));
 		}

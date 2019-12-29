@@ -11,3 +11,4 @@ font-kit = "^0.5"
 #font-kit = { path = "../libs/font-kit" }
 euclid = "0.20.7"
 json = "0.12.0"
+log = "0.4"

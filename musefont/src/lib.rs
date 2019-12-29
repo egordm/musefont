@@ -29,20 +29,13 @@ mod test {
 		let config = FontConfig::new(&config).unwrap();
 		let mut font = load_font(&path, filename, &config).unwrap();
 
-		let aa = font.sym(SymIdent::NoteheadBlack as u32);
-		let uu = aa.stem_down_nw();
-		let ua = aa.stem_up_se();
-
 		pretty_print(&mut font, SymIdent::NoteheadBlack);
 		pretty_print(&mut font, SymIdent::Rest32nd);
 	}
 
 	pub fn pretty_print(font: &mut ScoreFont, sym_id: SymIdent) {
-		let mut a = font.sym(sym_id as SymId).stem_down_nw() * 0.7;
-		let mut b = font.sym(sym_id as SymId).stem_up_se() * 0.7;
-		//a.y += -font.sym(sym_id as SymId).bbox().origin.y * 0.7;
-		//b.y += -font.sym(sym_id as SymId).bbox().origin.y * 0.7;
-
+		let a = font.sym(sym_id as SymId).stem_down_nw() * 0.7;
+		let b = font.sym(sym_id as SymId).stem_up_se() * 0.7;
 		let pixels = font.pixmap(sym_id as SymId, &(SIZE_ONE * 0.7), RasterizationOptions::GrayscaleAa, Format::A8).unwrap().canvas();
 
 		let ai = (a.y.floor() as usize) * pixels.stride + (a.x.floor() as usize);

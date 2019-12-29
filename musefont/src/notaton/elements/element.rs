@@ -30,7 +30,7 @@ impl ElementTrait for Element {
 impl RefableElement for Element {
 	fn from_ref_rc(_r: &ElementRef) -> Option<&Elem<Self>> { None }
 	fn into_ref(self) -> Option<ElementRef> { None }
-	fn transform_ref(r: Elem<Self>) -> Option<ElementRef> { None }
+	fn transform_ref(_r: Elem<Self>) -> Option<ElementRef> { None }
 }
 
 pub trait ElementTrait: RefableElement + ScoreElementTrait {

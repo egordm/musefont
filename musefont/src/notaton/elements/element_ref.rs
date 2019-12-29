@@ -1,4 +1,4 @@
-use std::{rc::{Rc, Weak}, cell::{RefCell, Ref, RefMut}};
+use std::{rc::{Rc, Weak}, cell::{RefCell/*, Ref, RefMut*/}};
 use crate::*;
 use std::ops::Deref;
 
@@ -48,7 +48,7 @@ impl<T: ElementTrait> ElementTrait for Elem<T> {
 impl<T: RefableElement> RefableElement for Elem<T> {
 	fn from_ref_rc(_r: &ElementRef) -> Option<&Elem<Self>> { None }
 	fn into_ref(self) -> Option<ElementRef> { T::transform_ref(self) }
-	fn transform_ref(r: Elem<Self>) -> Option<ElementRef> { None }
+	fn transform_ref(_r: Elem<Self>) -> Option<ElementRef> { None }
 }
 
 impl<T: Drawable> Drawable for Elem<T> {
@@ -164,5 +164,5 @@ impl ElementTrait for ElementRef {
 impl RefableElement for ElementRef {
 	fn from_ref_rc(_r: &ElementRef) -> Option<&Elem<Self>> { None }
 	fn into_ref(self) -> Option<ElementRef> { Some(self) }
-	fn transform_ref(r: Elem<Self>) -> Option<ElementRef> { None }
+	fn transform_ref(_r: Elem<Self>) -> Option<ElementRef> { None }
 }

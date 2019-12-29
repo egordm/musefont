@@ -1,8 +1,6 @@
 use font_kit::loaders::freetype::Font;
 use std::{path::Path, fs::File};
 use crate::*;
-use font_kit::loader::FontTransform;
-use font_kit::hinting::HintingOptions;
 
 type Error = FontLoadingError;
 

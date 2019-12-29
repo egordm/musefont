@@ -1,5 +1,4 @@
 use std::ops::{Add, Mul};
-use euclid::{Vector2D, UnknownUnit};
 
 pub type Point2F = euclid::default::Point2D<f32>;
 pub type Vec2F = euclid::default::Vector2D<f32>;

@@ -19,7 +19,7 @@ impl Painter for PaintContext {
 
 		self.instructions.push(match data {
 			DrawIns::Symbol(id, scale, pos) => {
-				DrawIns::Symbol(id, scale, scale_pos((pos + self.pos), scale_global))
+				DrawIns::Symbol(id, scale, scale_pos(pos + self.pos, scale_global))
 			},
 			DrawIns::Line(line, width) => {
 				DrawIns::Line((line + self.pos) * scale_global, width)
