@@ -131,7 +131,7 @@ decl_elem_ref! {
 	Accidental(Accidental),
 //	Beam(Beam),
 	Chord(Chord),
-//	Hook(Hook),
+	Hook(Hook),
 	Note(Note),
 	NoteDot(NoteDot),
 //	Rest(Rest),

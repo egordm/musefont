@@ -4,6 +4,7 @@ pub enum ElementType {
 	Chord,
 	Note,
 	Stem,
+	Hook,
 	Clef,
 	Rest,
 	Tie,

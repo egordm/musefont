@@ -10,7 +10,7 @@ pub struct Chord {
 	//stem_slash: Elem<StemSlash>,
 	stem_direction: DirectionH,
 	stem_up: bool,
-	//hook: Elem<Hook>,
+	hook: Elem<Hook>,
 }
 
 impl Chord {
@@ -22,10 +22,12 @@ impl Chord {
 			grace_notes: vec![],
 			stem: Stem::new(score.clone()),
 			stem_direction: DirectionH::Right,
-			stem_up: true
+			stem_up: true,
+			hook: Hook::new(score.clone())
 		});
 		let self_ref = ret.get_self_ref();
-		ret.borrow_mut().stem.set_parent(Some(self_ref));
+		ret.borrow_mut().stem.set_parent(Some(self_ref.clone()));
+		ret.borrow_mut().hook.set_parent(Some(self_ref));
 		ret
 	}
 }
@@ -41,6 +43,9 @@ impl Chord {
 	//pub fn stem_slash(&self) -> &StemSlash { self.expect_neighbor(self.stem_slash) }
 	//pub fn hook(&self) -> &Hook { self.expect_neighbor(self.hook) }
 	pub fn stem_up(&self) -> bool { self.stem_up }
+
+	pub fn duratin(&self) -> &Duration { &self.duration }
+	pub fn set_duration(&mut self, duration: Duration) { self.duration = duration } //TODO: update note duraitons
 
 	pub fn low_note(&self) -> Option<&Elem<Note>> {
 		self.notes.iter().min_by(|a, b| Elem::borrow(a).line().cmp(&Elem::borrow(b).line()))
@@ -105,7 +110,21 @@ impl Drawable for Chord {
 		// TODO: arpeggio
 		// TODO: glissando
 		// TODO: dots
-		// TODO: hook
+		{ // TODO: If using hook instead of beam
+			let hook_type = if self.stem_up() { self.duration.hook_type().up() } else { self.duration.hook_type().down() };
+			self.hook.borrow_mut().set_hook_type(hook_type);
+			self.hook.layout();
+			let mut p = self.stem.borrow().hook_pos();
+			if self.stem_up() {
+				p.y += self.hook.bbox().origin.y + self.hook.bbox().size.height;
+				p.x -= self.stem.width();
+			} else {
+				p.y += self.hook.bbox().origin.y;
+				p.x -= self.stem.width();
+			}
+			self.hook.set_pos(p);
+
+		}
 		// TODO: positon grace note
 		// TODO: chordline
 	}
@@ -114,7 +133,8 @@ impl Drawable for Chord {
 		painter.translate(self.pos().to_vector());
 
 		for note in &self.notes { note.borrow().draw(painter); }
-		self.stem().borrow().draw(painter);
+		self.stem().draw(painter);
+		self.hook.draw(painter);
 
 		painter.translate(-self.pos().to_vector());
 	}

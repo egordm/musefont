@@ -14,7 +14,7 @@ pub mod tie;
 pub use accidental::Accidental;
 //pub use beam::Beam;
 pub use chord::Chord;
-//pub use hook::Hook;
+pub use hook::Hook;
 pub use note::Note;
 pub use notedot::NoteDot;
 pub use notehead::Type as NoteheadType;

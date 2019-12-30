@@ -7,17 +7,16 @@ pub struct SymbolGroup {
 }
 
 impl SymbolGroup {
+	pub(crate) fn default(score: Score) -> Self { Self {
+		element: Element::new(score),
+		leafs: Vec::new(),
+	}}
+
+	pub fn new(score: Score) -> Elem<Self> { Elem::new(Self::default(score))}
+}
+
+impl SymbolGroup {
 	pub fn leaves(&self) -> &Vec<Symbol> { &self.leafs }
-
-	/*pub fn add(&mut self, el: Symbol) -> bool {
-		if el.element_type() == ElementType::Symbol {
-			el.set_parent(Some())
-
-			true
-		} else {
-			false
-		}
-	}*/
 }
 
 impl ElementTrait for SymbolGroup {

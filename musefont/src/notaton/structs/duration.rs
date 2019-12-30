@@ -1,4 +1,5 @@
 use crate::*;
+use crate::notaton::musical_elements::hook::HookType;
 
 #[derive(Clone, Copy, Debug, Primitive, PartialEq, Eq, Hash)]
 pub enum DurationType {
@@ -57,6 +58,20 @@ impl DurationType {
 			_ => true
 		}
 	}
+
+	pub fn hook_type(&self) -> HookType {
+		match self {
+			DurationType::Eighth => HookType::Flag8thUp,
+			DurationType::D16th => HookType::Flag16thUp,
+			DurationType::D32th => HookType::Flag32ndUp,
+			DurationType::D64th => HookType::Flag64thUp,
+			DurationType::D128th => HookType::Flag128thUp,
+			DurationType::D256th => HookType::Flag256thUp,
+			DurationType::D512th => HookType::Flag512thUp,
+			DurationType::D1024th => HookType::Flag1024thUp,
+			_ => HookType::None,
+		}
+	}
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -85,6 +100,8 @@ impl Duration {
 	}
 	pub fn note_head(&self) -> notehead::Type { self.duration_type.note_head() }
 	pub fn has_stem(&self) -> bool { self.duration_type.has_stem() }
+
+	pub fn hook_type(&self) -> HookType { self.duration_type.hook_type() }
 
 	pub fn ty(&self) -> DurationType { self.duration_type }
 }

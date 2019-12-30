@@ -71,10 +71,11 @@ fn main() {
 	let score = Score::new(font);
 
 	let mut chord = Chord::new(score.clone());
+	chord.borrow_mut().set_duration(Duration::new(DurationType::D128th, 0));
 	chord.set_pos(Point2F::new(100., 100.5));
 	{
 		let note = Note::new(score.clone());
-		note.borrow_mut().set_duration(Duration::new(DurationType::Quarter, 0));
+		note.borrow_mut().set_duration(Duration::new(DurationType::D128th, 0));
 		chord.borrow_mut().add_note(note);
 	}
 

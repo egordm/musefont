@@ -1222,7 +1222,7 @@ pub enum ArticulationAnchor {
 }
 
 #[derive(Clone, Copy, Debug, Primitive, PartialEq, Eq, Hash)]
-pub enum HookType {
+pub enum HookStyleType {
 	None = 0,
 	Hook90 = 1,
 	Hook45 = 2,
@@ -2429,7 +2429,7 @@ pub(super) fn style_default_values() -> [(StyleId, StyleValue); STYLE_COUNT] {[
 	(StyleId::LetRingFrameRound,           StyleValue::Int(0)),
 	(StyleId::LetRingFrameFgColor,         StyleValue::Color([0, 0, 0, 255])),
 	(StyleId::LetRingFrameBgColor,         StyleValue::Color([255, 255, 255, 0])),
-	(StyleId::LetRingEndHookType,          StyleValue::UInt(HookType::Hook90T as u32)),
+	(StyleId::LetRingEndHookType,          StyleValue::UInt(HookStyleType::Hook90T as u32)),
 
 	(StyleId::PalmMuteFontFace,            StyleValue::String("FreeSerif".to_string())),
 	(StyleId::PalmMuteFontSize,            StyleValue::Float(10.0)),
@@ -2451,7 +2451,7 @@ pub(super) fn style_default_values() -> [(StyleId, StyleValue); STYLE_COUNT] {[
 	(StyleId::PalmMuteFrameRound,          StyleValue::Int(0)),
 	(StyleId::PalmMuteFrameFgColor,        StyleValue::Color([0, 0, 0, 255])),
 	(StyleId::PalmMuteFrameBgColor,        StyleValue::Color([255, 255, 255, 0])),
-	(StyleId::PalmMuteEndHookType,         StyleValue::UInt(HookType::Hook90T as u32)),
+	(StyleId::PalmMuteEndHookType,         StyleValue::UInt(HookStyleType::Hook90T as u32)),
 
 	(StyleId::FermataPosAbove,             StyleValue::Point(Point2F::new(0.0, -1.0))),
 	(StyleId::FermataPosBelow,             StyleValue::Point(Point2F::new(0.0, 1.0))),

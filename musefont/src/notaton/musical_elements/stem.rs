@@ -37,12 +37,7 @@ impl Stem {
 			chord.borrow().stem_up()
 		} else { true }
 	}
-	pub fn hook_pos(&self) -> Point2F {
-		let mut p = self.pos() + self.line.p2.to_vector();
-		let xoff = self.line_width() * 0.5 * self.scale();
-		p.x += xoff;
-		p
-	}
+	pub fn hook_pos(&self) -> Point2F { self.pos() + self.line.p2.to_vector() }
 	pub fn stem_len(&self) -> f32 {
 		if self.up() { -self.len() } else { self.len() }
 	}
