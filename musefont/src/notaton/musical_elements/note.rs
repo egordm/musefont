@@ -21,8 +21,8 @@ impl Value {
 impl Default for Value {
 	fn default() -> Self {
 		Self {
-			pitch: -1,
-			line: INVALID_LINE,
+			pitch: 0,
+			line: 5,
 			fret: FRET_NONE,
 			string: STRING_NONE,
 		}
@@ -36,6 +36,7 @@ pub struct Note {
 	head_group: notehead::Group,
 	head_type: notehead::Type,
 	ghost: bool,
+	mirror: bool,
 
 	accidental: Option<Elem<Accidental>>,
 	//tie_for: Tie,
@@ -60,6 +61,8 @@ impl Note {
 		head_group: notehead::Group::Normal,
 		head_type: notehead::Type::Auto,
 		ghost: false,
+		mirror: false,
+
 		accidental: None,
 		dots: Vec::new(),
 		user_mirror: DirectionH::Auto,
@@ -79,6 +82,13 @@ impl ElementTrait for Note {
 impl Note {
 	pub fn duration(&self) -> &Duration { &self.duration }
 	pub fn set_duration(&mut self, duration: Duration) { self.duration = duration }
+
+	pub fn mirror(&self) -> bool { self.mirror }
+	pub fn set_mirror(&mut self, v: bool) { self.mirror = v }
+
+	pub fn ghost(&self) -> bool { self.ghost }
+	pub fn set_ghost(&mut self, v: bool) { self.ghost = v }
+
 	pub fn value(&self) -> &Value { &self.value }
 	pub fn line(&self) -> Line { self.value().line }
 

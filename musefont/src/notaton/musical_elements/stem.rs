@@ -56,7 +56,7 @@ impl Drawable for Stem {
 
 			// move stem start to note attach point
 			let chord = chord.borrow();
-			if let Some(note) = if up { chord.low_note() } else { chord.high_note() } {
+			if let Some(note) = if up { chord.down_note() } else { chord.up_note() } {
 				// TODO: Glyphs have flipped y axis. FIx that
 				y1 += if up { -note.borrow().stem_up_se().y } else { -note.borrow().stem_down_nw().y };
 				self.set_pos(Point2F::new(self.x(), note.y()));

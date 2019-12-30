@@ -71,8 +71,9 @@ fn main() {
 	let score = Score::new(font);
 
 	let mut chord = Chord::new(score.clone());
+	chord.borrow_mut().set_stem_direction(DirectionV::Down);
 	chord.borrow_mut().set_duration(Duration::new(DurationType::D128th, 0));
-	chord.set_pos(Point2F::new(100., 100.5));
+	chord.set_pos(Point2F::new(200., 200.5));
 	{
 		let note = Note::new(score.clone());
 		note.borrow_mut().set_duration(Duration::new(DurationType::D128th, 0));

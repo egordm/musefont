@@ -34,6 +34,16 @@ impl HookType {
 		else if self as u32 > 8 { HookType::from_u32(self as u32 - 8).unwrap() }
 		else { self }
 	}
+
+	pub fn index(self) -> i32 {
+		let ret = self as i32;
+		if ret > 8 { -(ret - 8) } else { ret }
+	}
+
+	pub fn from_index(mut idx: i32) -> Self {
+		if idx < 0 { idx = -idx + 8 }
+		HookType::from_i32(idx).unwrap()
+	}
 }
 
 #[derive(Clone, Debug)]

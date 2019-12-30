@@ -39,6 +39,11 @@ pub trait ScoreElementTrait {
 		self.sc_el().self_ref.as_ref().expect("Self ref should be set at construction.")
 			.upgrade().as_ref().and_then(T::from_ref_rc).cloned().expect("Weak ref should be valid and contain expected type.")
 	}
+
+	fn spatium(&self) -> f32 {
+		// TODO: if staff overrides
+		self.score().spatium()
+	}
 }
 
 

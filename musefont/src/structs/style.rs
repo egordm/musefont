@@ -65,5 +65,26 @@ impl Style {
 		}
 	}
 
+	pub fn value_spatium(&self, id: SId) -> Spatium {
+		if let StyleValue::Spatium(v) = self.value(id) { *v }
+		else { panic!("Style: {} has an incorrect value check style init", id) }
+	}
+	pub fn value_bool(&self, id: SId) -> bool {
+		if let StyleValue::Bool(v) = self.value(id) { *v }
+		else { panic!("Style: {} has an incorrect value check style init", id) }
+	}
+	pub fn value_f32(&self, id: SId) -> f32 {
+		if let StyleValue::Float(v) = self.value(id) { *v }
+		else { panic!("Style: {} has an incorrect value check style init", id) }
+	}
+	pub fn value_i32(&self, id: SId) -> i32 {
+		if let StyleValue::Int(v) = self.value(id) { *v }
+		else { panic!("Style: {} has an incorrect value check style init", id) }
+	}
+	pub fn value_str(&self, id: SId) -> String {
+		if let StyleValue::String(v) = self.value(id) { v.clone() }
+		else { panic!("Style: {} has an incorrect value check style init", id) }
+	}
+
 	// TODO: loading
 }

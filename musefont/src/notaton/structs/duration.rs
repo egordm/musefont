@@ -10,7 +10,7 @@ pub enum DurationType {
 	Quarter = 5,
 	Eighth = 6,
 	D16th = 7,
-	D32th = 8,
+	D32nd = 8,
 	D64th = 9,
 	D128th = 10,
 	D256th = 11,
@@ -31,7 +31,7 @@ impl DurationType {
 			DurationType::Quarter => Fraction::new(1, 4),
 			DurationType::Eighth => Fraction::new(1, 8),
 			DurationType::D16th => Fraction::new(1, 16),
-			DurationType::D32th => Fraction::new(1, 32),
+			DurationType::D32nd => Fraction::new(1, 32),
 			DurationType::D64th => Fraction::new(1, 64),
 			DurationType::D128th => Fraction::new(1, 128),
 			DurationType::D256th => Fraction::new(1, 256),
@@ -63,7 +63,7 @@ impl DurationType {
 		match self {
 			DurationType::Eighth => HookType::Flag8thUp,
 			DurationType::D16th => HookType::Flag16thUp,
-			DurationType::D32th => HookType::Flag32ndUp,
+			DurationType::D32nd => HookType::Flag32ndUp,
 			DurationType::D64th => HookType::Flag64thUp,
 			DurationType::D128th => HookType::Flag128thUp,
 			DurationType::D256th => HookType::Flag256thUp,
@@ -93,6 +93,7 @@ impl Duration {
 	pub fn is_zero(&self) -> bool { self.duration_type != DurationType::Zero }
 	pub fn is_measure(&self) -> bool { self.duration_type != DurationType::Measure }
 
+	pub fn dots(&self) -> u8 { self.dots }
 	pub fn ticks(&self) -> Fraction {
 		let mut ret = self.duration_type.ticks();
 		for _ in 0..self.dots { ret *= Fraction::new(1, 2) }

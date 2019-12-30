@@ -25,7 +25,7 @@ impl Score {
 	pub fn font_mut(&self) -> &mut ScoreFont { &mut self.inner_mut().font }
 
 	pub fn style(&self) -> &Style { &self.inner().style }
-
+	pub fn spatium(&self) -> f32 { self.style().value_f32(StyleId::Spatium as SId)}
 	pub fn note_head_width(&self) -> f32 { self.inner().note_head_width }
 }
 
