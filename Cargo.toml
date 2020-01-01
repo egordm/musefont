@@ -3,4 +3,5 @@ members = [
     "musefont",
 #    "musefont_python",
     "musefont_render",
+    "musescore",
 ]
