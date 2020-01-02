@@ -8,7 +8,7 @@ pub mod ordered_collection;
 
 pub use clef_type::*;
 pub use direction::*;
-pub use duration::{Duration, DurationType};
+//pub use duration::{Duration, DurationType};
 pub use fraction::Fraction;
 pub use instrument::{Instrument, InstrumentList};
 pub use interval::Interval;

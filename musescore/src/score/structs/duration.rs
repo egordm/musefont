@@ -1,3 +1,4 @@
+/*
 use super::*;
 use crate::notaton::musical_elements::hook::HookType;
 
@@ -106,4 +107,4 @@ impl Duration {
 	pub fn hook_count(&self) -> i32 { self.hook_type().count() }
 
 	pub fn ty(&self) -> DurationType { self.duration_type }
-}
+}*/

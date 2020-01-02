@@ -1,4 +1,4 @@
 #[derive(Debug, Clone)]
-pub struct Rest {
+pub struct SegmentList{
 
 }

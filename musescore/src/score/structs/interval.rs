@@ -9,9 +9,9 @@ impl Default for Interval {
 }
 
 impl Interval {
-	pub fn new(diatonic: i8, chromatic: i8) -> Self { Self { diatonic, chromatic }}
+	pub const fn new(diatonic: i8, chromatic: i8) -> Self { Self { diatonic, chromatic }}
 	pub fn from_chromatic(chromatic: i8) -> Self {
-		Self::new(chromatic_to_diatonic(c as i32) as i8, chromatic)
+		Self::new(chromatic_to_diatonic(chromatic as i32) as i8, chromatic)
 	}
 	pub fn flip(&mut self) {
 		self.diatonic = -self.diatonic;
@@ -50,10 +50,10 @@ pub fn chromatic_to_diatonic(mut semitones: i32) -> i32 {
 
 	let val = semitones % 12;
 	let octave = semitones / 12;
-	let interval_index = il[val];
-	let steps = intervalList[interval_index].diatonic;
+	let interval_index = il[val as usize];
+	let mut steps = INTERVAL_LIST[interval_index as usize].diatonic as i32;
 	steps = steps + octave * 7;
-	return down ? -steps : steps;
+	return if down { -steps } else { steps };
 }
 
 /// An array of all supported interval sorted by size

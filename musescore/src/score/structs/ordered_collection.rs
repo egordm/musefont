@@ -4,7 +4,7 @@ use std::collections::BTreeMap;
 pub struct OrderedCollecton<V>(BTreeMap<i32, V>);
 
 impl<V> OrderedCollecton<V> {
-	pub fn new() -> Self { Self(OrderedCollecton::new()) }
+	pub fn new() -> Self { Self(BTreeMap::new()) }
 	pub fn current(&self, pos: i32) -> Option<&V> {
 		self.0.range(pos + 1..).next_back().map(|(_, v)| v)
 	}
