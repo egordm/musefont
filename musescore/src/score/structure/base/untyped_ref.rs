@@ -1,9 +1,11 @@
 use super::*;
 use super::super::*;
 use std::convert::TryInto;
+use std::any::Any;
 
 macro_rules! decl_elem_ref {{
-	enum ($RefName: ident, $RefNameWeak: ident, $RefTypeName: ident) {
+	enum ($RefName: ident, $RefNameWeak: ident, $RefTypeName: ident) -> $Trait:ident
+	{
 		$($Variant:ident($Type:ty)),* $(,)*
 	}
 } => {
@@ -58,10 +60,23 @@ macro_rules! decl_elem_ref {{
 		}
 	})*
 
+	// Trait retrieval
+	impl $RefName {
+		pub fn as_trait(&self) -> Ref<dyn $Trait> {
+			match self {$(
+				Self::$Variant(r) => r.borrow_el(),
+			)*}
+		}
 
+		pub fn as_trait_mut(&self) -> RefMut<dyn $Trait> {
+			match self {$(
+				Self::$Variant(r) => r.borrow_mut_el(),
+			)*}
+		}
+	}
 }}
 
-decl_elem_ref! { enum (ElementRef, ElementRefWeak, ElementType) {
+decl_elem_ref! { enum (ElementRef, ElementRefWeak, ElementType) -> Any {
 	// Atoms
 	Accidental(Accidental),
 	Articulation(Articulation),
@@ -79,6 +94,7 @@ decl_elem_ref! { enum (ElementRef, ElementRefWeak, ElementType) {
 	Measure(Measure),
 	Part(Part),
 	Staff(Staff),
+	System(System),
 	VBox(VBox),
 	HBox(HBox),
 	Tuplet(Tuplet),
@@ -98,13 +114,13 @@ decl_elem_ref! { enum (ElementRef, ElementRefWeak, ElementType) {
 	Tie(Tie),
 }}
 
-decl_elem_ref! { enum (MeasureRef, MeasureRefWeak, MeasureType) {
+decl_elem_ref! { enum (MeasureRef, MeasureRefWeak, MeasureType) -> MeasureTrait {
 	Measure(Measure),
 	VBox(VBox),
 	HBox(HBox),
 }}
 
-decl_elem_ref! { enum (SegmentRef, SegmentRefWeak, SegmentType) {
+decl_elem_ref! { enum (SegmentRef, SegmentRefWeak, SegmentType) -> SegmentTrait {
 	Barline(Barline),
 	Chord(Chord),
 	Clef(Clef),
@@ -113,7 +129,7 @@ decl_elem_ref! { enum (SegmentRef, SegmentRefWeak, SegmentType) {
 	TimeSig(TimeSig),
 }}
 
-decl_elem_ref! { enum (SpannerRef, SpannerRefWeak, SpannerType) {
+decl_elem_ref! { enum (SpannerRef, SpannerRefWeak, SpannerType) -> Any {
 	Beam(Beam),
 	Line(Line),
 	Slur(Slur),

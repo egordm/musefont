@@ -1,6 +1,9 @@
-use std::{rc::{Weak, Rc}, cell::{RefCell, Ref, RefMut}};
+use std::{rc::{Weak, Rc}, cell::RefCell};
 use super::*;
 use std::borrow::Borrow;
+
+pub use std::cell::{Ref, RefMut};
+use bitflags::_core::convert::TryInto;
 
 #[derive(Clone)]
 pub struct ElWeak<T>(Weak<RefCell<T>>);
@@ -9,6 +12,11 @@ impl<T> ElWeak<T> {
 	pub fn upgrade(&self) -> Option<El<T>> {
 		Weak::upgrade(&self.0).map(El)
 	}
+}
+
+impl<T> TryInto<El<T>> for ElWeak<T> {
+	type Error = ();
+	fn try_into(self) -> Result<El<T>, Self::Error> { self.upgrade().ok_or(()) }
 }
 
 impl<T> Eq for ElWeak<T> {}
@@ -31,15 +39,23 @@ impl<T> std::fmt::Debug for ElWeak<T> {
 #[derive(Clone)]
 pub struct El<T>(Rc<RefCell<T>>);
 
+impl<T> From<T> for El<T> {
+	fn from(v: T) -> Self { El(Rc::new(RefCell::new(v))) }
+}
+
 impl<T> El<T> {
 	pub fn downgrade(&self) -> ElWeak<T> { ElWeak(Rc::downgrade(&self.0)) }
 
 	pub fn borrow_el(&self) -> Ref<T> { RefCell::borrow(&self.0) }
 	pub fn borrow_mut_el(&self) -> RefMut<T> { RefCell::borrow_mut(&self.0) }
 
-	fn as_element(&self) -> Ref<dyn ElementTrait> where T: Sized + ElementTrait {
+	fn as_element(&self) -> Ref<dyn Element> where T: Sized + Element {
 		self.borrow_el() // TODO: unnecessary in here
 	}
+}
+
+impl<T> Into<ElWeak<T>> for El<T> {
+	fn into(self) -> ElWeak<T> { self.downgrade() }
 }
 
 impl<T> Eq for El<T> {}

@@ -30,7 +30,7 @@ impl Interval {
 /// # Returns
 /// The number of diatonic steps in the interval
 pub fn chromatic_to_diatonic(mut semitones: i32) -> i32 {
-	const il: [i32; 12] = [
+	const IL: [i32; 12] = [
 		0,    // Perfect Unison
 		3,    // Minor Second
 		4,    // Major Second
@@ -50,7 +50,7 @@ pub fn chromatic_to_diatonic(mut semitones: i32) -> i32 {
 
 	let val = semitones % 12;
 	let octave = semitones / 12;
-	let interval_index = il[val as usize];
+	let interval_index = IL[val as usize];
 	let mut steps = INTERVAL_LIST[interval_index as usize].diatonic as i32;
 	steps = steps + octave * 7;
 	return if down { -steps } else { steps };
