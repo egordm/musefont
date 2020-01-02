@@ -1,6 +1,8 @@
 #[macro_use]
 extern crate enum_primitive_derive;
 extern crate num_traits;
+#[macro_use]
+extern crate bitflags;
 
 pub mod font;
 pub mod score;

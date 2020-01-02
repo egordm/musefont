@@ -1,0 +1,96 @@
+#[derive(Clone, Copy, Debug, Primitive, PartialEq, Eq, Hash)]
+pub enum FontStyle {
+	Normal = 0,
+	Bold = 1,
+	Italic = 2,
+	Underline = 4
+}
+
+#[derive(Clone, Copy, Debug, Primitive, PartialEq, Eq, Hash)]
+pub enum FrameType {
+	NoFrame = 0,
+	Square = 1,
+	Circle = 2,
+}
+
+#[derive(Clone, Copy, Debug, Primitive, PartialEq, Eq, Hash)]
+pub enum ArticulationAnchor {
+	/// anchor is always placed at top of staff
+	TopStaff = 0,
+	/// anchor is always placed at bottom of staff
+	BottomStaff = 1,
+	/// anchor depends on chord direction, away from stem
+	Chord = 2,
+	/// attribute is always placed at top of chord
+	TopChord = 3,
+	/// attribute is placed at bottom of chord
+	BottomChord = 4,
+}
+
+#[derive(Clone, Copy, Debug, Primitive, PartialEq, Eq, Hash)]
+pub enum HookStyleType {
+	None = 0,
+	Hook90 = 1,
+	Hook45 = 2,
+	Hook90T = 3,
+}
+
+#[derive(Clone, Copy, Debug, Primitive, PartialEq, Eq, Hash)]
+pub enum LineStyle { // pen style
+NoPen = 0,
+	SolidLine = 1,
+	DashLine = 2,
+	DotLine = 3,
+	DashDotLine = 4,
+	DashDotDotLine = 5,
+	CustomDashLine = 6,
+}
+
+
+#[derive(Clone, Copy, Debug, Primitive, PartialEq, Eq, Hash)]
+pub enum TremoloPlacement {
+	Default = 0,
+	StemCenter = 1,
+}
+
+#[derive(Clone, Copy, Debug, Primitive, PartialEq, Eq, Hash)]
+pub enum KeySigNatural {
+	None = 0,             // no naturals, except for change to CMaj/Amin
+	Before = 1,             // naturals before accidentals
+	After = 2,              // naturals after accidentals (but always before if going sharps <=> flats)
+}
+
+#[derive(Clone, Copy, Debug, Primitive, PartialEq, Eq, Hash)]
+pub enum TupletNumberType {
+	ShowNumber = 0,
+	ShowRelation = 1,
+	NoText = 2,
+}
+
+#[derive(Clone, Copy, Debug, Primitive, PartialEq, Eq, Hash)]
+pub enum TupletBracketType {
+	AutoBracket = 0,
+	ShowBracket = 1,
+	ShowNoBracket = 2,
+}
+
+#[derive(Clone, Copy, Debug, Primitive, PartialEq, Eq, Hash)]
+pub enum OffsetType {
+	/// offset in point units
+	Abs = 1,
+	/// offset in staff space units
+	Spatium = 2,
+}
+
+#[derive(Clone, Copy, Debug, Primitive, PartialEq, Eq, Hash)]
+pub enum VerticalAlignRange {
+	Segment = 0,
+	Measure = 1,
+	System = 2,
+}
+
+#[derive(Clone, Copy, Debug, Primitive, PartialEq, Eq, Hash)]
+pub enum OrnamentStyle {
+	Default = 0,
+	Baroque = 1,
+}
