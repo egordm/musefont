@@ -1,18 +1,6 @@
 use super::*;
 
 #[derive(Clone, Debug)]
-pub struct InstrumentList {
-	list: OrderedCollecton<Instrument>,
-	default: Instrument,
-}
-
-impl InstrumentList {
-	pub fn new(default: Instrument) -> Self { Self { list: OrderedCollecton::new(), default } }
-	pub fn instrument(&self, tick: i32) -> &Instrument { self.list.current(tick).unwrap_or(&self.default) }
-	pub fn set_instrument(&mut self, tick: i32, v: Instrument) { self.list.set_value(tick, v); }
-}
-
-#[derive(Clone, Debug)]
 pub struct Instrument {
 	long_names: Vec<StaffName>,
 	short_names: Vec<StaffName>,
@@ -26,7 +14,7 @@ pub struct Instrument {
 	transpose: Interval,
 	instrument_id: String,
 
-	clef_type: Vec<ClefTypeList>,
+	clef_type: Vec<ClefTypeGroup>,
 }
 
 #[derive(Clone, Debug)]

@@ -1,20 +1,28 @@
 use crate::score::*;
 
-pub trait MeasureTrait: MeasureNode {
-
-}
-
+/// One measure in a system
 #[derive(Debug, Clone)]
 pub struct Measure {
-	node: MeasureNodeData,
-	segments: SegmentList,
+	measure_data: MeasureData,
+	segments: OrderedCollecton<SegmentRef>,
+
+	mm_rest: Option<MeasureRefWeak>,
+
+	timesig: Fraction,
+	repeat_count: i32,
+
+	no_mode: MeasureNumberMode,
 }
 
 impl MeasureTrait for Measure {
 
 }
 
-impl MeasureNode for Measure {
-	fn data(&self) -> &MeasureNodeData { &self.node }
-	fn data_mut(&mut self) -> &mut MeasureNodeData { &mut self.node }
+pub enum MeasureNumberMode {
+	/// show measure number depending on style
+	Auto,
+	/// always show measure number
+	Show,
+	/// don’t show measure number
+	Hide
 }

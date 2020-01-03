@@ -1,5 +1,3 @@
-use crate::score::SegmentNode;
-
-pub trait SegmentTrait: SegmentNode {
+pub trait SegmentTrait {
 
 }

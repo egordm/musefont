@@ -1,34 +1,18 @@
 use std::collections::BTreeMap;
 use super::*;
 
-#[derive(Clone, Debug)]
-pub struct ClefList(OrderedCollecton<ClefTypeList>);
-
-impl ClefList {
-	pub fn new() -> Self { Self(OrderedCollecton::new()) }
-
-	pub fn clef(&self, tick: i32) -> ClefTypeList {
-		self.0.current(tick).cloned()
-			.unwrap_or(ClefTypeList::new(ClefType::Invalid, ClefType::Invalid))
-	}
-	pub fn set_clef(&mut self, tick: i32, v: ClefTypeList) { self.0.set_value(tick, v) }
-	pub fn next_clef_tick(&self, tick: i32) -> Option<i32> { self.0.next_key(tick) }
-	pub fn current_clef_tick(&self, tick: i32) -> Option<i32> { self.current_clef_tick(tick) }
-}
-
-
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub struct ClefTypeList {
+pub struct ClefTypeGroup {
 	concert_clef: ClefType,
 	transposing_clef: ClefType
 }
 
-impl ClefTypeList {
+impl ClefTypeGroup {
 	pub fn new(concert_clef: ClefType, transposing_clef: ClefType) -> Self { Self { concert_clef, transposing_clef}}
 	pub fn from_clef(concert_clef: ClefType) -> Self { Self::new(concert_clef, concert_clef) }
 }
 
-impl Default for ClefTypeList {
+impl Default for ClefTypeGroup {
 	fn default() -> Self { Self::new(ClefType::G, ClefType::G) }
 }
 

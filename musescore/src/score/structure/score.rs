@@ -12,9 +12,10 @@ impl Score {
 		Self(El::from(InnerScore {
 			font,
 			systems: vec![],
-			measures: MeasureList::new(),
+			measures: OrderedCollecton::new(),
 			parts: vec![],
 			staves: vec![],
+			spanners: OrderedCollecton::new(),
 			style,
 			note_head_width
 		}))
@@ -43,9 +44,10 @@ pub struct InnerScore {
 
 	systems: Vec<El<System>>,
 	// Contains a list of all the measures which hold notes and segments
-	measures: MeasureList,
+	measures: OrderedCollecton<MeasureRef>,
 	parts: Vec<El<Part>>,
 	staves: Vec<El<Staff>>,
+	spanners: OrderedCollecton<SpannerRef>,
 
 	style: Style,
 	note_head_width: f32,
