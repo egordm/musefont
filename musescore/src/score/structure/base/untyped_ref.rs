@@ -82,6 +82,7 @@ decl_elem_ref! { enum (ElementRef, ElementRefWeak, ElementType) -> Any {
 	Articulation(Articulation),
 	Chordline(Chordline),
 	Hook(Hook),
+	LedgerLine(LedgerLine),
 	Note(Note),
 	NoteDot(NoteDot),
 	Notehead(Notehead),
@@ -89,6 +90,7 @@ decl_elem_ref! { enum (ElementRef, ElementRefWeak, ElementType) -> Any {
 	StemSlash(StemSlash),
 	Symbol(Symbol),
 	SymbolGroup(SymbolGroup),
+	Text(Text),
 
 	// Composites
 	Measure(Measure),
@@ -108,10 +110,17 @@ decl_elem_ref! { enum (ElementRef, ElementRefWeak, ElementType) -> Any {
 	TimeSig(TimeSig),
 
 	// Spanners
+	Arpeggio(Arpeggio),
 	Beam(Beam),
 	Line(Line),
 	Slur(Slur),
 	Tie(Tie),
+	Tremolo(Tremolo),
+
+	// Spanner Segments
+	SlurSegment(SlurSegment),
+	TieSegment(TieSegment),
+	LineSegment(LineSegment),
 }}
 
 decl_elem_ref! { enum (MeasureRef, MeasureRefWeak, MeasureType) -> MeasureTrait {
@@ -130,8 +139,21 @@ decl_elem_ref! { enum (SegmentRef, SegmentRefWeak, SegmentType) -> SegmentTrait 
 }}
 
 decl_elem_ref! { enum (SpannerRef, SpannerRefWeak, SpannerType) -> Any {
+	Arpeggio(Arpeggio),
 	Beam(Beam),
 	Line(Line),
 	Slur(Slur),
 	Tie(Tie),
+	Tremolo(Tremolo),
+}}
+
+decl_elem_ref! { enum (SpannerSegmentRef, SpannerSegmentRefWeak, SpannerSegmentType) -> Any {
+	SlurSegment(SlurSegment),
+	TieSegment(TieSegment),
+	LineSegment(LineSegment),
+}}
+
+decl_elem_ref! { enum (ChordRef, ChordWeak, ChordType) -> Any {
+	Chord(Chord),
+	Rest(Rest),
 }}

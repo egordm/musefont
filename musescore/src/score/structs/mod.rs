@@ -6,14 +6,16 @@ pub mod instrument;
 pub mod interval;
 pub mod key;
 pub mod ordered_collection;
+pub mod pitchspelling;
 pub mod staff_type;
 
 pub use clef_type::*;
 pub use direction::*;
-//pub use duration::{Duration, DurationType};
+pub use duration::{Duration, DurationType};
 pub use fraction::Fraction;
 pub use instrument::Instrument;
 pub use interval::Interval;
 pub use key::*;
 pub use ordered_collection::*;
+pub use pitchspelling::*;
 pub use staff_type::*;

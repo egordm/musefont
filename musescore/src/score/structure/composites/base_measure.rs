@@ -4,6 +4,7 @@ pub trait MeasureTrait {
 
 }
 
+#[derive(Debug, Clone)]
 pub struct MeasureData {
 	elements: Vec<ElementRef>,
 	tick: Fraction,

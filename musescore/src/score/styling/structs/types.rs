@@ -14,20 +14,6 @@ pub enum FrameType {
 }
 
 #[derive(Clone, Copy, Debug, Primitive, PartialEq, Eq, Hash)]
-pub enum ArticulationAnchor {
-	/// anchor is always placed at top of staff
-	TopStaff = 0,
-	/// anchor is always placed at bottom of staff
-	BottomStaff = 1,
-	/// anchor depends on chord direction, away from stem
-	Chord = 2,
-	/// attribute is always placed at top of chord
-	TopChord = 3,
-	/// attribute is placed at bottom of chord
-	BottomChord = 4,
-}
-
-#[derive(Clone, Copy, Debug, Primitive, PartialEq, Eq, Hash)]
 pub enum HookStyleType {
 	None = 0,
 	Hook90 = 1,

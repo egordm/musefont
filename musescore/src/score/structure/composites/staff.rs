@@ -7,7 +7,7 @@ pub struct Staff {
 	part: Option<ElWeak<Part>>,
 
 	/// List of Clefs indexed using Ticks
-	clefs: ClefList,
+	clefs: ClefTypeList,
 	default_clef_type: ClefTypeGroup,
 
 	/// List of Keys indexed using Ticks
@@ -28,7 +28,7 @@ pub struct Staff {
 	staff_type_list: StaffTypeList
 }
 
-pub type ClefList = OrderedCollecton<ClefTypeGroup>;
+pub type ClefTypeList = OrderedCollecton<ClefTypeGroup>;
 pub type KeyList = OrderedCollecton<KeySigEvent>;
 pub type TimesigList = OrderedCollecton<El<TimeSig>>;
 pub type StaffTypeList = OrderedCollecton<StaffType>;

@@ -18,6 +18,7 @@ impl MeasureTrait for Measure {
 
 }
 
+#[derive(Debug, Clone, Copy)]
 pub enum MeasureNumberMode {
 	/// show measure number depending on style
 	Auto,

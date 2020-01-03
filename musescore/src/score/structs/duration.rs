@@ -1,6 +1,5 @@
-/*
 use super::*;
-use crate::notaton::musical_elements::hook::HookType;
+use crate::score::*;
 
 #[derive(Clone, Copy, Debug, Primitive, PartialEq, Eq, Hash)]
 pub enum DurationType {
@@ -43,13 +42,13 @@ impl DurationType {
 		}
 	}
 
-	pub fn note_head(&self) -> notehead::Type {
+	pub fn note_head(&self) -> NoteheadType {
 		match self {
-			DurationType::Half => notehead::Type::Half,
-			DurationType::Measure | DurationType::Whole => notehead::Type::Whole,
-			DurationType::Long | DurationType::Breve => notehead::Type::Brevis,
-			DurationType::Zero | DurationType::Invalid => notehead::Type::Quarter,
-			_ => notehead::Type::Quarter
+			DurationType::Half => NoteheadType::Half,
+			DurationType::Measure | DurationType::Whole => NoteheadType::Whole,
+			DurationType::Long | DurationType::Breve => NoteheadType::Brevis,
+			DurationType::Zero | DurationType::Invalid => NoteheadType::Quarter,
+			_ => NoteheadType::Quarter
 		}
 	}
 
@@ -100,11 +99,11 @@ impl Duration {
 		for _ in 0..self.dots { ret *= Fraction::new(1, 2) }
 		ret
 	}
-	pub fn note_head(&self) -> notehead::Type { self.duration_type.note_head() }
+	pub fn note_head(&self) -> NoteheadType { self.duration_type.note_head() }
 	pub fn has_stem(&self) -> bool { self.duration_type.has_stem() }
 
 	pub fn hook_type(&self) -> HookType { self.duration_type.hook_type() }
 	pub fn hook_count(&self) -> i32 { self.hook_type().count() }
 
 	pub fn ty(&self) -> DurationType { self.duration_type }
-}*/
+}
