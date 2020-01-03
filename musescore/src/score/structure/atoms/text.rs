@@ -3,6 +3,8 @@ use crate::{RectF, Point2F};
 
 #[derive(Debug, Clone)]
 pub struct Text {
+	element: ElementData,
+
 	font_style: FontStyle,
 	align: Align,
 	frame_type: FrameType,
@@ -27,6 +29,11 @@ pub struct Text {
 	primed: bool,
 
 	frame: RectF,
+}
+
+impl Element for Text {
+	fn el_data(&self) -> &ElementData { &self.element }
+	fn el_data_mut(&mut self) -> &mut ElementData { &mut self.element }
 }
 
 /// Represents a block of formatted text

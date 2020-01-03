@@ -3,6 +3,9 @@ use crate::font::SymName;
 
 #[derive(Debug, Clone)]
 pub struct Clef {
+	element: ElementData,
+	segment_data: SegmentData,
+
 	sym_id: SymName,
 	show_courtesy: bool,
 	small: bool,
@@ -10,6 +13,12 @@ pub struct Clef {
 	clef_types: ClefTypeList,
 }
 
-impl SegmentTrait for Clef {
+impl Element for Clef {
+	fn el_data(&self) -> &ElementData { &self.element }
+	fn el_data_mut(&mut self) -> &mut ElementData { &mut self.element }
+}
 
+impl SegmentTrait for Clef {
+	fn segment_data(&self) -> &SegmentData { &self.segment_data }
+	fn segment_data_mut(&mut self) -> &mut SegmentData { &mut self.segment_data }
 }

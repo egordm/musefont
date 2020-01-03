@@ -15,7 +15,14 @@ pub struct ElementData {
     flags: ElementFlags,
 }
 
-pub trait Element {
+pub trait Element: ScoreElement {
+	fn el_data(&self) -> &ElementData;
+	fn el_data_mut(&mut self) -> &mut ElementData;
+}
+
+impl<T: Element> ScoreElement for T {
+	fn sc_data(&self) -> &ScoreElementData { &self.el_data().score_element }
+	fn sc_data_mut(&mut self) -> &mut ScoreElementData { &mut self.el_data_mut().score_element }
 }
 
 bitflags! { struct ElementFlags: u32 {

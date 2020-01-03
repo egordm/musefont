@@ -10,6 +10,11 @@ pub struct Hook {
 	hook_type: HookType,
 }
 
+impl Element for Hook {
+	fn el_data(&self) -> &ElementData { self.element.el_data() }
+	fn el_data_mut(&mut self) -> &mut ElementData { self.element.el_data_mut() }
+}
+
 #[derive(Clone, Copy, Debug, Primitive, PartialEq, Eq, Hash)]
 pub enum HookType {
 	None = 0,

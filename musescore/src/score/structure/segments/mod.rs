@@ -1,4 +1,4 @@
-pub mod segments;
+pub mod segment;
 pub mod bar_line;
 pub mod chord;
 pub mod clef;
@@ -7,7 +7,7 @@ pub mod rest;
 pub mod time_sig;
 
 #[doc(inline)]
-pub use segments::*;
+pub use segment::*;
 #[doc(inline)]
 pub use bar_line::*;
 #[doc(inline)]

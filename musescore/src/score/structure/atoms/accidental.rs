@@ -1,8 +1,11 @@
 use crate::font::SymName;
+use crate::score::*;
 
 /// # Accidental
 #[derive(Debug, Clone)]
 pub struct Accidental {
+	element: ElementData,
+
 	elements: Vec<SymElement>,
 	accidental_type: AccidentalType,
 	small: bool,
@@ -10,6 +13,10 @@ pub struct Accidental {
 	role: AccidentalRole,
 }
 
+impl Element for Accidental {
+	fn el_data(&self) -> &ElementData { &self.element }
+	fn el_data_mut(&mut self) -> &mut ElementData { &mut self.element }
+}
 
 #[derive(Debug, Clone)]
 pub struct SymElement {

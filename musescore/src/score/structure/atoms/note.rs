@@ -7,6 +7,8 @@ pub type Pitch = i32;
 /// Graphic representation of a note.
 #[derive(Debug, Clone)]
 pub struct Note {
+	element: ElementData,
+
 	/// ghost note (guitar: death note)
 	ghost: bool,
 	/// marks this note as the hidden one if there are overlapping notes;
@@ -69,4 +71,7 @@ pub struct Note {
 	cached_notehead_sym: SymName,
 }
 
-
+impl Element for Note {
+	fn el_data(&self) -> &ElementData { &self.element }
+	fn el_data_mut(&mut self) -> &mut ElementData { &mut self.element }
+}

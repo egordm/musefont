@@ -6,6 +6,7 @@ pub mod sym;
 pub mod sym_id;
 pub mod types;
 
+#[doc(inline)]
 pub use font::*;
 #[doc(inline)]
 pub use glyph::*;

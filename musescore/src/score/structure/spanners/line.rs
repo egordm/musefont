@@ -1,7 +1,9 @@
 use crate::score::*;
 
 #[derive(Debug, Clone)]
-pub struct Line {
+pub struct LineSpanner {
+	element: ElementData,
+
 	line_width: f32,
 	line_color: Color,
 	line_style: LineStyle,
@@ -10,7 +12,19 @@ pub struct Line {
 	diagonal: bool,
 }
 
+impl Element for LineSpanner {
+	fn el_data(&self) -> &ElementData { &self.element }
+	fn el_data_mut(&mut self) -> &mut ElementData { &mut self.element }
+}
+
 #[derive(Debug, Clone)]
 pub struct LineSegment {
+	element: ElementData,
+
 	segment_data: SpannerSegment,
+}
+
+impl Element for LineSegment {
+	fn el_data(&self) -> &ElementData { &self.element }
+	fn el_data_mut(&mut self) -> &mut ElementData { &mut self.element }
 }

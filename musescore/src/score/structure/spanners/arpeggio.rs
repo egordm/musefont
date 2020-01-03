@@ -1,7 +1,10 @@
 use crate::font::SymId;
+use crate::score::*;
 
 #[derive(Debug, Clone)]
 pub struct Arpeggio {
+	element: ElementData,
+
 	arpeggio_type: ArpeggioType,
 	user_len1: f32,
 	user_len2: f32,
@@ -13,6 +16,11 @@ pub struct Arpeggio {
 	stretch: f32,
 	/// set in layout, will skip draw if true
 	hidden: bool,
+}
+
+impl Element for Arpeggio {
+	fn el_data(&self) -> &ElementData { &self.element }
+	fn el_data_mut(&mut self) -> &mut ElementData { &mut self.element }
 }
 
 #[derive(Clone, Copy, Debug, Primitive, PartialEq, Eq, Hash)]

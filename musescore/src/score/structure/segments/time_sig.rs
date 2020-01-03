@@ -5,6 +5,9 @@ use crate::font::SymName;
 /// This class represents a time signature.
 #[derive(Debug, Clone)]
 pub struct TimeSig {
+	element: ElementData,
+	segment_data: SegmentData,
+
 	/// calculated from actualSig() if !customText
 	numerator_string: String,
 	denumerator_string: String,
@@ -29,8 +32,14 @@ pub struct TimeSig {
 	large_parentheses: bool,
 }
 
-impl SegmentTrait for TimeSig {
+impl Element for TimeSig {
+	fn el_data(&self) -> &ElementData { &self.element }
+	fn el_data_mut(&mut self) -> &mut ElementData { &mut self.element }
+}
 
+impl SegmentTrait for TimeSig {
+	fn segment_data(&self) -> &SegmentData { &self.segment_data }
+	fn segment_data_mut(&mut self) -> &mut SegmentData { &mut self.segment_data }
 }
 
 #[derive(Clone, Copy, Debug)]

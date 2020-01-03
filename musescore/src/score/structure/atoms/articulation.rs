@@ -1,10 +1,12 @@
 use crate::font::SymName;
-use crate::score::{DirectionV, OrnamentStyle};
+use crate::score::*;
 
 /// # Articulation
 /// articulation marks
 #[derive(Debug, Clone)]
 pub struct Articulation {
+	element: ElementData,
+
 	sym_id: SymName,
 	direction: DirectionV,
 	channel_name: String,
@@ -14,6 +16,11 @@ pub struct Articulation {
 	up: bool,
 	/// for use in ornaments such as trill
 	ornament_style: OrnamentStyle,
+}
+
+impl Element for Articulation {
+	fn el_data(&self) -> &ElementData { &self.element }
+	fn el_data_mut(&mut self) -> &mut ElementData { &mut self.element }
 }
 
 #[derive(Clone, Copy, Debug, Primitive, PartialEq, Eq, Hash)]

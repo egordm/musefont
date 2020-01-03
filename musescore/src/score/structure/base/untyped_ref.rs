@@ -76,7 +76,7 @@ macro_rules! decl_elem_ref {{
 	}
 }}
 
-decl_elem_ref! { enum (ElementRef, ElementRefWeak, ElementType) -> Any {
+decl_elem_ref! { enum (ElementRef, ElementRefWeak, ElementType) -> Element {
 	// Atoms
 	Accidental(Accidental),
 	Articulation(Articulation),
@@ -85,7 +85,6 @@ decl_elem_ref! { enum (ElementRef, ElementRefWeak, ElementType) -> Any {
 	LedgerLine(LedgerLine),
 	Note(Note),
 	NoteDot(NoteDot),
-	Notehead(Notehead),
 	Stem(Stem),
 	StemSlash(StemSlash),
 	Symbol(Symbol),
@@ -112,7 +111,7 @@ decl_elem_ref! { enum (ElementRef, ElementRefWeak, ElementType) -> Any {
 	// Spanners
 	Arpeggio(Arpeggio),
 	Beam(Beam),
-	Line(Line),
+	LineSpanner(LineSpanner),
 	Slur(Slur),
 	Tie(Tie),
 	Tremolo(Tremolo),

@@ -4,6 +4,8 @@ use crate::LineF;
 /// # Tremolo
 #[derive(Debug, Clone)]
 pub struct Tremolo {
+	element: ElementData,
+
 	tremolo_type: TremoloType,
 	chord1: Option<El<Chord>>,
 	chord2: Option<El<Chord>>,
@@ -12,6 +14,11 @@ pub struct Tremolo {
 
 	lines: i32,
 	tremolo_placement: TremoloPlacement,
+}
+
+impl Element for Tremolo {
+	fn el_data(&self) -> &ElementData { &self.element }
+	fn el_data_mut(&mut self) -> &mut ElementData { &mut self.element }
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]

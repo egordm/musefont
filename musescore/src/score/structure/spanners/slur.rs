@@ -3,20 +3,34 @@ use crate::*;
 
 #[derive(Debug, Clone)]
 pub struct Slur {
-	spanner_data: Spanner,
+	element: ElementData,
+
+	spanner_data: SpannerData,
 	line_type: LineType,
 	/// actual direction
 	up: bool,
 	slur_direction: DirectionV,
 }
 
+impl Element for Slur {
+	fn el_data(&self) -> &ElementData { &self.element }
+	fn el_data_mut(&mut self) -> &mut ElementData { &mut self.element }
+}
+
 #[derive(Debug, Clone)]
 pub struct SlurSegment {
+	element: ElementData,
+
 	segment_data: SpannerSegment,
 	ups: UP,
 	path: LineType, // TODO: path type
 	shape_path: LineType, // TODO: path type
 	// TODO: shape
+}
+
+impl Element for SlurSegment {
+	fn el_data(&self) -> &ElementData { &self.element }
+	fn el_data_mut(&mut self) -> &mut ElementData { &mut self.element }
 }
 
 #[derive(Debug, Clone)]

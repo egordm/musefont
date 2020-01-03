@@ -2,7 +2,10 @@ use crate::score::*;
 
 #[derive(Debug, Clone)]
 pub struct Chord {
-	data: Rest,
+	element: ElementData,
+	duration_data: DurationElementData,
+	rest_data: RestData,
+	segment_data: SegmentData,
 
 	/// Sorted to decreasing line step
 	notes: Vec<El<Note>>,
@@ -33,7 +36,21 @@ pub struct Chord {
 	articulations: Vec<El<Articulation>>,
 }
 
-impl SegmentTrait for Chord {}
+impl Element for Chord {
+	fn el_data(&self) -> &ElementData { &self.element }
+	fn el_data_mut(&mut self) -> &mut ElementData { &mut self.element }
+}
+
+impl DurationElement for Chord {
+	fn duration_data(&self) -> &DurationElementData { &self.duration_data }
+	fn duration_data_mut(&mut self) -> &mut DurationElementData { &mut self.duration_data }
+}
+
+impl SegmentTrait for Chord {
+	fn segment_data(&self) -> &SegmentData { &self.segment_data }
+	fn segment_data_mut(&mut self) -> &mut SegmentData { &mut self.segment_data }
+}
+
 
 #[derive(Clone, Copy, Debug, Primitive, PartialEq, Eq, Hash)]
 pub enum NoteType {

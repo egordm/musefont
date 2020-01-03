@@ -1,4 +1,5 @@
 pub mod base_measure;
+pub mod duration_element;
 pub mod measure;
 pub mod part;
 pub mod staff;
@@ -8,6 +9,8 @@ pub mod tuplet;
 
 #[doc(inline)]
 pub use base_measure::*;
+#[doc(inline)]
+pub use duration_element::*;
 #[doc(inline)]
 pub use measure::*;
 #[doc(inline)]

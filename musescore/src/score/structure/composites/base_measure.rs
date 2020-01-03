@@ -1,7 +1,8 @@
 use crate::score::*;
 
-pub trait MeasureTrait {
-
+pub trait MeasureTrait: Element {
+	fn measure_data(&self) -> &MeasureData;
+	fn measure_data_mut(&mut self) -> &mut MeasureData;
 }
 
 #[derive(Debug, Clone)]

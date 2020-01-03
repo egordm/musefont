@@ -10,6 +10,9 @@ use crate::Point2F;
 /// A tuplet note has len of base_len * normal_notes / actual_notes.
 #[derive(Debug, Clone)]
 pub struct Tuplet {
+	element: ElementData,
+	duration_data: DurationElementData,
+
 	elements: Vec<ElementRef>,
 	direction: DirectionV,
 
@@ -32,6 +35,16 @@ pub struct Tuplet {
 	number: Option<Text>,
 	bracket_l: [Point2F; 4],
 	bracket_r: [Point2F; 3],
+}
+
+impl Element for Tuplet {
+	fn el_data(&self) -> &ElementData { &self.element }
+	fn el_data_mut(&mut self) -> &mut ElementData { &mut self.element }
+}
+
+impl DurationElement for Tuplet {
+	fn duration_data(&self) -> &DurationElementData { &self.duration_data}
+	fn duration_data_mut(&mut self) -> &mut DurationElementData { &mut self.duration_data }
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]

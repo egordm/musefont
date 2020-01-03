@@ -3,6 +3,8 @@ use crate::score::*;
 /// Global staff data not directly related to drawing.
 #[derive(Debug, Clone)]
 pub struct Staff {
+	element: ElementData,
+
 	/// Part the staff element belongs to
 	part: Option<ElWeak<Part>>,
 
@@ -26,6 +28,11 @@ pub struct Staff {
 
 	/// List of Staff Types indexed using Ticks
 	staff_type_list: StaffTypeList
+}
+
+impl Element for Staff {
+	fn el_data(&self) -> &ElementData { &self.element }
+	fn el_data_mut(&mut self) -> &mut ElementData { &mut self.element }
 }
 
 pub type ClefTypeList = OrderedCollecton<ClefTypeGroup>;

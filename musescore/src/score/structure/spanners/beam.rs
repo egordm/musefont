@@ -3,6 +3,8 @@ use crate::score::*;
 
 #[derive(Debug, Clone)]
 pub struct Beam {
+	element: ElementData,
+
 	///  Must be sorted by tick
 	chords: OrderedCollecton<ChordRef>,
 	segments: Vec<LineF>,
@@ -28,6 +30,11 @@ pub struct Beam {
 	max_move: i32,
 	max_duration: Duration,
 	slope: f32,
+}
+
+impl Element for Beam {
+	fn el_data(&self) -> &ElementData { &self.element }
+	fn el_data_mut(&mut self) -> &mut ElementData { &mut self.element }
 }
 
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]

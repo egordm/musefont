@@ -14,7 +14,7 @@ pub struct SpannerSegment {
 
 /// Data for slurs, ties, lines etc
 #[derive(Debug, Clone)]
-pub struct Spanner {
+pub struct SpannerData {
 	/// the element the spanner end is anchored to (read-only)
 	start_element: Option<ElementRef>,
 	/// the element the spanner start is anchored to (read-only)
