@@ -6,10 +6,17 @@ pub mod system;
 pub mod tbox;
 pub mod tuplet;
 
+#[doc(inline)]
 pub use base_measure::*;
+#[doc(inline)]
 pub use measure::*;
+#[doc(inline)]
 pub use part::*;
+#[doc(inline)]
 pub use staff::*;
+#[doc(inline)]
 pub use system::*;
+#[doc(inline)]
 pub use tbox::*;
+#[doc(inline)]
 pub use tuplet::*;
