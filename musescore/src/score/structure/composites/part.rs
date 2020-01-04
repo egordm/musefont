@@ -18,6 +18,10 @@ pub struct Part {
 impl Element for Part {
 	fn el_data(&self) -> &ElementData { &self.element }
 	fn el_data_mut(&mut self) -> &mut ElementData { &mut self.element }
+
+	fn element_type(&self) -> ElementType { ElementType::Part }
+
+	fn part(&self) -> Option<El<Part>> { self.get_ref_ty::<Part>() }
 }
 
 pub type InstrumentList = OrderedCollecton<Instrument>;

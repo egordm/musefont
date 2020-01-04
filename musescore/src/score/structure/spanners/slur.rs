@@ -15,6 +15,8 @@ pub struct Slur {
 impl Element for Slur {
 	fn el_data(&self) -> &ElementData { &self.element }
 	fn el_data_mut(&mut self) -> &mut ElementData { &mut self.element }
+
+	fn element_type(&self) -> ElementType { ElementType::Slur }
 }
 
 #[derive(Debug, Clone)]
@@ -31,6 +33,8 @@ pub struct SlurSegment {
 impl Element for SlurSegment {
 	fn el_data(&self) -> &ElementData { &self.element }
 	fn el_data_mut(&mut self) -> &mut ElementData { &mut self.element }
+
+	fn element_type(&self) -> ElementType { ElementType::SlurSegment }
 }
 
 #[derive(Debug, Clone)]

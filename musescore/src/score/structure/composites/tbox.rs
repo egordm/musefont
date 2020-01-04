@@ -43,6 +43,8 @@ pub struct VBox {
 impl Element for VBox {
 	fn el_data(&self) -> &ElementData { &self.element }
 	fn el_data_mut(&mut self) -> &mut ElementData { &mut self.element }
+
+	fn element_type(&self) -> ElementType { ElementType::VBox }
 }
 
 impl MeasureTrait for VBox {
@@ -64,6 +66,8 @@ pub struct HBox {
 impl Element for HBox {
 	fn el_data(&self) -> &ElementData { &self.element }
 	fn el_data_mut(&mut self) -> &mut ElementData { &mut self.element }
+
+	fn element_type(&self) -> ElementType { ElementType::HBox }
 }
 
 impl MeasureTrait for HBox {

@@ -1,5 +1,6 @@
-use std::convert::{TryFrom, TryInto};
+use crate::*;
 use crate::score::*;
+use std::convert::{TryFrom, TryInto};
 
 #[derive(Clone, Debug)]
 pub struct ScoreElementData {
@@ -17,21 +18,37 @@ impl ScoreElementData {
 }
 
 pub trait ScoreElement {
-	fn sc_data(&self) -> &ScoreElementData;
-	fn sc_data_mut(&mut self) -> &mut ScoreElementData;
+	fn score_data(&self) -> &ScoreElementData;
+	fn score_data_mut(&mut self) -> &mut ScoreElementData;
 
 	/// Gets score element is attached to
-	fn score(&self) -> &Score { &self.sc_data().score }
+	fn score(&self) -> &Score { &self.score_data().score }
 
 	/// Gets parent of the current element
 	/// Warning: Don't take mutable reference. Doing the will avoid a lot of panics
-	fn parent(&self) -> Option<ElementRef> { self.sc_data().parent.as_ref().and_then(ElementRefWeak::upgrade) }
-	fn set_parent(&mut self, e: Option<ElementRefWeak>) { self.sc_data_mut().parent = e; }
+	fn parent(&self) -> Option<ElementRef> { self.score_data().parent.as_ref().and_then(ElementRefWeak::upgrade) }
+	fn set_parent(&mut self, e: Option<ElementRefWeak>) { self.score_data_mut().parent = e; }
 	fn parent_ty<T>(&self) -> Option<El<T>> where Self: Sized, ElementRef: TryInto<El<T>> {
 		self.parent().and_then(|e| e.try_into().ok())
 	}
+	fn parent_iter(&self) -> ParentIter { ParentIter(self.score_data().parent.clone()) }
 
 	/// Returns a weak reference to self
-	fn get_ref(&self) -> ElementRefWeak { self.sc_data().self_ref.clone().expect("Self Ref is not set or invalid!") }
-	fn set_ref(&mut self, v: ElementRefWeak) { self.sc_data_mut().self_ref = Some(v) }
+	fn get_ref(&self) -> ElementRefWeak { self.score_data().self_ref.clone().expect("Self Ref is not set or invalid!") }
+	fn set_ref(&mut self, v: ElementRefWeak) { self.score_data_mut().self_ref = Some(v) }
+	fn get_ref_ty<T>(&self) -> Option<El<T>> where Self: Sized, ElementRef: TryInto<El<T>> {
+		self.get_ref().upgrade().and_then(|e| e.try_into().ok())
+	}
+}
+
+pub struct ParentIter(Option<ElementRefWeak>);
+
+impl Iterator for ParentIter {
+	type Item = ElementRef;
+
+	fn next(&mut self) -> Option<Self::Item> {
+		let ret = self.0.clone().and_then(|e| e.upgrade());
+		self.0 = ret.clone().and_then(|e| e.as_trait().score_data().parent.clone());
+		ret
+	}
 }

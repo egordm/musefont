@@ -16,6 +16,8 @@ pub struct KeySig {
 impl Element for KeySig {
 	fn el_data(&self) -> &ElementData { &self.element }
 	fn el_data_mut(&mut self) -> &mut ElementData { &mut self.element }
+
+	fn element_type(&self) -> ElementType { ElementType::KeySig }
 }
 
 impl SegmentTrait for KeySig {

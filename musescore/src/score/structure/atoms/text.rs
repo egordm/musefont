@@ -34,6 +34,8 @@ pub struct Text {
 impl Element for Text {
 	fn el_data(&self) -> &ElementData { &self.element }
 	fn el_data_mut(&mut self) -> &mut ElementData { &mut self.element }
+
+	fn element_type(&self) -> ElementType { ElementType::Text }
 }
 
 /// Represents a block of formatted text

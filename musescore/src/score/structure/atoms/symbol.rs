@@ -10,4 +10,6 @@ pub struct Symbol {
 impl Element for Symbol {
 	fn el_data(&self) -> &ElementData { self.element.el_data() }
 	fn el_data_mut(&mut self) -> &mut ElementData { self.element.el_data_mut() }
+
+	fn element_type(&self) -> ElementType { ElementType::Symbol }
 }

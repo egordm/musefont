@@ -22,6 +22,8 @@ pub struct Barline {
 impl Element for Barline {
 	fn el_data(&self) -> &ElementData { &self.element }
 	fn el_data_mut(&mut self) -> &mut ElementData { &mut self.element }
+
+	fn element_type(&self) -> ElementType { ElementType::Barline }
 }
 
 impl SegmentTrait for Barline {

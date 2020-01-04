@@ -33,6 +33,11 @@ pub struct Staff {
 impl Element for Staff {
 	fn el_data(&self) -> &ElementData { &self.element }
 	fn el_data_mut(&mut self) -> &mut ElementData { &mut self.element }
+
+	fn element_type(&self) -> ElementType { ElementType::Staff }
+
+	fn staff(&self) -> Option<El<Staff>> { self.get_ref_ty() }
+	fn part(&self) -> Option<El<Part>> { self.part.as_ref().and_then(ElWeak::upgrade) }
 }
 
 pub type ClefTypeList = OrderedCollecton<ClefTypeGroup>;

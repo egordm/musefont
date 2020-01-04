@@ -19,6 +19,8 @@ pub struct Chordline {
 impl Element for Chordline {
 	fn el_data(&self) -> &ElementData { &self.element }
 	fn el_data_mut(&mut self) -> &mut ElementData { &mut self.element }
+
+	fn element_type(&self) -> ElementType { ElementType::Chordline }
 }
 
 #[derive(Clone, Copy, Debug, Primitive, PartialEq, Eq, Hash)]

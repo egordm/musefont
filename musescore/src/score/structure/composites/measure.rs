@@ -19,6 +19,8 @@ pub struct Measure {
 impl Element for Measure {
 	fn el_data(&self) -> &ElementData { &self.element }
 	fn el_data_mut(&mut self) -> &mut ElementData { &mut self.element }
+
+	fn element_type(&self) -> ElementType { ElementType::Measure }
 }
 
 impl MeasureTrait for Measure {

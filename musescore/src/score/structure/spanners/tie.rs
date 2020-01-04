@@ -13,6 +13,8 @@ pub struct Tie {
 impl Element for Tie {
 	fn el_data(&self) -> &ElementData { &self.element }
 	fn el_data_mut(&mut self) -> &mut ElementData { &mut self.element }
+
+	fn element_type(&self) -> ElementType { ElementType::Tie }
 }
 
 
@@ -26,4 +28,6 @@ pub struct TieSegment {
 impl Element for TieSegment {
 	fn el_data(&self) -> &ElementData { &self.element }
 	fn el_data_mut(&mut self) -> &mut ElementData { &mut self.element }
+
+	fn element_type(&self) -> ElementType { ElementType::TieSegment }
 }

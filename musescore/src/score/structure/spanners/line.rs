@@ -15,6 +15,8 @@ pub struct LineSpanner {
 impl Element for LineSpanner {
 	fn el_data(&self) -> &ElementData { &self.element }
 	fn el_data_mut(&mut self) -> &mut ElementData { &mut self.element }
+
+	fn element_type(&self) -> ElementType { ElementType::LineSpanner }
 }
 
 #[derive(Debug, Clone)]
@@ -27,4 +29,6 @@ pub struct LineSegment {
 impl Element for LineSegment {
 	fn el_data(&self) -> &ElementData { &self.element }
 	fn el_data_mut(&mut self) -> &mut ElementData { &mut self.element }
+
+	fn element_type(&self) -> ElementType { ElementType::LineSegment }
 }

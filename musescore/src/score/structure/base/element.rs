@@ -1,31 +1,132 @@
 use crate::*;
 use crate::score::*;
+use crate::score::segments;
 
 pub type Track = i32;
 
 #[derive(Clone, Debug)]
 pub struct ElementData {
 	score_element: ScoreElementData,
+	/// Bounding box relative to _pos + _offset
 	bbox: RectF,
+	/// standard magnification (derived value)
 	scale: f32,
+	/// Reference position, relative to _parent, set by autoplace
 	pos: Point2F,
+	/// offset from reference position, set by autoplace or user
 	offset: Point2F,
+	/// autoplace min distance
 	min_dist: f32,
+	/// staffIdx * VOICES + voice
 	track: Track,
-    flags: ElementFlags,
+	flags: ElementFlags,
 }
 
 pub trait Element: ScoreElement {
 	fn el_data(&self) -> &ElementData;
 	fn el_data_mut(&mut self) -> &mut ElementData;
+
+	fn element_type(&self) -> ElementType;
+
+	// Positon and scale properties
+	fn ipos(&self) -> &Point2F { &self.el_data().pos }
+	fn pos(&self) -> Point2F { self.el_data().pos + self.el_data().offset.to_vector() }
+	fn x(&self) -> f32 { self.el_data().pos.x + self.el_data().offset.x }
+	fn y(&self) -> f32 { self.el_data().pos.y + self.el_data().offset.y }
+	fn set_pos(&mut self, pos: Point2F) { self.el_data_mut().pos = pos; }
+	fn move_pos(&mut self, dt: &Point2F) { self.el_data_mut().pos += dt.to_vector(); }
+
+	fn scale(&self) -> f32 { self.el_data().scale }
+	fn set_scale(&mut self, scale: f32) { self.el_data_mut().scale = scale; }
+
+	fn offset(&self) -> &Point2F { &self.el_data().offset }
+	fn set_offset(&mut self, v: &Point2F) { self.el_data_mut().offset = *v; }
+
+	fn bbox(&self) -> &RectF { &self.el_data().bbox }
+	fn set_bbox(&mut self, v: RectF) { self.el_data_mut().bbox = v; }
+	fn add_bbox(&mut self, v: &RectF) { self.el_data_mut().bbox = self.el_data_mut().bbox.union(v); }
+	fn width(&self) -> f32 { self.el_data().bbox.size.width }
+	fn set_width(&mut self, v: f32) { self.el_data_mut().bbox.size.width = v; }
+	fn height(&self) -> f32 { self.el_data().bbox.size.height }
+	fn set_height(&mut self, v: f32) { self.el_data_mut().bbox.size.height = v; }
+	fn contains(&self, p: &Point2F) -> bool { self.el_data().bbox.contains(*p) }
+	fn intersects(&self, r: &RectF) -> bool { self.el_data().bbox.intersects(r) }
+
+	// Flags
+	fn flag(&self, f: ElementFlags) -> bool { self.el_data().flags.bits & f.bits == f.bits }
+	fn system_flag(&self) -> bool {self.flag(ElementFlags::SYSTEM)}
+	fn visible(&self) -> bool { !self.flag(ElementFlags::INVISIBLE) }
+	fn selected(&self) -> bool { self.flag(ElementFlags::SELECTED) }
+	fn autoplace(&self) -> bool {
+		self.score().style().value_bool(StyleName::AutoplaceEnabled)
+			&& !self.flag(ElementFlags::NO_AUTOPLACE)
+	}
+	fn placement(&self) -> Placement { if self.flag(ElementFlags::PLACE_ABOVE) { Placement::Above } else { Placement::Below } }
+	fn size_is_spatium_dependent(&self) -> bool {!self.flag(ElementFlags::SIZE_SPATIUM_DEPENDENT)}
+
+	// Score properties
+	fn track(&self) -> Track { self.el_data().track }
+	fn set_track(&mut self, v: Track) { self.el_data_mut().track = v }
+	fn staff_id(&self) -> i32 { self.track() >> 2 }
+	fn voice(&self) -> i32 { self.track() & 3 }
+	fn set_voice(&mut self, v: i32) { self.set_track((self.track() / constants::VOICES) * constants::VOICES + v) }
+
+	fn tick(&self) -> Fraction {
+		let mut iter = self.parent_iter();
+		while let Some(e) = iter.next() {
+			if e.as_trait().is_segment() || e.as_trait().is_measure() {
+				return e.as_trait().tick();
+			}
+		}
+		return Fraction::new(0, 1);
+	}
+
+	fn baseline(&self) -> f32 { -self.height() }
+
+	// Score main elements
+	fn staff(&self) -> Option<El<Staff>> {
+		if self.track() == -1 { return None; }
+		self.score().staff(self.track() >> 2)
+	}
+	fn part(&self) -> Option<El<Part>> {
+		self.staff().and_then(|e| e.borrow_el().part())
+	}
+
+	// Properties
+	fn get_property(&self, p: PropertyId) -> ValueVariant {
+		match p {
+			PropertyId::Tick => self.tick().ticks().into(),
+			PropertyId::Track => self.track().into(),
+			PropertyId::Voice => self.voice().into(),
+			PropertyId::Position => self.pos().into(),
+			PropertyId::Visible => self.visible().into(),
+			PropertyId::Selected => self.selected().into(),
+			PropertyId::Offset => self.offset().into(),
+			PropertyId::MinDistance => self.el_data().min_dist.into(),
+			PropertyId::Placement => self.placement().into(),
+			PropertyId::Autoplace => self.autoplace().into(),
+			PropertyId::SystemFlag => self.system_flag().into(),
+			PropertyId::SizeSpatiumDependent => self.size_is_spatium_dependent().into(),
+			_ => ValueVariant::None,
+		}
+	}
+	fn set_property(&mut self, p: PropertyId, v: ValueVariant) {
+		// TODO:
+	}
+
+	// Typing
+	fn is_segment(&self) -> bool { is_segment(self.element_type()) }
+	fn is_measure(&self) -> bool { is_measure(self.element_type()) }
+	fn is_spanner(&self) -> bool { is_spanner(self.element_type()) }
+	fn is_chord(&self) -> bool { is_chord(self.element_type()) }
 }
 
 impl<T: Element> ScoreElement for T {
-	fn sc_data(&self) -> &ScoreElementData { &self.el_data().score_element }
-	fn sc_data_mut(&mut self) -> &mut ScoreElementData { &mut self.el_data_mut().score_element }
+	fn score_data(&self) -> &ScoreElementData { &self.el_data().score_element }
+	fn score_data_mut(&mut self) -> &mut ScoreElementData { &mut self.el_data_mut().score_element }
 }
 
-bitflags! { struct ElementFlags: u32 {
+bitflags! { pub struct ElementFlags: u32 {
 	const NOTHING                = 0x00000000;
 	const DROP_TARGET            = 0x00000001;
 	const NOT_SELECTABLE         = 0x00000002;

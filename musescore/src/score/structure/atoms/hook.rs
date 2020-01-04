@@ -13,6 +13,8 @@ pub struct Hook {
 impl Element for Hook {
 	fn el_data(&self) -> &ElementData { self.element.el_data() }
 	fn el_data_mut(&mut self) -> &mut ElementData { self.element.el_data_mut() }
+
+	fn element_type(&self) -> ElementType { ElementType::Hook }
 }
 
 #[derive(Clone, Copy, Debug, Primitive, PartialEq, Eq, Hash)]

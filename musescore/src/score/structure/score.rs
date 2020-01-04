@@ -30,6 +30,9 @@ impl Score {
 	pub fn style(&self) -> Ref<Style> { Ref::map(self.inner(), |r| &r.style) }
 	pub fn spatium(&self) -> f32 { self.style().value_f32(StyleName::Spatium) }
 	pub fn note_head_width(&self) -> f32 { self.inner().note_head_width }
+
+	pub fn staves(&self) -> Ref<StaffList> { Ref::map(self.inner(), |r| &r.staves) }
+	pub fn staff(&self, i: i32) -> Option<El<Staff>> { self.inner().staves.get(i as usize).cloned() }
 }
 
 impl std::fmt::Debug for Score {
@@ -45,10 +48,13 @@ pub struct InnerScore {
 	systems: Vec<El<System>>,
 	// Contains a list of all the measures which hold notes and segments
 	measures: OrderedCollecton<MeasureRef>,
-	parts: Vec<El<Part>>,
-	staves: Vec<El<Staff>>,
+	parts: PartList,
+	staves: StaffList,
 	spanners: OrderedCollecton<SpannerRef>,
 
 	style: Style,
 	note_head_width: f32,
 }
+
+pub type StaffList = Vec<El<Staff>>;
+pub type PartList = Vec<El<Part>>;

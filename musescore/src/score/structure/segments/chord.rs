@@ -39,6 +39,8 @@ pub struct Chord {
 impl Element for Chord {
 	fn el_data(&self) -> &ElementData { &self.element }
 	fn el_data_mut(&mut self) -> &mut ElementData { &mut self.element }
+
+	fn element_type(&self) -> ElementType { ElementType::Chord }
 }
 
 impl DurationElement for Chord {

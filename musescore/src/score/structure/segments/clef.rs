@@ -16,6 +16,8 @@ pub struct Clef {
 impl Element for Clef {
 	fn el_data(&self) -> &ElementData { &self.element }
 	fn el_data_mut(&mut self) -> &mut ElementData { &mut self.element }
+
+	fn element_type(&self) -> ElementType { ElementType::Clef }
 }
 
 impl SegmentTrait for Clef {

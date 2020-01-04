@@ -4,7 +4,7 @@ use std::convert::TryInto;
 use std::any::Any;
 
 macro_rules! decl_elem_ref {{
-	enum ($RefName: ident, $RefNameWeak: ident, $RefTypeName: ident) -> $Trait:ident
+	enum ($RefName: ident, $RefNameWeak: ident, $type_check: ident ->$RefTypeName: ident) -> $Trait:ident
 	{
 		$($Variant:ident($Type:ty)),* $(,)*
 	}
@@ -13,6 +13,13 @@ macro_rules! decl_elem_ref {{
 	pub enum $RefTypeName {
 		Invalid,
 		$($Variant),*
+	}
+
+	pub fn $type_check(t: ElementType) -> bool {
+		match t {
+		    $(ElementType::$Variant)|* => true,
+			_ => false,
+		}
 	}
 
 	#[derive(Clone, Debug, Eq, PartialEq)]
@@ -53,9 +60,9 @@ macro_rules! decl_elem_ref {{
 	$(impl From<El<$Type>> for $RefName {
 		fn from(r: El<$Type>) -> Self { $RefName::$Variant(r) }
 	})*
-	$(impl<'a> TryInto<&'a El<$Type>> for &'a $RefName {
+	$(impl TryInto<El<$Type>> for $RefName {
 		type Error = ();
-		fn try_into(self) -> Result<&'a El<$Type>, Self::Error> {
+		fn try_into(self) -> Result<El<$Type>, Self::Error> {
 			if let $RefName::$Variant(r) = self { Ok(r) } else { Err(()) }
 		}
 	})*
@@ -76,7 +83,7 @@ macro_rules! decl_elem_ref {{
 	}
 }}
 
-decl_elem_ref! { enum (ElementRef, ElementRefWeak, ElementType) -> Element {
+decl_elem_ref! { enum (ElementRef, ElementRefWeak, is_element -> ElementType) -> Element {
 	// Atoms
 	Accidental(Accidental),
 	Articulation(Articulation),
@@ -122,13 +129,13 @@ decl_elem_ref! { enum (ElementRef, ElementRefWeak, ElementType) -> Element {
 	LineSegment(LineSegment),
 }}
 
-decl_elem_ref! { enum (MeasureRef, MeasureRefWeak, MeasureType) -> MeasureTrait {
+decl_elem_ref! { enum (MeasureRef, MeasureRefWeak, is_measure -> MeasureType) -> MeasureTrait {
 	Measure(Measure),
 	VBox(VBox),
 	HBox(HBox),
 }}
 
-decl_elem_ref! { enum (SegmentRef, SegmentRefWeak, SegmentType) -> SegmentTrait {
+decl_elem_ref! { enum (SegmentRef, SegmentRefWeak, is_segment -> SegmentType) -> SegmentTrait {
 	Barline(Barline),
 	Chord(Chord),
 	Clef(Clef),
@@ -137,22 +144,22 @@ decl_elem_ref! { enum (SegmentRef, SegmentRefWeak, SegmentType) -> SegmentTrait 
 	TimeSig(TimeSig),
 }}
 
-decl_elem_ref! { enum (SpannerRef, SpannerRefWeak, SpannerType) -> Any {
+decl_elem_ref! { enum (SpannerRef, SpannerRefWeak, is_spanner -> SpannerType) -> Any {
 	Arpeggio(Arpeggio),
 	Beam(Beam),
-	Line(Line),
+	LineSpanner(LineSpanner),
 	Slur(Slur),
 	Tie(Tie),
 	Tremolo(Tremolo),
 }}
 
-decl_elem_ref! { enum (SpannerSegmentRef, SpannerSegmentRefWeak, SpannerSegmentType) -> Any {
+decl_elem_ref! { enum (SpannerSegmentRef, SpannerSegmentRefWeak, is_spanner_segment -> SpannerSegmentType) -> Any {
 	SlurSegment(SlurSegment),
 	TieSegment(TieSegment),
 	LineSegment(LineSegment),
 }}
 
-decl_elem_ref! { enum (ChordRef, ChordWeak, ChordType) -> Any {
+decl_elem_ref! { enum (ChordRef, ChordWeak, is_chord -> ChordType) -> Any {
 	Chord(Chord),
 	Rest(Rest),
 }}
