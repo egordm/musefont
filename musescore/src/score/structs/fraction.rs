@@ -2,11 +2,15 @@ use crate::*;
 use std::ops::{Mul, MulAssign};
 use std::cmp::Ordering;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub struct Fraction {
 	// TODO: implement arithmetic
 	numerator: i32,
 	denominator: i32,
+}
+
+impl Default for Fraction {
+	fn default() -> Self { Self::new(0, 1)}
 }
 
 impl Fraction {

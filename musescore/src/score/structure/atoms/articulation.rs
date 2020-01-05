@@ -50,6 +50,10 @@ impl Articulation {
 	pub fn set_ornament_style(&mut self, v: OrnamentStyle) { self.ornament_style = v }
 
 	// Types
+	pub fn layout_close_to_note(&self) -> bool {
+		(self.is_staccato() || self.is_tenuto()) && !self.is_double()
+	}
+
 	pub fn is_tenuto(&self) -> bool {
 		match self.sym_id {
 			SymName::ArticTenutoAbove | SymName::ArticTenutoBelow => true,

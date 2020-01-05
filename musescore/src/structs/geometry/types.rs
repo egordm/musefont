@@ -1,5 +1,3 @@
-use euclid::{Rect, Point2D, UnknownUnit};
-
 pub type Point2F = euclid::default::Point2D<f32>;
 pub type Vec2F = euclid::default::Vector2D<f32>;
 pub type Size2F = euclid::default::Size2D<f32>;

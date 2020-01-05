@@ -1241,45 +1241,6 @@ pub enum LineStyle { // pen style
 }
 
 #[derive(Clone, Copy, Debug, Primitive, PartialEq, Eq, Hash)]
-pub enum ClefType {
-	Invalid = 0,
-	G = 1,
-	G15Mb = 2,
-	G8Vb = 3,
-	G8Va = 4,
-	G15Ma = 5,
-	G8VbO = 6,
-	G8VbP = 7,
-	G1 = 8,
-	C1 = 9,
-	C2 = 10,
-	C3 = 11,
-	C4 = 12,
-	C5 = 13,
-	C19C = 14,
-	C3F18C = 15,
-	C4F18C = 16,
-	C3F20C = 17,
-	C4F20C = 18,
-	F = 19,
-	F15Mb = 20,
-	F8Vb = 21,
-	F8Va = 22,
-	F15Ma = 23,
-	FB = 24,
-	FC = 25,
-	FF18C = 26,
-	F19C = 27,
-	Perc = 28,
-	Perc2 = 29,
-	Tab = 30,
-	Tab4 = 31,
-	TabSerif = 32,
-	Tab4Serif = 33,
-	Max = 34,
-}
-
-#[derive(Clone, Copy, Debug, Primitive, PartialEq, Eq, Hash)]
 pub enum TremoloPlacement {
 	Default = 0,
 	StemCenter = 1,
@@ -1308,8 +1269,10 @@ pub enum TupletBracketType {
 
 #[derive(Clone, Copy, Debug, Primitive, PartialEq, Eq, Hash)]
 pub enum OffsetType {
-	Abs = 1,       //< offset in point units
-	Spatium = 2,    //< offset in staff space units
+	/// offset in point units
+	Abs = 1,
+	/// offset in staff space units
+	Spatium = 2,
 }
 
 #[derive(Clone, Copy, Debug, Primitive, PartialEq, Eq, Hash)]

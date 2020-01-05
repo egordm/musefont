@@ -1,4 +1,6 @@
 use crate::*;
+use std::ops::Deref;
+use std::any::Any;
 
 #[derive(Clone, Debug)]
 pub struct Element {
@@ -63,6 +65,10 @@ pub trait ElementTrait: RefableElement + ScoreElementTrait {
 	fn intersects(&self, r: &RectF) -> bool { self.el().bbox.intersects(r) }
 
 	fn baseline(&self) -> f32 { -self.height() }
+
+	fn apply_style(&mut self) { }
+
+	fn as_any<'a>(&'a self) -> &'a dyn ElementTrait where Self: Sized { self }
 
 	// TOOD: part, voice, staff, bar
 }

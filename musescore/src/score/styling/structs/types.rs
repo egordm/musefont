@@ -1,9 +1,12 @@
-#[derive(Clone, Copy, Debug, Primitive, PartialEq, Eq, Hash)]
-pub enum FontStyle {
-	Normal = 0,
-	Bold = 1,
-	Italic = 2,
-	Underline = 4
+bitflags! { pub struct FontStyle: u32 {
+	const NORMAL = 0x00000000;
+	const BOLD = 0x00000001;
+	const ITALIC = 0x00000002;
+	const UNDERLINE = 0x00000004;
+}}
+
+impl Into<u32> for FontStyle {
+	fn into(self) -> u32 { self.bits }
 }
 
 #[derive(Clone, Copy, Debug, Primitive, PartialEq, Eq, Hash)]

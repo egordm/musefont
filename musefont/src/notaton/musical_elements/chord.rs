@@ -1,6 +1,5 @@
 use crate::*;
-use crate::notaton::musical_elements::hook::HookType;
-use crate::notaton::musical_elements::accidental::Type::SharpThreeArrowsDown;
+use crate::beam::BeamMode;
 use std::borrow::Borrow;
 
 #[derive(Clone, Copy, Debug, Primitive, PartialEq, Eq, Hash)]
@@ -37,6 +36,9 @@ pub struct Chord {
 	//stem_slash: Elem<StemSlash>,
 	stem_direction: DirectionV,
 	hook: Elem<Hook>,
+
+	beam: Option<ElementWeakRef>,
+	beam_mode: BeamMode,
 }
 
 impl Chord {
@@ -52,7 +54,10 @@ impl Chord {
 			grace_notes: vec![],
 			stem: Stem::new(score.clone()),
 			stem_direction: DirectionV::Up,
-			hook: Hook::new(score.clone())
+			hook: Hook::new(score.clone()),
+
+			beam: None,
+			beam_mode: BeamMode::Auto
 		});
 		let self_ref = ret.get_self_ref();
 		ret.borrow_mut().stem.set_parent(Some(self_ref.clone()));
@@ -77,6 +82,13 @@ impl Chord {
 	pub fn set_duration(&mut self, duration: Duration) { self.duration = duration } //TODO: update note duraitons
 	pub fn stem_direction(&self) -> DirectionV { self.stem_direction }
 	pub fn set_stem_direction(&mut self, v: DirectionV) { self.stem_direction = v }
+
+	pub fn beam(&self) -> Option<Elem<Beam>> { // TODO: weak elem<type>
+		self.beam.as_ref().and_then(ElementWeakRef::upgrade).and_then(|r| Beam::from_ref_rc(&r).cloned())
+	}
+	pub fn set_beam(&mut self, v: Option<ElementWeakRef>) { self.beam = v }
+	pub fn beam_mode(&self) -> BeamMode { self.beam_mode }
+	pub fn set_beam_mode(&mut self, v: BeamMode) { self.beam_mode = v }
 
 	pub fn is_grace(&self) -> bool { self.note_type != NoteType::Normal }
 	pub fn down_note(&self) -> Option<&Elem<Note>> {
@@ -132,7 +144,7 @@ impl Chord {
 			let dl = dn.borrow().line();
 
 			let hook_type = self.duration().hook_type();
-			let hook_idx = hook_type.index();
+			let hook_idx = hook_type.count();
 
 			let mut shorten_stem = self.score().style().value_bool(StyleId::ShortenStem as SId);
 			if hook_idx >= 2 /*|| tremolo*/ { shorten_stem = false }

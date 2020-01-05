@@ -153,9 +153,9 @@ impl Note {
 	pub fn accidental(&self) -> &Option<El<Accidental>> { &self.accidental }
 	pub fn set_accidental(&mut self, v: Option<El<Accidental>>) { self.accidental = v }
 
-	pub fn tie_for(&self) -> &Option<ElWeak<Tie>> { &self.tie_for }
+	pub fn tie_for(&self) -> Option<El<Tie>> { self.tie_for.as_ref().and_then(|e| e.upgrade()) }
 	pub fn set_tie_for(&mut self, v: Option<ElWeak<Tie>>) { self.tie_for = v }
-	pub fn tie_back(&self) -> &Option<ElWeak<Tie>> { &self.tie_back }
+	pub fn tie_back(&self) -> Option<El<Tie>> { self.tie_back.as_ref().and_then(|e| e.upgrade()) }
 	pub fn set_tie_back(&mut self, v: Option<ElWeak<Tie>>) { self.tie_back = v }
 
 	pub fn spanner_for(&self) -> &Vec<SpannerRefWeak> { &self.spanner_for }
@@ -292,8 +292,7 @@ impl Note {
 	}
 
 	pub fn add(&mut self, e: ElementRef) {
-		e.as_trait_mut().set_parent(Some(self.get_ref()));
-		e.as_trait_mut().set_track(self.track());
+		e.as_trait_mut().attach(self.get_ref(), self.track());
 
 		match e {
 			ElementRef::NoteDot(e) => self.dots.push(e),

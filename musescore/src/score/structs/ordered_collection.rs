@@ -1,4 +1,6 @@
 use std::collections::BTreeMap;
+use std::collections::btree_map::{Values, Range};
+use std::ops::RangeBounds;
 
 #[derive(Clone, Debug)]
 pub struct OrderedCollecton<V>(BTreeMap<i32, V>, Option<V>);
@@ -34,4 +36,7 @@ impl<V> OrderedCollecton<V> {
 		it.next_back();
 		self.0.range(..pos).next_back().map(|(_, v)| v)
 	}
+
+	pub fn iter_vals(&self) -> impl DoubleEndedIterator<Item=&V> { self.0.values() }
+	pub fn range(&self, r: impl RangeBounds<i32>) -> Range<'_, i32, V> { self.0.range(r) }
 }

@@ -1,7 +1,7 @@
 use crate::*;
 use super::*;
-use bitflags::_core::convert::TryInto;
 use num_traits::{FromPrimitive, ToPrimitive};
+use std::convert::TryInto;
 
 pub type Spatium = f32;
 pub type Color = [u8; 4];

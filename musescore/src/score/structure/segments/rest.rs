@@ -1,5 +1,6 @@
 use crate::score::*;
 use crate::font::SymName;
+use crate::remove_element;
 
 #[derive(Debug, Clone)]
 pub struct Rest {
@@ -68,20 +69,43 @@ pub struct ChordRestData {
 	pub(super) cross_measure_tdur: Duration,
 }
 
+impl Default for ChordRestData {
+	fn default() -> Self { Self {
+		elements: vec![],
+		duration_type: Default::default(),
+		staff_move: 0,
+		beam: None,
+		beam_mode: BeamMode::Auto,
+		up: true,
+		small: false,
+		cross_measure: CrossMeasure::Unknown,
+		cross_measure_tdur: Default::default()
+	}}
+}
+
 pub trait ChordRestTrait: DurationElement + SegmentTrait {
 	fn rest_data(&self) -> &ChordRestData;
 	fn rest_data_mut(&mut self) -> &mut ChordRestData;
 
 	fn elements(&self) -> &Vec<ElementRef> { &self.rest_data().elements }
-	fn set_elements(&mut self, v: Vec<ElementRef>) { self.rest_data_mut().elements = v }
+	//fn set_elements(&mut self, v: Vec<ElementRef>) { self.rest_data_mut().elements = v }
+	fn add_element(&mut self, e: ElementRef) { self.rest_data_mut().elements.push(e) }
+	fn remove_element(&mut self, e: &ElementRef) { remove_element(&mut self.rest_data_mut().elements, &e) }
+
 	fn duration_type(&self) -> &Duration { &self.rest_data().duration_type }
 	fn set_duration_type(&mut self, v: Duration) { self.rest_data_mut().duration_type = v }
-	
+	fn set_dots(&mut self, n: u8) { self.rest_data_mut().duration_type.set_dots(n)}
+	fn dots(&self) -> u8 {
+		if self.cross_measure() == CrossMeasure::First { self.cross_measure_tdur().dots() }
+		else if self.cross_measure() == CrossMeasure::Second { 0 }
+		else { self.duration_type().dots() }
+	}
+
 	fn staff_move(&self) -> i32 { self.rest_data().staff_move }
 	fn set_staff_move(&mut self, v: i32) { self.rest_data_mut().staff_move = v }
 	
-	fn beam(&self) -> &Option<ElWeak<Beam>> { &self.rest_data().beam }
-	fn set_beam(&mut self, v: Option<ElWeak<Beam>>) { self.rest_data_mut().beam = v }
+	fn beam(&self) -> Option<El<Beam>> { self.rest_data().beam.as_ref().and_then(|e| e.upgrade()) }
+	fn set_beam(&mut self, v: Option<El<Beam>>) { self.rest_data_mut().beam = v.map(|e| e.downgrade()) }
 	fn beam_mode(&self) -> BeamMode { self.rest_data().beam_mode }
 	fn set_beam_mode(&mut self, v: BeamMode) { self.rest_data_mut().beam_mode = v }
 	

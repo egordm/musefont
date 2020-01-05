@@ -32,6 +32,12 @@ pub struct Beam {
 	slope: f32,
 }
 
+impl Beam {
+	pub fn up(&self) -> bool { unimplemented!() }
+	pub fn elements(&self) -> impl DoubleEndedIterator<Item=&ChordRef> { self.chords.iter_vals() }
+
+}
+
 impl Element for Beam {
 	fn el_data(&self) -> &ElementData { &self.element }
 	fn el_data_mut(&mut self) -> &mut ElementData { &mut self.element }

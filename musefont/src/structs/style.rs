@@ -69,6 +69,10 @@ impl Style {
 		if let StyleValue::Spatium(v) = self.value(id) { *v }
 		else { panic!("Style: {} has an incorrect value check style init", id) }
 	}
+	pub fn value_p(&self, id: SId) -> f32 {
+		if let StyleValue::Spatium(v) = self.value(id) { self.precomputed_values[id as usize] }
+		else { panic!("Style: {} has an incorrect value check style init", id) }
+	}
 	pub fn value_bool(&self, id: SId) -> bool {
 		if let StyleValue::Bool(v) = self.value(id) { *v }
 		else { panic!("Style: {} has an incorrect value check style init", id) }

@@ -39,6 +39,20 @@ pub struct LineF {
 	pub p2: Point2F,
 }
 
+impl LineF {
+	pub fn new(p1: Point2F, p2: Point2F) -> Self { Self {p1, p2}}
+
+	pub fn len(&self) -> f32 {
+		let diff = self.p1 - self.p2;
+		diff.dot(diff).sqrt()
+	}
+
+	pub fn x1(&self) -> f32 { self.p1.x }
+	pub fn y1(&self) -> f32 { self.p1.y }
+	pub fn x2(&self) -> f32 { self.p2.x }
+	pub fn y2(&self) -> f32 { self.p2.y }
+}
+
 impl Add<Vec2F> for LineF {
 	type Output = LineF;
 
@@ -69,15 +83,6 @@ impl Mul<Size2F> for LineF {
 	}
 }
 
-impl LineF {
-	pub fn new(p1: Point2F, p2: Point2F) -> Self { Self {p1, p2}}
-
-	pub fn len(&self) -> f32 {
-		let diff = self.p1 - self.p2;
-		diff.dot(diff).sqrt()
-	}
-}
-
 pub const POINT_ZERO: Point2F = Point2F::new(0., 0.);
 pub const SIZE_ONE: Size2F = Size2F::new(1., 1.);
 
@@ -86,7 +91,6 @@ pub type Format = font_kit::canvas::Format;
 
 macro_rules! impl_display {
     ($enum:ident, {$($variant:pat => $fmt_string:expr),+$(,)* }) => {
-
         impl ::std::fmt::Display for $enum {
             fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
                 use self::$enum::*;

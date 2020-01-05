@@ -1,7 +1,7 @@
 use std::{rc::{Weak, Rc}, cell::RefCell};
 
 pub use std::cell::{Ref, RefMut};
-use bitflags::_core::convert::TryInto;
+use std::convert::TryInto;
 
 #[derive(Clone)]
 pub struct ElWeak<T>(Weak<RefCell<T>>);

@@ -15,7 +15,13 @@ impl Score {
 		let note_head_width = font.width(SymIdent::NoteheadBlack as SymId, 1.); // TODO: spatium / spatium20
 		let mut style = Style::new();
 		style.precompute_values();
-		Self(Rc::new(RefCell::new(InnerScore { font, style, note_head_width })))
+		Self(Rc::new(RefCell::new(InnerScore {
+			font,
+			parts: vec![],
+			staves: vec![],
+			style,
+			note_head_width
+		})))
 	}
 
 	fn inner(&self) -> &InnerScore { unsafe { &*RefCell::as_ptr(&self.0) } }
@@ -31,6 +37,11 @@ impl Score {
 
 pub struct InnerScore {
 	font: ScoreFont,
+
+	// measures: MeasureBaseList,   here are the notes
+	parts: Vec<Elem<Part>>,
+	staves: Vec<Elem<Staff>>,
+
 	style: Style,
 	note_head_width: f32,
 }

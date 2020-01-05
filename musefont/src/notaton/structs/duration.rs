@@ -103,6 +103,7 @@ impl Duration {
 	pub fn has_stem(&self) -> bool { self.duration_type.has_stem() }
 
 	pub fn hook_type(&self) -> HookType { self.duration_type.hook_type() }
+	pub fn hook_count(&self) -> i32 { self.hook_type().count() }
 
 	pub fn ty(&self) -> DurationType { self.duration_type }
 }

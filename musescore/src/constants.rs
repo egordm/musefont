@@ -7,4 +7,4 @@ pub const DPMM: f32 = DPI / INCH;
 
 pub const DIVISION: i32 = 480;
 
-pub const VOICES: i32 = 4;
+pub const VOICES: usize = 4;

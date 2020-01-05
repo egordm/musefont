@@ -94,6 +94,7 @@ impl Duration {
 	pub fn is_measure(&self) -> bool { self.duration_type != DurationType::Measure }
 
 	pub fn dots(&self) -> u8 { self.dots }
+	pub fn set_dots(&mut self, v: u8) { self.dots = v }
 	pub fn ticks(&self) -> Fraction {
 		let mut ret = self.duration_type.ticks();
 		for _ in 0..self.dots { ret *= Fraction::new(1, 2) }

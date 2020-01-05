@@ -49,6 +49,11 @@ pub trait Element: ScoreElement {
 
 	fn element_type(&self) -> ElementType;
 
+	fn attach(&mut self, parent: ElementRefWeak, track: Track) {
+		self.set_parent(Some(parent));
+		self.set_track(track);
+	}
+
 	// Positon and scale properties
 	fn ipos(&self) -> &Point2F { &self.el_data().pos }
 	fn pos(&self) -> Point2F { self.el_data().pos + self.el_data().offset.to_vector() }
@@ -98,7 +103,7 @@ pub trait Element: ScoreElement {
 	fn set_track(&mut self, v: Track) { self.el_data_mut().track = v }
 	fn staff_id(&self) -> i32 { self.track() >> 2 }
 	fn voice(&self) -> i32 { self.track() & 3 }
-	fn set_voice(&mut self, v: i32) { self.set_track((self.track() / constants::VOICES) * constants::VOICES + v) }
+	fn set_voice(&mut self, v: i32) { self.set_track((self.track() / constants::VOICES as i32) * constants::VOICES as i32 + v) }
 
 	fn tick(&self) -> Fraction {
 		let mut iter = self.parent_iter();

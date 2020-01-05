@@ -1,5 +1,6 @@
 use crate::num_traits::FromPrimitive;
 use crate::*;
+use num_traits::abs;
 
 #[derive(Clone, Copy, Debug, Primitive, PartialEq, Eq, Hash)]
 pub enum HookType {
@@ -33,6 +34,10 @@ impl HookType {
 		if self == HookType::None { self }
 		else if self as u32 > 8 { HookType::from_u32(self as u32 - 8).unwrap() }
 		else { self }
+	}
+
+	pub fn count(self) -> i32 {
+		abs(self.index())
 	}
 
 	pub fn index(self) -> i32 {

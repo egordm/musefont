@@ -1,24 +1,64 @@
-use std::{rc::{Rc, Weak}, cell::{RefCell/*, Ref, RefMut*/}};
+use std::{rc::{Rc, Weak}, cell::{RefCell, Ref, RefMut}};
 use crate::*;
 use std::ops::Deref;
+use std::any::Any;
 
-pub trait RefableElement: Sized {
-	fn from_ref(r: &ElementRef) -> Option<&Self> { Self::from_ref_rc(r).map(|e| e.as_ref()) }
-	fn from_ref_mut(r: &mut ElementRef) -> Option<&mut Self> { Self::from_ref_rc(r).map(|e| e.as_mut()) }
-	fn from_ref_rc(r: &ElementRef) -> Option<&Elem<Self>>;
+pub trait RefableElement {
+	fn from_ref(r: &ElementRef) -> Option<&Self> where Self: Sized { Self::from_ref_rc(r).map(|e| e.as_ref()) }
+	fn from_ref_mut(r: &mut ElementRef) -> Option<&mut Self> where Self: Sized { Self::from_ref_rc(r).map(|e| e.as_mut()) }
+	fn from_ref_rc(r: &ElementRef) -> Option<&Elem<Self>> where Self: Sized;
 	fn into_ref(self) -> Option<ElementRef>;
-	fn transform_ref(r: Elem<Self>) -> Option<ElementRef>;
+	fn transform_ref(r: Elem<Self>) -> Option<ElementRef> where Self: Sized;
+}
+
+#[derive(Clone)]
+pub struct WeakElem<T>(Weak<RefCell<T>>);
+
+impl<T> std::fmt::Debug for WeakElem<T> {
+	fn fmt(&self, f: &mut std::fmt::Formatter) -> Result<(), std::fmt::Error> {
+		write!(f, "Weak")
+	}
+}
+
+impl<T> WeakElem<T> {
+	pub fn upgrade(&self) -> Option<Elem<T>> {
+		Weak::upgrade(&self.0).map(Elem)
+	}
+}
+
+impl<T> PartialEq for WeakElem<T> {
+	fn eq(&self, other: &Self) -> bool { Weak::ptr_eq(&self.0, &other.0) }
 }
 
 #[derive(Clone)]
 pub struct Elem<T>(Rc<RefCell<T>>);
 
-impl<T: ElementTrait + Clone> Elem<T> {
+impl<T> Elem<T> {
+	pub fn downgrade(&self) -> WeakElem<T> {
+		WeakElem(Rc::downgrade(&self.0))
+	}
+
+	fn test(&self) -> impl Deref<Target=T> + '_ { RefCell::borrow(&self.0) }
+
+	fn aab(&self) -> Ref< dyn ElementTrait> where T: Sized + ElementTrait {
+		Ref::map(RefCell::borrow(&self.0), |v| v)
+	}
+
+	fn aa(&self) -> Ref<'_, RectF> where T: Sized + ElementTrait {
+		Ref::map(RefCell::borrow(&self.0), |v| v.bbox())
+	}
+}
+
+impl<T> PartialEq for Elem<T> {
+	fn eq(&self, other: &Self) -> bool { Rc::ptr_eq(&self.0, &other.0) }
+}
+
+impl<T: ScoreElementTrait + RefableElement + Clone> Elem<T> {
 	pub fn new(e: T) -> Self {
 		let mut ret = Self(Rc::new(RefCell::new(e)));
 		let aa = ret.clone();
 		let self_ref = aa.into_ref().expect("Element should return a valid ref").downgrade();
-		ret.set_self_ref(self_ref);
+		ret.borrow_mut().set_self_ref(self_ref);
 		ret
 	}
 }
@@ -29,8 +69,8 @@ impl<T> Elem<T> {
 //	pub fn borrow(&self) -> Ref<T> { RefCell::borrow(&self.0) }
 //	pub fn borrow_mut(&self) -> RefMut<T> { RefCell::borrow_mut(&self.0) }
 
-	fn as_ref(&self) -> &T { unsafe { &*RefCell::as_ptr(&self.0) } }
-	fn as_mut(&self) -> &mut T { unsafe { &mut *RefCell::as_ptr(&self.0) } }
+	pub(crate) fn as_ref(&self) -> &T { unsafe { &*RefCell::as_ptr(&self.0) } }
+	pub(crate) fn as_mut(&self) -> &mut T { unsafe { &mut *RefCell::as_ptr(&self.0) } }
 }
 
 impl<T: std::fmt::Debug> std::fmt::Debug for Elem<T> {
@@ -62,22 +102,22 @@ impl<T: Drawable> Drawable for Elem<T> {
 
 macro_rules! decl_elem_ref {
 	{$($Variant:ident($Type:ty)),* $(,)*} => {
-		#[derive(Clone)]
+		#[derive(Clone, Debug)]
 		pub enum ElementWeakRef {
 			$(
-				$Variant(Weak<RefCell<$Type>>)
+				$Variant(WeakElem<$Type>)
 			),*
 		}
 
 		impl ElementWeakRef {
 			pub fn upgrade(&self) -> Option<ElementRef> {
 				match self {$(
-				    ElementWeakRef::$Variant(wc) => { wc.upgrade().map(|e| ElementRef::$Variant(Elem(e))) },
+				    ElementWeakRef::$Variant(wc) => { wc.upgrade().map(ElementRef::$Variant) },
 				)*}
 			}
 		}
 
-		#[derive(Clone)]
+		#[derive(Clone, PartialEq)]
 		pub enum ElementRef {
 			$(
 				$Variant(Elem<$Type>)
@@ -87,7 +127,7 @@ macro_rules! decl_elem_ref {
 		impl ElementRef {
 			pub fn downgrade(&self) -> ElementWeakRef {
 				match self {$(
-				    ElementRef::$Variant(rc) => { ElementWeakRef::$Variant(Rc::downgrade(&rc.0)) },
+				    ElementRef::$Variant(rc) => { ElementWeakRef::$Variant(rc.downgrade()) },
 				)*}
 			}
 
@@ -129,22 +169,21 @@ decl_elem_ref! {
 	Symbol(Symbol),
 	SymbolGroup(SymbolGroup),
 	Accidental(Accidental),
-//	Beam(Beam),
+	Beam(Beam),
 	Chord(Chord),
 	Hook(Hook),
+	Measure(Measure),
+	MeasureBase(MeasureBase),
 	Note(Note),
 	NoteDot(NoteDot),
+	Part(Part),
 //	Rest(Rest),
 //	Slur(Slur),
+	Staff(Staff),
 	Stem(Stem),
 //	StemSlash(StemSlash),
 //	Tie(Tie),
-}
-
-impl std::fmt::Debug for ElementWeakRef {
-	fn fmt(&self, f: &mut std::fmt::Formatter) -> Result<(), std::fmt::Error> {
-		std::fmt::Debug::fmt(&self.upgrade(), f)
-	}
+	TimeSig(TimeSig),
 }
 
 impl std::fmt::Debug for ElementRef {
