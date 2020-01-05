@@ -31,14 +31,14 @@ impl ScoreFont {
 	pub fn family(&self) -> &String { &self.family }
 	pub fn sym(&self, id: impl Into<SymId>) -> &Sym { &self.symbols[id.into() as usize] }
 
-	pub fn bounding_box(&self, id: impl Into<SymId>, mag: &Size2F) -> RectF {
+	pub fn bbox(&self, id: impl Into<SymId>, mag: &Size2F) -> RectF {
 		let bb = self.sym(id).bbox();
 		RectF::new(bb.origin, Size2F::new(bb.size.width * mag.width, bb.size.height * mag.height))
 	}
 	pub fn bounding_box_combined(&self, it: impl IntoIterator<Item=impl Into<SymId> + Copy>, mag: &Size2F) -> RectF {
 		let (mut pos, mut bb) = (VEC_ZERO, RectF::default());
 		for sym_id in it {
-			bb = bb.union(&self.bounding_box(sym_id, mag).translate(pos));
+			bb = bb.union(&self.bbox(sym_id, mag).translate(pos));
 			pos.x += self.advance(sym_id, mag.width);
 		}
 		bb
@@ -48,10 +48,10 @@ impl ScoreFont {
 		self.sym(id).advance() * mag
 	}
 	pub fn width(&self, id: impl Into<SymId>, mag: f32) -> f32 {
-		self.bounding_box(id, &Size2F::new(mag, mag)).size.width
+		self.bbox(id, &Size2F::new(mag, mag)).size.width
 	}
 	pub fn height(&self, id: impl Into<SymId>, mag: f32) -> f32 {
-		self.bounding_box(id, &Size2F::new(mag, mag)).size.height
+		self.bbox(id, &Size2F::new(mag, mag)).size.height
 	}
 	pub fn stem_down_nw(&self, id: impl Into<SymId>, mag: f32) -> Point2F { self.sym(id).stem_down_nw() * mag }
 	pub fn stem_up_se(&self, id: impl Into<SymId>, mag: f32) -> Point2F {

@@ -122,7 +122,7 @@ pub enum NoteheadGroup {
 pub const NOTE_HEAD_GROUP_COUNT: usize = 60;
 pub const NOTE_HEAD_COUNT: usize = 4;
 
-const NOTE_HEADS: [[[SymName; NOTE_HEAD_COUNT]; NOTE_HEAD_GROUP_COUNT]; 2] = {[
+pub(crate) const NOTE_HEADS: [[[SymName; NOTE_HEAD_COUNT]; NOTE_HEAD_GROUP_COUNT]; 2] = {[
 	{[     // down stem
 		[SymName::NoteheadWhole, SymName::NoteheadHalf, SymName::NoteheadBlack, SymName::NoteheadDoubleWhole],
 		[SymName::NoteheadXWhole, SymName::NoteheadXHalf, SymName::NoteheadXBlack, SymName::NoteheadXDoubleWhole],

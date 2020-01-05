@@ -1,6 +1,7 @@
 use crate::*;
 use crate::score::*;
 use crate::font::SymName;
+use crate::num_traits::FromPrimitive;
 
 pub type Line = i32;
 pub type Pitch = i32;
@@ -11,6 +12,8 @@ pub const INVALID_LINE: Line = -1;
 #[derive(Debug, Clone)]
 pub struct Note {
 	element: ElementData,
+
+	sym: SymName,
 
 	/// ghost note (guitar: death note)
 	ghost: bool,
@@ -77,6 +80,7 @@ pub struct Note {
 impl Note {
 	pub fn new(score: Score) -> El<Self> { new_element(Self {
 		element: ElementData::new(score),
+		sym: SymName::NoSym,
 		ghost: false,
 		hidden: false,
 		dots_hidden: false,
@@ -129,12 +133,12 @@ impl Note {
 
 	pub fn subchannel(&self) -> i32 { self.subchannel }
 	pub fn set_subchannel(&mut self, v: i32) { self.subchannel = v }
-	pub fn line(&self) -> Line { self.line }
+	pub fn line(&self) -> Line { if self.fixed { self.fixed_line } else { self.line } }
 	pub fn set_line(&mut self, v: Line) { self.line = v }
 	pub fn fret(&self) -> i32 { self.fret }
 	pub fn set_fret(&mut self, v: i32) { self.fret = v }
 	pub fn string(&self) -> i32 { self.string }
-	pub fn set_string(&mut self, v: i32) { self.string = v }
+	pub fn set_string(&mut self, v: i32) { self.string = v; self.element.pos.y = self.string as f32 * self.spatium() * 1.5 }
 	pub fn tpc(&self) -> Tpc { if self.concert_pitch() { self.tpc.1} else { self.tpc.0 } }
 	pub fn set_tpc(&mut self, v: Tpc) { if self.concert_pitch() { self.tpc.1 = v} else { self.tpc.0 = v } }
 
@@ -212,19 +216,47 @@ impl Note {
 impl Note {
 	/// returns the width of the symbol bbox or the width of the string representation of the fret mark
 	pub fn head_width(&self) -> f32 {
-		self.score().font().width(self.note_head(), self.scale())
+		self.score().font().width(self.notehead(), self.scale())
 	}
 	/// returns the height of the notehead symbol or the height of the string representation of the fret mark
-	pub fn head_height(&self) -> f32 { self.score().font().height(self.note_head(), self.scale()) }
+	pub fn head_height(&self) -> f32 { self.score().font().height(self.notehead(), self.scale()) }
 
 	pub fn stem_down_nw(&self) -> Point2F {
-		self.score().font().stem_down_nw(self.note_head(), self.scale())
+		self.score().font().stem_down_nw(self.notehead(), self.scale())
 	}
 	pub fn stem_up_se(&self) -> Point2F {
-		self.score().font().stem_up_se(self.note_head(), self.scale())
+		self.score().font().stem_up_se(self.notehead(), self.scale())
 	}
 
-	pub fn note_head(&self) -> SymName   {
+	/// returns the x of the symbol bbox. It is different from headWidth() because zero point could be different from leftmost bbox position.
+	pub fn bbox_right_pos(&self) -> f32 {
+		self.font().bbox(self.notehead(), &size_from(self.scale())).right()
+	}
+	/// returns the width of the notehead "body". It is actual for slashed noteheads like -O-, where O is body.
+	pub fn bbox_body_width(&self) -> f32 {
+		self.head_width() + 2. * self.bbox_xshift()
+	}
+	/// returns the x shift of the notehead bounding box
+	pub fn bbox_xshift(&self) -> f32 {
+		self.font().bbox(self.notehead(), &size_from(self.scale())).left()
+	}
+	/// returns the x coordinate of the notehead center related to the basepoint of the notehead bbox
+	pub fn notehead_centerx(&self) -> f32 {
+		self.head_width() / 2. + self.bbox_xshift()
+	}
+
+	/// used only when dropping a notehead from the palette they are either half note,
+	/// either double whole
+	pub fn notehead_group(&self) -> NoteheadGroup {
+		let mut group = NoteheadGroup::Invalid;
+		for i in NoteheadGroup::Normal as usize .. NoteheadGroup::DoWalker as usize {
+			if NOTE_HEADS[0][i][1] == self.sym || NOTE_HEADS[0][i][3] == self.sym {
+				group = NoteheadGroup::from_usize(i).unwrap();
+			}
+		}
+		group
+	}
+	pub fn notehead(&self) -> SymName   {
 		let mut dir = DirectionV::Up;
 		let mut head_type = NoteheadType::Quarter;
 
@@ -279,7 +311,6 @@ impl Note {
 			_ => {},
 		}
 	}
-
 	pub fn remove(&mut self, e: &ElementRef) {
 		match e {
 			ElementRef::NoteDot(_) => {self.dots.pop();},
@@ -293,6 +324,29 @@ impl Note {
 			ElementRef::Accidental(_) => self.set_accidental(None),
 			_ => {},
 		}
+	}
+
+	pub fn add_spanner(&mut self, l: SpannerRef) {
+		unimplemented!()
+	}
+	pub fn remove_spanner(&mut self, l: SpannerRef) {
+		unimplemented!()
+	}
+
+	pub fn add_parentheses(&mut self) {
+		let s = Symbol::new(self.score().clone());
+		if let mut s = s.borrow_mut_el() {
+			s.set_sym(SymName::NoteheadParenthesisLeft);
+			s.set_parent(Some(self.get_ref()));
+		}
+		self.elements.push(s.into());
+
+		let s = Symbol::new(self.score().clone());
+		if let mut s = s.borrow_mut_el() {
+			s.set_sym(SymName::NoteheadParenthesisRight);
+			s.set_parent(Some(self.get_ref()));
+		}
+		self.elements.push(s.into());
 	}
 }
 

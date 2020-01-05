@@ -20,7 +20,7 @@ pub struct ElementData {
 	/// standard magnification (derived value)
 	scale: f32,
 	/// Reference position, relative to _parent, set by autoplace
-	pos: Point2F,
+	pub(crate) pos: Point2F,
 	/// offset from reference position, set by autoplace or user
 	offset: Point2F,
 	/// autoplace min distance
@@ -173,6 +173,18 @@ pub trait Element: ScoreElement {
 	fn is_measure(&self) -> bool { is_measure(self.element_type()) }
 	fn is_spanner(&self) -> bool { is_spanner(self.element_type()) }
 	fn is_chord(&self) -> bool { is_chord(self.element_type()) }
+
+	fn spatium(&self) -> f32 {
+		if self.system_flag() {
+			self.score().spatium()
+		} else {
+			if let Some(staff) = self.staff() {
+				staff.borrow_el().spatium(&self.tick())
+			} else {
+				self.score().spatium()
+			}
+		}
+	}
 }
 
 impl<T: Element> ScoreElement for T {

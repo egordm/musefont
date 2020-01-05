@@ -1,5 +1,6 @@
 use crate::score::*;
 use std::convert::{TryInto};
+use crate::font::ScoreFont;
 
 #[derive(Clone, Debug)]
 pub struct ScoreElementData {
@@ -22,6 +23,8 @@ pub trait ScoreElement {
 
 	/// Gets score element is attached to
 	fn score(&self) -> &Score { &self.score_data().score }
+	fn font(&self) -> Ref<ScoreFont> { self.score_data().score.font() }
+	fn style(&self) -> Ref<Style> { self.score_data().score.style() }
 
 	/// Gets parent of the current element
 	/// Warning: Don't take mutable reference. Doing the will avoid a lot of panics

@@ -1,3 +1,4 @@
+use crate::*;
 use crate::score::*;
 
 /// Global staff data not directly related to drawing.
@@ -62,6 +63,17 @@ impl Staff {
 
 	pub fn lines(&self, tick: &Fraction) -> u32 { self.staff_type(tick).lines() }
 	pub fn set_lines(&mut self, tick: &Fraction, v: u32) { self.staff_type_mut(tick).set_lines(v) }
+
+	pub fn spatium(&self, tick: &Fraction) -> f32 {
+		self.score().spatium() * self.mag(tick)
+	}
+	pub fn mag(&self, tick: &Fraction) -> f32 {
+		(if self.small(tick) { self.style().value_f32(StyleName::SmallStaffMag) } else { 1.0}) * self.user_mag(tick)
+	}
+	pub fn user_mag(&self, tick: &Fraction) -> f32 { self.staff_type(tick).user_mag() }
+	pub fn set_user_mag(&mut self, tick: &Fraction, v: f32) { self.staff_type_mut(tick).set_user_mag(v) }
+	pub fn small(&self, tick: &Fraction) -> bool { self.staff_type(tick).small() }
+	pub fn set_small(&mut self, tick: &Fraction, v: bool) { self.staff_type_mut(tick).set_small(v) }
 
 	pub fn staff_type(&self, tick: &Fraction) -> &StaffType {
 		self.staff_type_list.get(tick.ticks()).unwrap_or(&self.staff_type_default)

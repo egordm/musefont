@@ -1,3 +1,5 @@
+use euclid::{Rect, Point2D, UnknownUnit};
+
 pub type Point2F = euclid::default::Point2D<f32>;
 pub type Vec2F = euclid::default::Vector2D<f32>;
 pub type Size2F = euclid::default::Size2D<f32>;
@@ -8,30 +10,51 @@ pub const VEC_ZERO: Vec2F = Vec2F::new(0., 0.);
 pub const POINT_ZERO: Point2F = Point2F::new(0., 0.);
 pub const SIZE_ONE: Size2F = Size2F::new(1., 1.);
 
-pub fn rect_from_ps(p1: Point2F, p2: Point2F) -> RectF {
-	let size = Size2F::new( (p1.x - p2.x).abs(), (p1.y - p2.y).abs());
-	let origin = Point2F::new(p1.x.min(p2.x), p1.y.min(p2.y));
-	RectF::new(origin, size)
+pub trait RectTrait {
+	fn right(&self) -> f32;
+	fn left(&self) -> f32;
+	fn up(&self) -> f32;
+	fn down(&self) -> f32;
+
+	fn from_ps(p1: Point2F, p2: Point2F) -> Self;
+
+	fn norm(self) -> Self;
+	fn adjust(self, p1: Point2F, p2: Point2F) -> Self;
 }
 
-pub fn rect_norm(mut r: RectF) -> RectF {
-	if r.size.width < 0. {
-		r.origin.x += r.size.width;
-		r.size.width = -r.size.width;
+impl RectTrait for RectF {
+	fn right(&self) -> f32 { self.origin.x + self.size.width}
+	fn left(&self) -> f32 { self.origin.x }
+	fn up(&self) -> f32 { self.origin.y + self.size.height }
+	fn down(&self) -> f32 {  self.origin.y }
+
+	fn from_ps(p1: Point2F, p2: Point2F) -> Self {
+		let size = Size2F::new( (p1.x - p2.x).abs(), (p1.y - p2.y).abs());
+		let origin = Point2F::new(p1.x.min(p2.x), p1.y.min(p2.y));
+		RectF::new(origin, size)
 	}
-	if r.size.height < 0. {
-		r.origin.y += r.size.height;
-		r.size.height = -r.size.height;
+	fn norm(mut self) -> Self {
+		if self.size.width < 0. {
+			self.origin.x += self.size.width;
+			self.size.width = -self.size.width;
+		}
+		if self.size.height < 0. {
+			self.origin.y += self.size.height;
+			self.size.height = -self.size.height;
+		}
+		self
 	}
-	r
+	fn adjust(self, p1: Point2F, p2: Point2F) -> Self {
+		let wh = p2 - p1;
+		RectF::new(
+			self.origin + p1.to_vector(),
+			Size2F::new(self.size.width + wh.x, self.size.height + wh.y)
+		)
+	}
 }
 
-pub fn rect_adjust(r: RectF, p1: Point2F, p2: Point2F) -> RectF {
-	let wh = p2 - p1;
-	RectF::new(
-		r.origin + p1.to_vector(),
-		Size2F::new(r.size.width + wh.x, r.size.height + wh.y)
-	)
+pub fn size_from(v: f32) -> Size2F {
+	Size2F::new(v, v)
 }
 
 pub fn scale_pos(p: Point2F, s: Size2F) -> Point2F {
