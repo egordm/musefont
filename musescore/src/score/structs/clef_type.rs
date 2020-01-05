@@ -9,6 +9,11 @@ pub struct ClefTypeGroup {
 impl ClefTypeGroup {
 	pub fn new(concert_clef: ClefType, transposing_clef: ClefType) -> Self { Self { concert_clef, transposing_clef}}
 	pub fn from_clef(concert_clef: ClefType) -> Self { Self::new(concert_clef, concert_clef) }
+
+	pub fn concert_clef(&self) -> ClefType { self.concert_clef }
+	pub fn transposing_clef(&self) -> ClefType { self.transposing_clef }
+	pub fn set_concert_clef(&mut self, v: ClefType) { self.concert_clef = v }
+	pub fn set_transposing_clef(&mut self, v: ClefType) { self.transposing_clef = v }
 }
 
 impl Default for ClefTypeGroup {

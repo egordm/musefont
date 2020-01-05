@@ -27,6 +27,7 @@ impl KeySigEvent {
 
 	pub fn key(&self) -> Key { self.key }
 	pub fn mode(&self) -> KeyMode { self.mode }
+	pub fn set_mode(&mut self, v: KeyMode) { self.mode = v; }
 	pub fn custom(&self) -> bool { self.custom}
 	pub fn is_valid(&self) -> bool { self.key != Key::Invalid }
 	pub fn is_atonal(&self) -> bool { self.mode == KeyMode::None }
@@ -45,29 +46,47 @@ pub struct KeySym {
 	pos: Point2F,  // actual pixel position on screen (set by layout)
 }
 
+pub const KEY_C_B: isize = -7;
+pub const KEY_G_B: isize = -6;
+pub const KEY_D_B: isize = -5;
+pub const KEY_A_B: isize = -4;
+pub const KEY_E_B: isize = -3;
+pub const KEY_B_B: isize = -2;
+pub const KEY_F: isize = -1;
+pub const KEY_C: isize = 0;
+pub const KEY_G: isize = 1;
+pub const KEY_D: isize = 2;
+pub const KEY_A: isize = 3;
+pub const KEY_E: isize = 4;
+pub const KEY_B: isize = 5;
+pub const KEY_F_S: isize = 6;
+pub const KEY_C_S: isize = 7;
+pub const KEY_DELTA_ENHARMONIC: isize = 12;
+pub const KEY_INVALID: isize = 13;
+
 #[allow(non_camel_case_types)]
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
+#[derive(Clone, Copy, Debug, Primitive, PartialEq, Eq, Hash)]
 pub enum Key {
-	C_B = -7,
-	G_B = -6,
-	D_B = -5,
-	A_B = -4,
-	E_B = -3,
-	B_B = -2,
-	F = -1,
-	C = 0,
-	G = 1,
-	D = 2,
-	A = 3,
-	E = 4,
-	B = 5,
-	F_S = 6,
-	C_S = 7,
-	DeltaEnharmonic = 12,
-	Invalid = 13
+	C_B = KEY_C_B,
+	G_B = KEY_G_B,
+	D_B = KEY_D_B,
+	A_B = KEY_A_B,
+	E_B = KEY_E_B,
+	B_B = KEY_B_B,
+	F = KEY_F,
+	C = KEY_C,
+	G = KEY_G,
+	D = KEY_D,
+	A = KEY_A,
+	E = KEY_E,
+	B = KEY_B,
+	F_S = KEY_F_S,
+	C_S = KEY_C_S,
+	DeltaEnharmonic = KEY_DELTA_ENHARMONIC,
+	Invalid = KEY_INVALID
 }
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
+#[derive(Clone, Copy, Debug, PartialEq, Primitive, Eq, Hash)]
 pub enum KeyMode {
 	Unknown = 0,
 	None = 1,

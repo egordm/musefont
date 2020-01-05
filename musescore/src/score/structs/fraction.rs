@@ -1,5 +1,5 @@
 use crate::*;
-use std::ops::{Mul, MulAssign};
+use std::ops::{Mul, MulAssign, Div, DivAssign};
 use std::cmp::Ordering;
 
 #[derive(Clone, Copy, Debug)]
@@ -88,6 +88,24 @@ impl MulAssign for Fraction {
 	fn mul_assign(&mut self, rhs: Self) {
 		self.numerator *= rhs.num();
 		self.denominator *= rhs.den();
+	}
+}
+
+impl Div for Fraction {
+	type Output = Fraction;
+
+	fn div(mut self, rhs: Self) -> Self::Output {
+		self /= rhs;
+		return self;
+	}
+}
+
+impl DivAssign for Fraction {
+	fn div_assign(&mut self, rhs: Self) {
+		let sign = if rhs.numerator >= 0 { 1 } else { -1 };
+		self.numerator *= sign * rhs.denominator;
+		self.denominator *= sign * rhs.numerator;
+		if self.numerator != sign { self.reduce() }
 	}
 }
 
