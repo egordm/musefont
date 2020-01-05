@@ -3,7 +3,6 @@ use crate::score::*;
 #[derive(Debug, Clone)]
 pub struct Barline {
 	element: ElementData,
-	segment_data: SegmentData,
 
 	/// span barline to next staff if true, values > 1 are used for importing from 2.x
 	span_staff: i32,
@@ -27,8 +26,6 @@ impl Element for Barline {
 }
 
 impl SegmentTrait for Barline {
-	fn segment_data(&self) -> &SegmentData { &self.segment_data }
-	fn segment_data_mut(&mut self) -> &mut SegmentData { &mut self.segment_data }
 }
 
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]

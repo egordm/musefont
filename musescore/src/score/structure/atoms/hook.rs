@@ -2,6 +2,7 @@ use crate::num_traits::FromPrimitive;
 use crate::*;
 use crate::score::*;
 use num_traits::abs;
+use crate::font::SymName;
 
 /// # [Hook](https://en.wikipedia.org/wiki/Note_value)
 #[derive(Debug, Clone)]
@@ -10,11 +11,54 @@ pub struct Hook {
 	hook_type: HookType,
 }
 
+impl Hook {
+	pub fn new(score: Score) -> El<Self> { new_element(Self {
+		element: Symbol::default(score),
+		hook_type: HookType::None,
+	})}
+
+	pub fn hook_type(&self) -> HookType { self.hook_type }
+	pub fn set_hook_type(&mut self, v: HookType) {
+		self.hook_type = v;
+		self.element.set_sym(match self.hook_type {
+			HookType::None => SymName::NoSym,
+			HookType::Flag8thUp => SymName::Flag8thUp,
+			HookType::Flag16thUp => SymName::Flag16thUp,
+			HookType::Flag32ndUp => SymName::Flag32ndUp,
+			HookType::Flag64thUp => SymName::Flag64thUp,
+			HookType::Flag128thUp => SymName::Flag128thUp,
+			HookType::Flag256thUp => SymName::Flag256thUp,
+			HookType::Flag512thUp => SymName::Flag512thUp,
+			HookType::Flag1024thUp => SymName::Flag1024thUp,
+			HookType::Flag8thDown => SymName::Flag8thDown,
+			HookType::Flag16thDown => SymName::Flag16thDown,
+			HookType::Flag32ndDown => SymName::Flag32ndDown,
+			HookType::Flag64thDown => SymName::Flag64thDown,
+			HookType::Flag128thDown => SymName::Flag128thDown,
+			HookType::Flag256thDown => SymName::Flag256thDown,
+			HookType::Flag512thDown => SymName::Flag512thDown,
+			HookType::Flag1024thDown => SymName::Flag1024thDown,
+		})
+	}
+}
+
 impl Element for Hook {
 	fn el_data(&self) -> &ElementData { self.element.el_data() }
 	fn el_data_mut(&mut self) -> &mut ElementData { self.element.el_data_mut() }
 
 	fn element_type(&self) -> ElementType { ElementType::Hook }
+
+	fn get_property(&self, p: PropertyId) -> ValueVariant {
+		self.element.get_custom_property(p)
+			.if_none(|| self.get_element_property(p))
+	}
+	fn set_property(&mut self, p: PropertyId, v: ValueVariant) -> bool {
+		self.element.set_custom_property(p, v.clone()) || self.set_element_property(p, v)
+	}
+}
+
+impl AtomTrait for Hook {
+
 }
 
 #[derive(Clone, Copy, Debug, Primitive, PartialEq, Eq, Hash)]

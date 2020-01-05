@@ -13,11 +13,71 @@ pub struct Accidental {
 	role: AccidentalRole,
 }
 
+impl Accidental {
+	pub fn new(score: Score) -> El<Self> { new_element(Self {
+		element: ElementData::new(score),
+		elements: vec![],
+		accidental_type: AccidentalType::None,
+		small: false,
+		bracket: AccidentalBracket::None,
+		role: AccidentalRole::Auto
+	})}
+
+	pub fn elements(&self) -> &Vec<SymElement> { &self.elements }
+	pub fn set_elements(&mut self, v: Vec<SymElement>) { self.elements = v }
+
+	pub fn accidental_type(&self) -> AccidentalType { self.accidental_type }
+	pub fn set_accidental_type(&mut self, v: AccidentalType) { self.accidental_type = v }
+
+	pub fn small(&self) -> bool { self.small }
+	pub fn set_small(&mut self, v: bool) { self.small = v }
+
+	pub fn bracket(&self) -> AccidentalBracket { self.bracket }
+	pub fn set_bracket(&mut self, v: AccidentalBracket) { self.bracket = v }
+
+	pub fn role(&self) -> AccidentalRole { self.role }
+	pub fn set_role(&mut self, v: AccidentalRole) { self.role = v }
+
+	pub fn symbol(&self) -> SymName { ACC_LIST[self.accidental_type as usize].2 }
+	pub fn note(&self) -> Option<El<Note>> { self.parent_ty() }
+
+	fn get_custom_property(&self, p: PropertyId) -> ValueVariant {
+		match p {
+			PropertyId::AccidentalType => ValueVariant::from_enum(self.accidental_type()),
+			PropertyId::Small => self.small().into(),
+			PropertyId::AccidentalBracket => ValueVariant::from_enum(self.bracket()),
+			PropertyId::Role => ValueVariant::from_enum(self.role()),
+			_ => ValueVariant::None,
+		}
+	}
+	fn set_custom_property(&mut self, p: PropertyId, v: ValueVariant) -> bool {
+		match p {
+			PropertyId::AccidentalType => v.with_enum(|v| self.set_accidental_type(v)),
+			PropertyId::Small => v.with_value(|v| self.set_small(v)),
+			PropertyId::AccidentalBracket => v.with_enum(|v| self.set_bracket(v)),
+			PropertyId::Role => v.with_enum(|v| self.set_role(v)),
+			_ => false,
+		}
+	}
+}
+
 impl Element for Accidental {
 	fn el_data(&self) -> &ElementData { &self.element }
 	fn el_data_mut(&mut self) -> &mut ElementData { &mut self.element }
 
 	fn element_type(&self) -> ElementType { ElementType::Accidental }
+
+	fn get_property(&self, p: PropertyId) -> ValueVariant {
+		self.get_custom_property(p)
+			.if_none(|| self.get_element_property(p))
+	}
+	fn set_property(&mut self, p: PropertyId, v: ValueVariant) -> bool {
+		self.set_element_property(p, v.clone()) || self.set_custom_property(p, v)
+	}
+}
+
+impl AtomTrait for Accidental {
+
 }
 
 #[derive(Debug, Clone)]
@@ -37,108 +97,10 @@ pub enum AccidentalBracket {
 	Bracket = 2,
 }
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
+#[derive(Clone, Copy, Debug, PartialEq, Primitive, Eq, Hash)]
 pub enum AccidentalRole {
 	/// layout created accidental
-	Auto,
+	Auto = 0,
 	/// user created accidental
-	User
-}
-
-#[derive(Clone, Copy, Debug, Primitive, PartialEq, Eq, Hash)]
-pub enum AccidentalType {
-	None = 0,
-	Flat = 1,
-	Natural = 2,
-	Sharp = 3,
-	Sharp2 = 4,
-	Flat2 = 5,
-	//SHARP3
-    //FLAT3
-	NaturalFlat = 6,
-	NaturalSharp = 7,
-	SharpSharp = 8,
-
-	// Gould arrow quartertone
-	FlatArrowUp = 9,
-	FlatArrowDown = 10,
-	NaturalArrowUp = 11,
-	NaturalArrowDown = 12,
-	SharpArrowUp = 13,
-	SharpArrowDown = 14,
-	Sharp2ArrowUp = 15,
-	Sharp2ArrowDown = 16,
-	Flat2ArrowUp = 17,
-	Flat2ArrowDown = 18,
-
-	// Stein-Zimmermann
-	MirroredFlat = 19,
-	MirroredFlat2 = 20,
-	SharpSlash = 21,
-	SharpSlash4 = 22,
-
-	// Arel-Ezgi-Uzdilek (AEU)
-	FlatSlash2 = 23,
-	FlatSlash = 24,
-	SharpSlash3 = 25,
-	SharpSlash2 = 26,
-
-	// Extended Helmholtz-Ellis accidentals (just intonation)
-	DoubleFlatOneArrowDown = 27,
-	FlatOneArrowDown = 28,
-	NaturalOneArrowDown = 29,
-	SharpOneArrowDown = 30,
-	DoubleSharpOneArrowDown = 31,
-	DoubleFlatOneArrowUp = 32,
-
-	FlatOneArrowUp = 33,
-	NaturalOneArrowUp = 34,
-	SharpOneArrowUp = 35,
-	DoubleSharpOneArrowUp = 36,
-	DoubleFlatTwoArrowsDown = 37,
-	FlatTwoArrowsDown = 38,
-
-	NaturalTwoArrowsDown = 39,
-	SharpTwoArrowsDown = 40,
-	DoubleSharpTwoArrowsDown = 41,
-	DoubleFlatTwoArrowsUp = 42,
-	FlatTwoArrowsUp = 43,
-	NaturalTwoArrowsUp = 44,
-
-	SharpTwoArrowsUp = 45,
-	DoubleSharpTwoArrowsUp = 46,
-	DoubleFlatThreeArrowsDown = 47,
-	FlatThreeArrowsDown = 48,
-	NaturalThreeArrowsDown = 49,
-	SharpThreeArrowsDown = 50,
-
-	DoubleSharpThreeArrowsDown = 51,
-	DoubleFlatThreeArrowsUp = 52,
-	FlatThreeArrowsUp = 53,
-	NaturalThreeArrowsUp = 54,
-	SharpThreeArrowsUp = 55,
-	DoubleSharpThreeArrowsUp = 56,
-
-	LowerOneSeptimalComma = 57,
-	RaiseOneSeptimalComma = 58,
-	LowerTwoSeptimalCommas = 59,
-	RaiseTwoSeptimalCommas = 60,
-	LowerOneUndecimalQuartertone = 61,
-	RaiseOneUndecimalQuartertone = 62,
-
-	LowerOneTridecimalQuartertone = 63,
-	RaiseOneTridecimalQuartertone = 64,
-
-	DoubleFlatEqualTempered = 65,
-	FlatEqualTempered = 66,
-	NaturalEqualTempered = 67,
-	SharpEqualTempered = 68,
-	DoubleSharpEqualTempered = 69,
-	QuarterFlatEqualTempered = 70,
-	QuarterSharpEqualTempered = 71,
-
-	// Persian
-	Sori = 72,
-	Koron = 73,
-	End = 74,
+	User = 1
 }

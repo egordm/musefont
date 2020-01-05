@@ -11,3 +11,7 @@ impl Element for NoteDot {
 
 	fn element_type(&self) -> ElementType { ElementType::NoteDot }
 }
+
+impl AtomTrait for NoteDot {
+
+}

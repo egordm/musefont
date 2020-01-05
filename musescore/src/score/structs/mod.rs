@@ -1,3 +1,4 @@
+pub mod accidental_type;
 pub mod clef_type;
 pub mod direction;
 pub mod duration;
@@ -9,6 +10,8 @@ pub mod ordered_collection;
 pub mod pitchspelling;
 pub mod staff_type;
 
+#[doc(inline)]
+pub use accidental_type::*;
 #[doc(inline)]
 pub use clef_type::*;
 #[doc(inline)]

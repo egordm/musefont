@@ -7,6 +7,10 @@ pub struct LineF {
 	pub p2: Point2F,
 }
 
+impl Default for LineF {
+	fn default() -> Self { LineF::new(Point2F::default(), Point2F::default()) }
+}
+
 impl LineF {
 	pub fn new(p1: Point2F, p2: Point2F) -> Self { Self {p1, p2}}
 

@@ -4,7 +4,6 @@ use crate::font::SymName;
 #[derive(Debug, Clone)]
 pub struct Clef {
 	element: ElementData,
-	segment_data: SegmentData,
 
 	sym_id: SymName,
 	show_courtesy: bool,
@@ -21,6 +20,4 @@ impl Element for Clef {
 }
 
 impl SegmentTrait for Clef {
-	fn segment_data(&self) -> &SegmentData { &self.segment_data }
-	fn segment_data_mut(&mut self) -> &mut SegmentData { &mut self.segment_data }
 }

@@ -99,7 +99,7 @@ impl Duration {
 		for _ in 0..self.dots { ret *= Fraction::new(1, 2) }
 		ret
 	}
-	pub fn note_head(&self) -> NoteheadType { self.duration_type.note_head() }
+	pub fn head_type(&self) -> NoteheadType { self.duration_type.note_head() }
 	pub fn has_stem(&self) -> bool { self.duration_type.has_stem() }
 
 	pub fn hook_type(&self) -> HookType { self.duration_type.hook_type() }

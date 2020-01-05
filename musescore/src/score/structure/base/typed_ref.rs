@@ -1,6 +1,4 @@
 use std::{rc::{Weak, Rc}, cell::RefCell};
-use super::*;
-use std::borrow::Borrow;
 
 pub use std::cell::{Ref, RefMut};
 use bitflags::_core::convert::TryInto;
@@ -48,10 +46,6 @@ impl<T> El<T> {
 
 	pub fn borrow_el(&self) -> Ref<T> { RefCell::borrow(&self.0) }
 	pub fn borrow_mut_el(&self) -> RefMut<T> { RefCell::borrow_mut(&self.0) }
-
-	fn as_element(&self) -> Ref<dyn Element> where T: Sized + Element {
-		self.borrow_el() // TODO: unnecessary in here
-	}
 }
 
 impl<T> Into<ElWeak<T>> for El<T> {

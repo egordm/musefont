@@ -1,7 +1,24 @@
 use super::*;
 use super::super::*;
-use std::convert::TryInto;
+use std::convert::{TryInto, TryFrom};
 use std::any::Any;
+
+macro_rules! conv_elem_ref {
+{ enum ElementRef { $($Variant:ident($Type:ty)),* $(,)* } } => {
+
+};
+{ enum $RefName: ident { $($Variant:ident($Type:ty)),* $(,)* } } => {
+	impl TryFrom<ElementRef> for $RefName {
+		type Error = ();
+		fn try_from(value: ElementRef) -> Result<$RefName, Self::Error> {
+			match value {
+				$(ElementRef::$Variant(r) => Ok($RefName::$Variant(r)),)*
+				_ => Err(())
+			}
+		}
+	}
+}
+}
 
 macro_rules! decl_elem_ref {{
 	enum ($RefName: ident, $RefNameWeak: ident, $type_check: ident ->$RefTypeName: ident) -> $Trait:ident
@@ -67,6 +84,12 @@ macro_rules! decl_elem_ref {{
 		}
 	})*
 
+	conv_elem_ref! {
+		enum $RefName {
+			$($Variant($Type)),*
+		}
+	}
+
 	// Trait retrieval
 	impl $RefName {
 		pub fn as_trait(&self) -> Ref<dyn $Trait> {
@@ -113,6 +136,7 @@ decl_elem_ref! { enum (ElementRef, ElementRefWeak, is_element -> ElementType) ->
 	Clef(Clef),
 	KeySig(KeySig),
 	Rest(Rest),
+	Segment(Segment),
 	TimeSig(TimeSig),
 
 	// Spanners
@@ -129,6 +153,22 @@ decl_elem_ref! { enum (ElementRef, ElementRefWeak, is_element -> ElementType) ->
 	LineSegment(LineSegment),
 }}
 
+decl_elem_ref! { enum (AtomRef, AtomRefWeak, is_atom -> AtomType) -> AtomTrait {
+	Accidental(Accidental),
+	Articulation(Articulation),
+	Chordline(Chordline),
+	Hook(Hook),
+	LedgerLine(LedgerLine),
+	Note(Note),
+	NoteDot(NoteDot),
+	Stem(Stem),
+	StemSlash(StemSlash),
+	Symbol(Symbol),
+	SymbolGroup(SymbolGroup),
+	Text(Text),
+}}
+
+
 decl_elem_ref! { enum (MeasureRef, MeasureRefWeak, is_measure -> MeasureType) -> MeasureTrait {
 	Measure(Measure),
 	VBox(VBox),
@@ -141,6 +181,7 @@ decl_elem_ref! { enum (SegmentRef, SegmentRefWeak, is_segment -> SegmentType) ->
 	Clef(Clef),
 	KeySig(KeySig),
 	Rest(Rest),
+	Segment(Segment),
 	TimeSig(TimeSig),
 }}
 
@@ -159,7 +200,7 @@ decl_elem_ref! { enum (SpannerSegmentRef, SpannerSegmentRefWeak, is_spanner_segm
 	LineSegment(LineSegment),
 }}
 
-decl_elem_ref! { enum (ChordRef, ChordWeak, is_chord -> ChordType) -> Any {
+decl_elem_ref! { enum (ChordRef, ChordWeak, is_chord -> ChordType) -> ChordRestTrait {
 	Chord(Chord),
 	Rest(Rest),
 }}

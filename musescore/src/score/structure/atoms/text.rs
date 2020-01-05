@@ -38,6 +38,10 @@ impl Element for Text {
 	fn element_type(&self) -> ElementType { ElementType::Text }
 }
 
+impl AtomTrait for Text {
+
+}
+
 /// Represents a block of formatted text
 #[derive(Debug, Clone)]
 pub struct TextBlock {

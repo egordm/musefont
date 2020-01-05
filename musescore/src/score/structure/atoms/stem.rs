@@ -17,3 +17,7 @@ impl Element for Stem {
 
 	fn element_type(&self) -> ElementType { ElementType::Stem }
 }
+
+impl AtomTrait for Stem {
+
+}

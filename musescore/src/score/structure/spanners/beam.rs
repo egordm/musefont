@@ -47,16 +47,16 @@ pub enum SpannerSegmentType {
 	END
 }
 
-#[derive(Copy, Clone, Debug, PartialEq, Eq)]
+#[derive(Copy, Clone, Debug, PartialEq, Primitive, Eq)]
 pub enum BeamMode {
-	Auto,
-	Begin,
-	Mid,
-	End,
-	None,
-	Begin32,
-	Begin64,
-	Invalid
+	Auto = 0,
+	Begin = 1,
+	Mid = 2,
+	End = 3,
+	None = 4,
+	Begin32 = 5,
+	Begin64 = 6,
+	Invalid = 7,
 }
 
 #[derive(Clone, Debug, Default)]

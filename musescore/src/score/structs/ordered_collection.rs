@@ -13,6 +13,9 @@ impl<V> OrderedCollecton<V> {
 	pub fn get(&self, pos: i32) -> Option<&V> {
 		self.0.range(pos + 1..).next_back().map(|(_, v)| v)
 	}
+	pub fn get_mut(&mut self, pos: i32) -> Option<&mut V> {
+		self.0.range_mut(pos + 1..).next_back().map(|(_, v)| v)
+	}
 	pub fn set(&mut self, pos: i32, v: V) {
 		if let Some(current) = self.0.get_mut(&pos) { *current = v; } else { self.0.insert(pos, v); }
 	}

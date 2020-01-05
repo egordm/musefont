@@ -23,9 +23,49 @@ pub struct StaffType {
 	gen_keysig: bool,
 
 	// Standard: configurable properties
-	//note_head_scheme: notehead::Scheme,
+	notehead_scheme: NoteheadScheme,
 
 	// TODO: tabbed layout params
+}
+
+impl StaffType {
+	pub fn group(&self) -> &StaffGroup { &self.group }
+	pub fn set_group(&mut self, v: StaffGroup) { self.group = v }
+
+	pub fn user_mag(&self) -> f32 { self.user_mag }
+	pub fn set_user_mag(&mut self, v: f32) { self.user_mag = v }
+
+	pub fn voffset(&self) -> Spatium { self.voffset }
+	pub fn set_voffset(&mut self, v: Spatium) { self.voffset = v }
+
+	pub fn small(&self) -> bool { self.small }
+	pub fn set_small(&mut self, v: bool) { self.small = v }
+
+	pub fn lines(&self) -> u32 { self.lines }
+	pub fn set_lines(&mut self, v: u32) { self.lines = v }
+
+	pub fn step_offset(&self) -> i32 { self.step_offset }
+	pub fn set_step_offset(&mut self, v: i32) { self.step_offset = v }
+
+	pub fn line_distance(&self) -> Spatium { self.line_distance }
+	pub fn set_line_distance(&mut self, v: Spatium) { self.line_distance = v }
+	pub fn show_bar_lines(&self) -> bool { self.show_bar_lines }
+	pub fn set_show_bar_lines(&mut self, v: bool) { self.show_bar_lines = v }
+	pub fn show_ledger_lines(&self) -> bool { self.show_ledger_lines }
+	pub fn set_show_ledger_lines(&mut self, v: bool) { self.show_ledger_lines = v }
+
+	pub fn stemless(&self) -> bool { self.stemless }
+	pub fn set_stemless(&mut self, v: bool) { self.stemless = v }
+
+	pub fn gen_clef(&self) -> bool { self.gen_clef }
+	pub fn set_gen_clef(&mut self, v: bool) { self.gen_clef = v }
+	pub fn gen_timesig(&self) -> bool { self.gen_timesig }
+	pub fn set_gen_timesig(&mut self, v: bool) { self.gen_timesig = v }
+
+	pub fn gen_keysig(&self) -> bool { self.gen_keysig }
+	pub fn set_gen_keysig(&mut self, v: bool) { self.gen_keysig = v }
+	pub fn notehead_scheme(&self) -> NoteheadScheme { self.notehead_scheme }
+	pub fn set_notehead_scheme(&mut self, v: NoteheadScheme) { self.notehead_scheme = v }
 }
 
 impl Default for StaffType {
@@ -43,7 +83,7 @@ impl Default for StaffType {
 		gen_clef: true,
 		gen_timesig: true,
 		gen_keysig: true,
-		//note_head_scheme: notehead::Scheme::Normal,
+		notehead_scheme: NoteheadScheme::Normal,
 	}}
 }
 

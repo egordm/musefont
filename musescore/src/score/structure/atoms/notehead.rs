@@ -17,11 +17,11 @@ pub enum NoteheadType {
 
 impl NoteheadType {
 	pub fn get_symid(&self, dir: DirectionV, group: NoteheadGroup) -> SymName {
-		self.get_keyed_symid(dir, group, NoteheadScheme::Normal, 0, Key::C)
+		self.get_keyed_symid(dir, group, NoteheadScheme::Normal, Tpc::TpcInvalid, Key::C)
 	}
 
 	#[allow(unused_variables)]
-	pub fn get_keyed_symid(&self, dir: DirectionV, group: NoteheadGroup, scheme: NoteheadScheme, tpc: i32, key: Key) -> SymName {
+	pub fn get_keyed_symid(&self, dir: DirectionV, group: NoteheadGroup, scheme: NoteheadScheme, tpc: Tpc, key: Key) -> SymName {
 		(match scheme {
 			NoteheadScheme::Normal => NOTE_HEADS[dir as usize][group as usize][*self as usize],
 			NoteheadScheme::Pitchname | NoteheadScheme::PitchnameGerman => unimplemented!(),

@@ -1,5 +1,6 @@
 use crate::*;
 use crate::score::*;
+use std::convert::{TryFrom, TryInto};
 
 /// # Segment
 /// A segment holds all vertical aligned staff elements.
@@ -11,11 +12,14 @@ use crate::score::*;
 ///
 /// Segments are children of Measures and store Clefs, KeySigs, TimeSigs, BarLines and ChordRests.
 #[derive(Debug, Clone)]
-pub struct SegmentData {
+pub struct Segment {
+	element: ElementData,
+
 	segment_type: SegmentType,
 	/// midi tick position (read only)
 	tick: Fraction,
 	ticks: Fraction,
+	extra_leading_space: Spatium,
 	stretch: bool,
 
 	/// The list of annotations (read only)
@@ -28,7 +32,28 @@ pub struct SegmentData {
 	dot_pos_x: Vec<f32>,
 }
 
-pub trait SegmentTrait {
-	fn segment_data(&self) -> &SegmentData;
-	fn segment_data_mut(&mut self) -> &mut SegmentData;
+impl Element for Segment {
+	fn el_data(&self) -> &ElementData { &self.element }
+	fn el_data_mut(&mut self) -> &mut ElementData { &mut self.element }
+
+	fn element_type(&self) -> ElementType { ElementType::Segment }
+}
+
+impl SegmentTrait for Segment {
+	fn segment(&self) -> Option<El<Segment>> { self.get_ref_ty() }
+	fn measure(&self) -> Option<MeasureRef> {
+		self.parent().and_then(|e| MeasureRef::try_from(e).ok())
+	}
+}
+
+pub trait SegmentTrait: Element {
+	fn segment(&self) -> Option<El<Segment>> {
+		self.parent().and_then(|e| e.try_into().ok())
+	}
+	fn measure(&self) -> Option<MeasureRef> {
+		MeasureRef::try_from(self.segment()?.borrow_el().parent()?).ok()
+	}
+	fn system(&self) -> Option<El<System>> {
+		self.measure()?.as_trait().parent()?.try_into().ok()
+	}
 }

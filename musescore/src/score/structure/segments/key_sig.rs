@@ -4,7 +4,6 @@ use crate::score::*;
 #[derive(Debug, Clone)]
 pub struct KeySig {
 	element: ElementData,
-	segment_data: SegmentData,
 
 	/// Show courtesy key signature for this sig if appropriate
 	show_courtesy: bool,
@@ -21,6 +20,4 @@ impl Element for KeySig {
 }
 
 impl SegmentTrait for KeySig {
-	fn segment_data(&self) -> &SegmentData { &self.segment_data }
-	fn segment_data_mut(&mut self) -> &mut SegmentData { &mut self.segment_data }
 }

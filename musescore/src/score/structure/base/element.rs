@@ -1,8 +1,16 @@
 use crate::*;
 use crate::score::*;
-use crate::score::segments;
 
 pub type Track = i32;
+
+pub fn new_element<T: Element + Clone>(e: T) -> El<T>
+	where ElementRef: From<El<T>>
+{
+	let ret = El::from(e);
+	let self_ref = ElementRef::from(ret.clone()).downgrade();
+	ret.borrow_mut_el().set_ref(self_ref);
+	return ret;
+}
 
 #[derive(Clone, Debug)]
 pub struct ElementData {
@@ -20,6 +28,19 @@ pub struct ElementData {
 	/// staffIdx * VOICES + voice
 	track: Track,
 	flags: ElementFlags,
+}
+
+impl ElementData {
+	pub fn new(score: Score)  -> Self {Self {
+		score_element: ScoreElementData::new(score),
+		bbox: Default::default(),
+		scale: 1.0,
+		pos: Default::default(),
+		offset: Default::default(),
+		min_dist: 0.0,
+		track: 0,
+		flags: ElementFlags::NOTHING
+	}}
 }
 
 pub trait Element: ScoreElement {
@@ -40,7 +61,7 @@ pub trait Element: ScoreElement {
 	fn set_scale(&mut self, scale: f32) { self.el_data_mut().scale = scale; }
 
 	fn offset(&self) -> &Point2F { &self.el_data().offset }
-	fn set_offset(&mut self, v: &Point2F) { self.el_data_mut().offset = *v; }
+	fn set_offset(&mut self, v: Point2F) { self.el_data_mut().offset = v; }
 
 	fn bbox(&self) -> &RectF { &self.el_data().bbox }
 	fn set_bbox(&mut self, v: RectF) { self.el_data_mut().bbox = v; }
@@ -54,15 +75,23 @@ pub trait Element: ScoreElement {
 
 	// Flags
 	fn flag(&self, f: ElementFlags) -> bool { self.el_data().flags.bits & f.bits == f.bits }
+	fn set_flag(&mut self, f: ElementFlags, v: bool) { self.el_data_mut().flags.set(f, v) }
+
 	fn system_flag(&self) -> bool {self.flag(ElementFlags::SYSTEM)}
+	fn set_system_flag(&mut self, v: bool) {self.set_flag(ElementFlags::SYSTEM, v)}
 	fn visible(&self) -> bool { !self.flag(ElementFlags::INVISIBLE) }
+	fn set_visible(&mut self, v: bool) {self.set_flag(ElementFlags::INVISIBLE, !v)}
 	fn selected(&self) -> bool { self.flag(ElementFlags::SELECTED) }
+	fn set_selected(&mut self, v: bool) {self.set_flag(ElementFlags::SELECTED, v)}
 	fn autoplace(&self) -> bool {
 		self.score().style().value_bool(StyleName::AutoplaceEnabled)
 			&& !self.flag(ElementFlags::NO_AUTOPLACE)
 	}
+	fn set_autoplace(&mut self, v: bool) {self.set_flag(ElementFlags::NO_AUTOPLACE, !v)}
 	fn placement(&self) -> Placement { if self.flag(ElementFlags::PLACE_ABOVE) { Placement::Above } else { Placement::Below } }
+	fn set_placement(&mut self, p: Placement) {self.set_flag(ElementFlags::PLACE_ABOVE, p == Placement::Above)}
 	fn size_is_spatium_dependent(&self) -> bool {!self.flag(ElementFlags::SIZE_SPATIUM_DEPENDENT)}
+	fn set_size_is_spatium_dependent(&mut self, v: bool) {self.set_flag(ElementFlags::SIZE_SPATIUM_DEPENDENT, !v)}
 
 	// Score properties
 	fn track(&self) -> Track { self.el_data().track }
@@ -89,11 +118,14 @@ pub trait Element: ScoreElement {
 		self.score().staff(self.track() >> 2)
 	}
 	fn part(&self) -> Option<El<Part>> {
-		self.staff().and_then(|e| e.borrow_el().part())
+		self.staff()?.borrow_el().part().clone().and_then(|e| e.upgrade())
 	}
 
 	// Properties
 	fn get_property(&self, p: PropertyId) -> ValueVariant {
+		self.get_element_property(p)
+	}
+	fn get_element_property(&self, p: PropertyId) -> ValueVariant {
 		match p {
 			PropertyId::Tick => self.tick().ticks().into(),
 			PropertyId::Track => self.track().into(),
@@ -102,16 +134,38 @@ pub trait Element: ScoreElement {
 			PropertyId::Visible => self.visible().into(),
 			PropertyId::Selected => self.selected().into(),
 			PropertyId::Offset => self.offset().into(),
-			PropertyId::MinDistance => self.el_data().min_dist.into(),
-			PropertyId::Placement => self.placement().into(),
+			PropertyId::MinDistance => self.el_data().min_dist.into(), // TODO: spatium type
+			PropertyId::Placement => (self.placement() as u32).into(),
 			PropertyId::Autoplace => self.autoplace().into(),
 			PropertyId::SystemFlag => self.system_flag().into(),
 			PropertyId::SizeSpatiumDependent => self.size_is_spatium_dependent().into(),
 			_ => ValueVariant::None,
 		}
 	}
-	fn set_property(&mut self, p: PropertyId, v: ValueVariant) {
-		// TODO:
+
+	fn set_property(&mut self, p: PropertyId, v: ValueVariant) -> bool {
+		self.set_element_property(p, v)
+	}
+	fn set_element_property(&mut self, p: PropertyId, v: ValueVariant) -> bool {
+		match p {
+			PropertyId::Track => v.with_value(|v| self.set_track(v)),
+			PropertyId::Voice => v.with_value(|v| self.set_voice(v)),
+			PropertyId::Position => v.with_value(|v| self.set_pos(v)),
+			PropertyId::Visible => v.with_value(|v| self.set_visible(v)),
+			PropertyId::Selected => v.with_value(|v| self.set_selected(v)),
+			PropertyId::Offset => v.with_value(|v| self.set_offset(v)),
+			PropertyId::MinDistance => v.with_spatium(|v| self.el_data_mut().min_dist = v),
+			PropertyId::Placement => v.with_enum(|v| self.set_placement(v)),
+			PropertyId::Autoplace => v.with_value(|v| self.set_autoplace(v)),
+			PropertyId::SystemFlag => v.with_value(|v| self.set_system_flag(v)),
+			PropertyId::SizeSpatiumDependent => v.with_value(|v| self.set_size_is_spatium_dependent(v)),
+			_ => false,
+		}
+	}
+
+	// Style
+	fn concert_pitch(&self) -> bool {
+		self.score().style().value_bool(StyleName::ConcertPitch)
 	}
 
 	// Typing

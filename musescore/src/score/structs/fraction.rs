@@ -22,6 +22,15 @@ impl Fraction {
 	}
 }
 
+impl Into<i32> for Fraction {
+	fn into(self) -> i32 { self.ticks() }
+}
+
+impl From<i32> for Fraction {
+	fn from(v: i32) -> Self { Self::from_ticks(v) }
+}
+
+
 impl Eq for Fraction {}
 
 impl PartialEq for Fraction {
@@ -55,6 +64,11 @@ impl Fraction {
 			let result = sgn * ((sgn * self.numerator) * constants::DIVISION * 4 + (self.denominator / 2)) / self.denominator;
 			result
 		}
+	}
+
+	pub fn from_ticks(v: i32) -> Self {
+		if v == -1 { Fraction::new(-1, 1) }
+		else { Fraction::new(v, constants::DIVISION * 4).reduced() }
 	}
 }
 

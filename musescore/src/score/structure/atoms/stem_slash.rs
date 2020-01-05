@@ -14,3 +14,7 @@ impl Element for StemSlash {
 
 	fn element_type(&self) -> ElementType { ElementType::StemSlash }
 }
+
+impl AtomTrait for StemSlash {
+
+}

@@ -50,6 +50,9 @@ impl ScoreFont {
 	pub fn width(&self, id: impl Into<SymId>, mag: f32) -> f32 {
 		self.bounding_box(id, &Size2F::new(mag, mag)).size.width
 	}
+	pub fn height(&self, id: impl Into<SymId>, mag: f32) -> f32 {
+		self.bounding_box(id, &Size2F::new(mag, mag)).size.height
+	}
 	pub fn stem_down_nw(&self, id: impl Into<SymId>, mag: f32) -> Point2F { self.sym(id).stem_down_nw() * mag }
 	pub fn stem_up_se(&self, id: impl Into<SymId>, mag: f32) -> Point2F {
 		self.sym(id).stem_up_se() * mag

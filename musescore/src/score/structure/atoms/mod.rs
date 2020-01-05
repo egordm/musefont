@@ -1,5 +1,6 @@
 pub mod accidental;
 pub mod articulation;
+pub mod atom;
 pub mod chordline;
 pub mod hook;
 pub mod ledger_line;
@@ -16,6 +17,8 @@ pub mod text;
 pub use accidental::*;
 #[doc(inline)]
 pub use articulation::*;
+#[doc(inline)]
+pub use atom::*;
 #[doc(inline)]
 pub use chordline::*;
 #[doc(inline)]

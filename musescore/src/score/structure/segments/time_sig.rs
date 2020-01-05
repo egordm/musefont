@@ -6,7 +6,6 @@ use crate::font::SymName;
 #[derive(Debug, Clone)]
 pub struct TimeSig {
 	element: ElementData,
-	segment_data: SegmentData,
 
 	/// calculated from actualSig() if !customText
 	numerator_string: String,
@@ -40,8 +39,6 @@ impl Element for TimeSig {
 }
 
 impl SegmentTrait for TimeSig {
-	fn segment_data(&self) -> &SegmentData { &self.segment_data }
-	fn segment_data_mut(&mut self) -> &mut SegmentData { &mut self.segment_data }
 }
 
 #[derive(Clone, Copy, Debug)]

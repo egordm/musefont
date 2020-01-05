@@ -1,8 +1,11 @@
 use crate::score::*;
+use std::convert::TryInto;
 
 pub trait MeasureTrait: Element {
 	fn measure_data(&self) -> &MeasureData;
 	fn measure_data_mut(&mut self) -> &mut MeasureData;
+
+	fn system(&self) -> Option<El<System>> { self.parent().and_then(|e| e.try_into().ok()) }
 }
 
 #[derive(Debug, Clone)]
