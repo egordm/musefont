@@ -17,8 +17,8 @@ pub struct Segment {
 
 	segment_type: SegmentTypeMask,
 	/// midi tick position (read only)
-	tick: Fraction,
-	ticks: Fraction,
+	rel_time: Fraction,
+	duration: Fraction,
 	extra_leading_space: Spatium,
 	stretch: bool,
 
@@ -33,12 +33,25 @@ pub struct Segment {
 }
 
 impl Segment {
-	pub fn segment_type(&self) -> SegmentTypeMask { self.segment_type }
-	pub fn set_segment_type(&mut self, v: SegmentTypeMask) { self.segment_type = v }
+	pub fn new(score: Score) -> El<Self> { new_element(Self {
+		element: ElementData::new(score),
+		segment_type: SegmentTypeMask::INVALID,
+		rel_time: Fraction::new(0, 1),
+		duration: Fraction::new(0, 1),
+		extra_leading_space: 0.0,
+		stretch: false,
+		annotations: vec![],
+		elist: vec![],
+		dot_pos_x: vec![]
+	})}
 
-	pub fn time(&self) -> Fraction { self.tick }
-	pub fn duration(&self) -> Fraction { self.ticks }
-	pub fn set_duration(&mut self, v: Fraction) { self.ticks = v }
+	pub fn segment_type(&self) -> SegmentTypeMask { self.segment_type }
+	pub fn set_segment_type(&mut self, v: impl Into<SegmentTypeMask> + Copy) { self.segment_type = v.into() }
+
+	pub fn rel_time(&self) -> Fraction { self.rel_time }
+	pub fn set_rel_time(&mut self, t: Fraction) { self.rel_time = t }
+	pub fn duration(&self) -> Fraction { self.duration }
+	pub fn set_duration(&mut self, v: Fraction) { self.duration = v }
 
 	pub fn extra_leading_space(&self) -> Spatium { self.extra_leading_space }
 	pub fn set_extra_leading_space(&mut self, v: Spatium) { self.extra_leading_space = v }
@@ -53,6 +66,7 @@ impl Segment {
 
 	pub fn elements(&self) -> &Vec<Option<ElementRef>> { &self.elist }
 	pub fn element(&self, track: i32) -> Option<&ElementRef> { self.elist.get(track as usize)?.as_ref() }
+	pub fn set_element(&mut self, track: i32, e: Option<ElementRef>) { self.elist[track as usize] = e }
 
 	pub fn next(&self) -> Option<El<Segment>> {
 		self.measure()?.borrow_el().segment_next_iter(self.time()).skip(1).next().cloned()
@@ -157,6 +171,16 @@ impl Segment {
 			_ => {}
 		}
 	}
+
+	pub fn insert_staff(&mut self, staff: i32) {
+		// TODO: impl
+		unimplemented!()
+	}
+
+	pub fn remove_staff(&mut self, staff: i32) {
+		// TODO: impl
+		unimplemented!()
+	}
 }
 
 impl Element for Segment {
@@ -164,6 +188,10 @@ impl Element for Segment {
 	fn el_data_mut(&mut self) -> &mut ElementData { &mut self.element }
 
 	fn element_type(&self) -> ElementType { ElementType::Segment }
+
+	fn time(&self) -> Fraction {
+		self.rel_time() + self.measure().map(|e| e.borrow_el().time()).unwrap_or(Fraction::new(0, 0))
+	}
 }
 
 impl SegmentTrait for Segment {

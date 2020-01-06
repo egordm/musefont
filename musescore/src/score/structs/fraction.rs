@@ -1,5 +1,5 @@
 use crate::*;
-use std::ops::{Mul, MulAssign, Div, DivAssign};
+use std::ops::{Mul, MulAssign, Div, DivAssign, Add, AddAssign, Sub, SubAssign};
 use std::cmp::Ordering;
 
 #[derive(Clone, Copy, Debug)]
@@ -106,6 +106,51 @@ impl DivAssign for Fraction {
 		self.numerator *= sign * rhs.denominator;
 		self.denominator *= sign * rhs.numerator;
 		if self.numerator != sign { self.reduce() }
+	}
+}
+
+impl Add for Fraction {
+	type Output = Fraction;
+
+	fn add(mut self, rhs: Self) -> Self::Output {
+		self += rhs;
+		self
+	}
+}
+
+
+impl AddAssign for Fraction {
+	fn add_assign(&mut self, rhs: Self) {
+		if self.denominator == rhs.denominator {
+			self.numerator += rhs.numerator; // Common enough use case to be handled separately for efficiency
+		} else {
+			let g = gcd(self.denominator, rhs.denominator);
+			let m1 = rhs.denominator / g; // This saves one division over straight lcm
+			self.numerator = self.numerator * m1 + rhs.numerator * (self.denominator / g);
+			self.denominator *= m1;
+		}
+	}
+}
+
+impl Sub for Fraction {
+	type Output = Fraction;
+
+	fn sub(mut self, rhs: Self) -> Self::Output {
+		self -= rhs;
+		self
+	}
+}
+
+impl SubAssign for Fraction {
+	fn sub_assign(&mut self, rhs: Self) {
+		if self.denominator == rhs.denominator {
+			self.numerator -= rhs.numerator; // Common enough use case to be handled separately for efficiency
+		} else {
+			let g = gcd(self.denominator, rhs.denominator);
+			let m1 = rhs.denominator / g; // This saves one division over straight lcm
+			self.numerator = self.numerator * m1 - rhs.numerator * (self.denominator / g);
+			self.denominator *= m1;
+		}
 	}
 }
 

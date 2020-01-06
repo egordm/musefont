@@ -26,6 +26,11 @@ pub struct Staff {
 	/// line of end staff to draw the bar line to (0= staff bottom line, ...)
 	bar_line_to: i32,
 
+	invisible: bool,
+
+	/// user edited extra distance
+	user_dist: f32,
+
 	color: Color,
 
 	/// List of Staff Types indexed using Ticks
@@ -34,6 +39,24 @@ pub struct Staff {
 }
 
 impl Staff {
+	pub fn new(score: Score) -> El<Self> { new_element(Self {
+		element: ElementData::new(score),
+		part: None,
+		clefs: ClefTypeList::new(),
+		default_clef_type: Default::default(),
+		keys: (KeyList::new()),
+		key_default: Default::default(),
+		timesigs: TimesigList::new(),
+		bar_line_span: 0,
+		bar_line_from: 0,
+		bar_line_to: 0,
+		invisible: false,
+		user_dist: 0.0,
+		color: [0, 0, 0, 255],
+		staff_type_list: StaffTypeList::new(),
+		staff_type_default: Default::default()
+	})}
+
 	pub fn part(&self) -> &Option<ElWeak<Part>> { &self.part }
 	pub fn set_part(&mut self, v: Option<ElWeak<Part>>) { self.part = v }
 
@@ -55,6 +78,17 @@ impl Staff {
 	pub fn set_bar_line_from(&mut self, v: i32) { self.bar_line_from = v }
 	pub fn bar_line_to(&self) -> i32 { self.bar_line_to }
 	pub fn set_bar_line_to(&mut self, v: i32) { self.bar_line_to = v }
+
+	pub fn invisible(&self) -> bool { self.invisible }
+	pub fn set_invisible(&mut self, v: bool) { self.invisible = v }
+	pub fn user_dist(&self) -> f32 { self.user_dist }
+	pub fn set_user_dist(&mut self, v: f32) { self.user_dist = v }
+
+	pub fn timesig(&self, time: &Fraction) -> Option<&El<TimeSig>> { self.timesigs.get(time.ticks()) }
+	pub fn timestretch(&self, tick: &Fraction) -> Fraction {
+		if let Some(timesig) = self.timesig(tick) { timesig.borrow_el().stretch().clone() }
+		else { Fraction::new(1,1) }
+	}
 
 	pub fn color(&self) -> &Color { &self.color }
 	pub fn set_color(&mut self, v: Color) { self.color = v }

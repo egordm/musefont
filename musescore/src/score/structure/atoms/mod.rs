@@ -7,6 +7,8 @@ pub mod ledger_line;
 pub mod note;
 pub mod notedot;
 pub mod notehead;
+pub mod spacer;
+pub mod staff_lines;
 pub mod stem;
 pub mod stem_slash;
 pub mod symbol;
@@ -31,6 +33,10 @@ pub use note::*;
 pub use notedot::*;
 #[doc(inline)]
 pub use notehead::*;
+#[doc(inline)]
+pub use spacer::*;
+#[doc(inline)]
+pub use staff_lines::*;
 #[doc(inline)]
 pub use stem::*;
 #[doc(inline)]

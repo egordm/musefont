@@ -84,6 +84,10 @@ pub trait Element: ScoreElement {
 
 	fn system_flag(&self) -> bool {self.flag(ElementFlags::SYSTEM)}
 	fn set_system_flag(&mut self, v: bool) {self.set_flag(ElementFlags::SYSTEM, v)}
+	fn header(&self) -> bool {self.flag(ElementFlags::HEADER)}
+	fn set_header(&mut self, v: bool) {self.set_flag(ElementFlags::HEADER, v)}
+	fn trailer(&self) -> bool {self.flag(ElementFlags::TRAILER)}
+	fn set_trailer(&mut self, v: bool) {self.set_flag(ElementFlags::TRAILER, v)}
 	fn visible(&self) -> bool { !self.flag(ElementFlags::INVISIBLE) }
 	fn set_visible(&mut self, v: bool) {self.set_flag(ElementFlags::INVISIBLE, !v)}
 	fn selected(&self) -> bool { self.flag(ElementFlags::SELECTED) }
@@ -122,7 +126,7 @@ pub trait Element: ScoreElement {
 	// Score main elements
 	fn staff(&self) -> Option<El<Staff>> {
 		if self.track() == -1 { return None; }
-		self.score().staff(self.track() >> 2)
+		self.score().staff(self.staff_id())
 	}
 	fn part(&self) -> Option<El<Part>> {
 		self.staff()?.borrow_el().part().clone().and_then(|e| e.upgrade())
