@@ -1,6 +1,7 @@
 pub mod segment;
 pub mod bar_line;
 pub mod chord;
+pub mod chordrest;
 pub mod clef;
 pub mod key_sig;
 pub mod rest;
@@ -12,6 +13,8 @@ pub use segment::*;
 pub use bar_line::*;
 #[doc(inline)]
 pub use chord::*;
+#[doc(inline)]
+pub use chordrest::*;
 #[doc(inline)]
 pub use clef::*;
 #[doc(inline)]

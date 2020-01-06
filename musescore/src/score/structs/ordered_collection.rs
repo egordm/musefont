@@ -21,6 +21,7 @@ impl<V> OrderedCollecton<V> {
 	pub fn set(&mut self, pos: i32, v: V) {
 		if let Some(current) = self.0.get_mut(&pos) { *current = v; } else { self.0.insert(pos, v); }
 	}
+	pub fn remove(&mut self, pos: i32) { self.0.remove(&pos); }
 
 	/// return the position at which the value after given pos is located
 	pub fn next_key(&self, pos: i32) -> Option<i32> {

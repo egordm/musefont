@@ -44,10 +44,10 @@ impl Staff {
 	pub fn set_default_clef_type(&mut self, v: ClefTypeGroup) { self.default_clef_type = v }
 
 	pub fn keys(&self) -> &KeyList { &self.keys }
-	pub fn set_keys(&mut self, v: KeyList) { self.keys = v }
+	//pub fn set_keys(&mut self, v: KeyList) { self.keys = v }
 
 	pub fn timesigs(&self) -> &TimesigList { &self.timesigs }
-	pub fn set_timesigs(&mut self, v: TimesigList) { self.timesigs = v }
+	//pub fn set_timesigs(&mut self, v: TimesigList) { self.timesigs = v }
 
 	pub fn bar_line_span(&self) -> i32 { self.bar_line_span }
 	pub fn set_bar_line_span(&mut self, v: i32) { self.bar_line_span = v }
@@ -59,7 +59,83 @@ impl Staff {
 	pub fn color(&self) -> &Color { &self.color }
 	pub fn set_color(&mut self, v: Color) { self.color = v }
 
-	pub fn key(&self, tick: &Fraction) -> Key { self.key_sig_event(tick).key() }
+	pub fn key(&self, tick: &Fraction) -> Key { self.keysig_event(tick).key() }
+	pub fn set_keysig(&mut self, time: &Fraction, v: KeySigEvent) {
+		self.keys.set(time.ticks(), v)
+	}
+
+	pub fn set_clef(&mut self, e: El<Clef>) {
+		if e.borrow_el().generated() { return; }
+		let track = e.borrow_el().track();
+
+		if let Some(segment) = e.borrow_el().segment() {
+			let time = segment.borrow_el().time();
+			if let Some(measure) = segment.borrow_el().measure() {
+				for s in measure.borrow_el().segment_next_iter(time) {
+					let s = s.borrow_el();
+					if s.time() != time { break; }
+					if s.is_clef() || s.is_header_clef() {
+						if let Some(other) = s.element(track) {
+							// adding this clef has no effect on the clefs list
+							if other.as_trait().generated() { return; }
+						}
+					}
+				}
+			}
+		}
+
+		self.clefs.set(e.borrow_el().time().ticks(), e.borrow_el().clef_type_group().clone())
+	}
+	pub fn remove_clef(&mut self, e: El<Clef>) {
+		if e.borrow_el().generated() { return; }
+		let track = e.borrow_el().track();
+
+		if let Some(segment) = e.borrow_el().segment() {
+			let time = segment.borrow_el().time();
+			if let Some(measure) = segment.borrow_el().measure() {
+				for s in measure.borrow_el().segment_next_iter(time) {
+					let s = s.borrow_el();
+					if s.time() != time { break; }
+					if s.is_clef() || s.is_header_clef() {
+						if let Some(other) = s.element(track) {
+							// removing this clef has no effect on the clefs list
+							if other.as_trait().generated() { return; }
+						}
+					}
+				}
+			}
+			self.clefs.remove(time.ticks());
+			if let Some(measure) = segment.borrow_el().measure() {
+				for s in measure.borrow_el().segment_prev_iter(time) {
+					let s = s.borrow_el();
+					if s.time() != time { break; }
+					if s.is_clef() || s.is_header_clef() {
+						if let Some(ElementRef::Clef(other)) = s.element(track) {
+							// a previous clef at the same tick position gets valid
+							if other.borrow_el().generated() {
+								self.clefs.set(time.ticks(), other.borrow_el().clef_type_group().clone())
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	pub fn add_timesig(&mut self, timesig: El<TimeSig>) {
+		if let Some(segment) = timesig.borrow_el().segment() {
+			if segment.borrow_el().is_timesig() {
+				self.timesigs.set(segment.borrow_el().time().ticks(), timesig.clone());
+			}
+		}
+	}
+	pub fn remove_timesig(&mut self, timesig: El<TimeSig>) {
+		if let Some(segment) = timesig.borrow_el().segment() {
+			if segment.borrow_el().is_timesig() {
+				self.timesigs.remove(segment.borrow_el().time().ticks());
+			}
+		}
+	}
 
 	pub fn lines(&self, tick: &Fraction) -> u32 { self.staff_type(tick).lines() }
 	pub fn set_lines(&mut self, tick: &Fraction, v: u32) { self.staff_type_mut(tick).set_lines(v) }
@@ -85,10 +161,10 @@ impl Staff {
 		self.staff_type_list.set(tick.ticks(), v)
 	}
 
-	pub fn key_sig_event(&self, tick: &Fraction) -> &KeySigEvent {
+	pub fn keysig_event(&self, tick: &Fraction) -> &KeySigEvent {
 		self.keys.get(tick.ticks()).unwrap_or(&self.key_default)
 	}
-	pub fn key_sig_event_mut(&mut self, tick: &Fraction) -> &mut KeySigEvent {
+	pub fn keysig_event_mut(&mut self, tick: &Fraction) -> &mut KeySigEvent {
 		self.keys.get_mut(tick.ticks()).unwrap_or(&mut self.key_default)
 	}
 }

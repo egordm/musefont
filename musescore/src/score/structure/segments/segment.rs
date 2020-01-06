@@ -24,8 +24,8 @@ pub struct Segment {
 
 	/// The list of annotations (read only)
 	annotations: Vec<ElementRef>,
-	/// Element storage, size = staves * VOICES
-	elist: [Vec<ElementRef>; constants::VOICES],
+	/// Element storage, size = [staves * VOICES]
+	elist: Vec<Option<ElementRef>>,
 	// size = staves
 	//shapes: Vec<Shape>,
 	/// size = staves
@@ -47,10 +47,12 @@ impl Segment {
 
 	pub fn annotations(&self) -> &Vec<ElementRef> { &self.annotations }
 	pub fn set_annotations(&mut self, v: Vec<ElementRef>) { self.annotations = v }
-	pub fn elements(&self) -> &[Vec<ElementRef>; constants::VOICES] { &self.elist }
 
 	pub fn dot_pos_x(&self) -> &Vec<f32> { &self.dot_pos_x }
 	pub fn set_dot_pos_x(&mut self, v: Vec<f32>) { self.dot_pos_x = v }
+
+	pub fn elements(&self) -> &Vec<Option<ElementRef>> { &self.elist }
+	pub fn element(&self, track: i32) -> Option<&ElementRef> { self.elist.get(track as usize)?.as_ref() }
 
 	pub fn next(&self) -> Option<El<Segment>> {
 		self.measure()?.borrow_el().segment_next_iter(self.time()).skip(1).next().cloned()
@@ -58,22 +60,21 @@ impl Segment {
 	pub fn prev(&self) -> Option<El<Segment>> {
 		self.measure()?.borrow_el().segment_prev_iter(self.time()).skip(1).next().cloned()
 	}
-	pub fn next_type(&self, t: impl Into<SegmentTypeMask>) -> Option<El<Segment>> {
-		let t = t.into();
+	pub fn next_type(&self, t: impl Into<SegmentTypeMask> + Copy) -> Option<El<Segment>> {
 		self.measure()?.borrow_el().segment_next_iter(self.time()).skip(1)
-			.filter(|e| e.borrow_el().segment_type() & t == t).next().cloned()
+			.filter(|e| e.borrow_el().is_type(t)).next().cloned()
 	}
-	pub fn prev_type(&self, t: impl Into<SegmentTypeMask>) -> Option<El<Segment>> {
-		let t = t.into();
+	pub fn prev_type(&self, t: impl Into<SegmentTypeMask> + Copy) -> Option<El<Segment>> {
 		self.measure()?.borrow_el().segment_prev_iter(self.time()).skip(1)
-			.filter(|e| e.borrow_el().segment_type() & t == t).next().cloned()
+			.filter(|e| e.borrow_el().is_type(t)).next().cloned()
 	}
 
 	pub fn next_chordrest(&self, track: i32, backwards: bool) -> Option<ChordRef> {
 		let f = |segment: &El<Segment>| {
-			for e in &segment.borrow_el().elements()[track as usize] {
-				if e.get_type() != ElementType::Chord && e.get_type() != ElementType::Rest { continue; }
-				if let Ok(res) = ChordRef::try_from(e.clone()) { return Some(res); }
+			if let Some(e) = segment.borrow_el().element(track) {
+				if e.get_type() != ElementType::Chord && e.get_type() != ElementType::Rest {
+					if let Ok(res) = ChordRef::try_from(e.clone()) { return Some(res); }
+				}
 			}
 			return None;
 		};
@@ -88,6 +89,73 @@ impl Segment {
 			}
 		}
 		return None;
+	}
+
+	pub fn is_type(&self, t: impl Into<SegmentTypeMask>) -> bool { let t = t.into(); self.segment_type & t == t }
+	pub fn is_begin_barline(&self) -> bool { self.is_type(SegmentTypeMask::BEGIN_BARLINE) }
+	pub fn is_start_repeat_barline(&self) -> bool { self.is_type(SegmentTypeMask::START_REPEAT_BARLINE) }
+	pub fn is_barline(&self) -> bool { self.is_type(SegmentTypeMask::BARLINE) }
+	pub fn is_end_barline(&self) -> bool { self.is_type(SegmentTypeMask::END_BARLINE) }
+	pub fn is_clef(&self) -> bool { self.is_type(SegmentTypeMask::CLEF) }
+	pub fn is_header_clef(&self) -> bool { self.is_type(SegmentTypeMask::HEADER_CLEF) }
+	pub fn is_keysig(&self) -> bool { self.is_type(SegmentTypeMask::KEYSIG) }
+	pub fn is_ambitus(&self) -> bool { self.is_type(SegmentTypeMask::AMBITUS) }
+	pub fn is_timesig(&self) -> bool { self.is_type(SegmentTypeMask::TIMESIG) }
+	pub fn is_breath(&self) -> bool { self.is_type(SegmentTypeMask::BREATH) }
+	pub fn is_chordrest(&self) -> bool { self.is_type(SegmentTypeMask::CHORDREST) }
+	pub fn is_keysig_announce(&self) -> bool { self.is_type(SegmentTypeMask::KEYSIG_ANNOUNCE) }
+	pub fn is_timesig_announce(&self) -> bool { self.is_type(SegmentTypeMask::TIMESIG_ANNOUNCE) }
+
+	pub fn add_chordrest(&mut self, e: ChordRef) {
+		let track = self.track();
+		if track % constants::VOICES as i32 > 0 {
+			let mut visible = false;
+			if let ChordRef::Chord(e) = e{
+				// TODO: needed?
+			} else {
+				visible = e.as_trait().visible();
+			}
+		}
+	}
+
+	pub fn add(&mut self, e: ElementRef) { // TODO: move insert logic to actual setters
+		e.as_trait_mut().attach(self.get_ref(), self.track());
+		let track = self.track();
+
+		match e {
+			ElementRef::Clef(e) => {
+				self.elist[track as usize] = Some(e.clone().into());
+				if !e.borrow_el().generated() {
+					if let Some(staff) = e.borrow_el().staff() {
+						staff.borrow_mut_el().set_clef(e.clone()) // TODO: rip invariant?
+					}
+				}
+			},
+			ElementRef::TimeSig(e) => {
+				self.elist[track as usize] = Some(e.clone().into());
+				if !e.borrow_el().generated() {
+					if let Some(staff) = e.borrow_el().staff() {
+						staff.borrow_mut_el().add_timesig(e.clone()) // TODO: rip invariant?
+					}
+				}
+			},
+			ElementRef::KeySig(e) => {
+				self.elist[track as usize] = Some(e.clone().into());
+				if !e.borrow_el().generated() {
+					if let Some(staff) = e.borrow_el().staff() {
+						staff.borrow_mut_el().set_keysig(&self.time(), e.borrow_el().sig().clone()) // TODO: rip invariant?
+					}
+				}
+			}
+			ElementRef::Chord(e) => self.add_chordrest(e.into()),
+			ElementRef::Rest(e) => self.add_chordrest(e.into()),
+			_ => {}
+		}
+	}
+	pub fn remove(&mut self, e: &ElementRef) {
+		match e {
+			_ => {}
+		}
 	}
 }
 

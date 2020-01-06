@@ -275,7 +275,7 @@ impl Note {
 		let mut key = Key::C;
 		let mut scheme = NoteheadScheme::Normal;
 		if let (Some(chord), Some(staff)) = (self.chord(), self.staff()) {
-			let tick = chord.as_trait().tick();
+			let tick = chord.as_trait().time();
 			if tick >= Fraction::new(0, 1) {
 				let staff = staff.borrow_el();
 				key = staff.key(&tick);

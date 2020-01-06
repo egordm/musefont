@@ -12,7 +12,9 @@ pub trait RectTrait {
 	fn right(&self) -> f32;
 	fn left(&self) -> f32;
 	fn up(&self) -> f32;
+	fn top(&self) -> f32 { self.up() }
 	fn down(&self) -> f32;
+	fn bottom(&self) -> f32 { self.down() }
 
 	fn from_ps(p1: Point2F, p2: Point2F) -> Self;
 

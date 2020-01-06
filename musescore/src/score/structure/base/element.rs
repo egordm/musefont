@@ -88,6 +88,8 @@ pub trait Element: ScoreElement {
 	fn set_visible(&mut self, v: bool) {self.set_flag(ElementFlags::INVISIBLE, !v)}
 	fn selected(&self) -> bool { self.flag(ElementFlags::SELECTED) }
 	fn set_selected(&mut self, v: bool) {self.set_flag(ElementFlags::SELECTED, v)}
+	fn generated(&self) -> bool { self.flag(ElementFlags::GENERATED) }
+	fn set_generated(&mut self, v: bool) {self.set_flag(ElementFlags::GENERATED, v)}
 	fn autoplace(&self) -> bool {
 		self.score().style().value_bool(StyleName::AutoplaceEnabled)
 			&& !self.flag(ElementFlags::NO_AUTOPLACE)
@@ -105,11 +107,11 @@ pub trait Element: ScoreElement {
 	fn voice(&self) -> i32 { self.track() & 3 }
 	fn set_voice(&mut self, v: i32) { self.set_track((self.track() / constants::VOICES as i32) * constants::VOICES as i32 + v) }
 
-	fn tick(&self) -> Fraction {
+	fn time(&self) -> Fraction {
 		let mut iter = self.parent_iter();
 		while let Some(e) = iter.next() {
 			if e.as_trait().is_segment() || e.as_trait().is_measure() {
-				return e.as_trait().tick();
+				return e.as_trait().time();
 			}
 		}
 		return Fraction::new(0, 1);
@@ -132,7 +134,7 @@ pub trait Element: ScoreElement {
 	}
 	fn get_element_property(&self, p: PropertyId) -> ValueVariant {
 		match p {
-			PropertyId::Tick => self.tick().ticks().into(),
+			PropertyId::Tick => self.time().ticks().into(),
 			PropertyId::Track => self.track().into(),
 			PropertyId::Voice => self.voice().into(),
 			PropertyId::Position => self.pos().into(),
@@ -184,7 +186,7 @@ pub trait Element: ScoreElement {
 			self.score().spatium()
 		} else {
 			if let Some(staff) = self.staff() {
-				staff.borrow_el().spatium(&self.tick())
+				staff.borrow_el().spatium(&self.time())
 			} else {
 				self.score().spatium()
 			}
