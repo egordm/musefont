@@ -222,7 +222,7 @@ impl Chord {
 			ElementRef::Note(e) => {
 				if let Some(pos) = self.notes.iter().position(|o| o == e) {
 					self.notes.remove(pos);
-					let e = e.borrow_mut_el();
+					//let e = e.borrow_mut_el();
 					//e.disconnect_tied_notes(); TODO:
 					//e.remove_spanners_back()
 					//e.remove_spanners_for()

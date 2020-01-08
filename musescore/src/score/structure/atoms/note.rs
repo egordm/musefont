@@ -300,7 +300,7 @@ impl Note {
 			ElementRef::Text(e) => self.elements.push(e.into()),
 			ElementRef::Tie(e) => {
 				let elt = e.clone();
-				let tie = elt.borrow_mut_el();
+				let _tie = elt.borrow_mut_el();
 				//tie.set_start_note(Some(self.get_ref())) TODO
 				//tie.set_track(self.track())
 				self.set_tie_for(Some(e.downgrade()));
@@ -316,7 +316,7 @@ impl Note {
 			ElementRef::Symbol(_) => remove_element(&mut self.elements, e),
 			ElementRef::Text(_) => remove_element(&mut self.elements, e),
 			ElementRef::Tie(e) => {
-				let tie = e.borrow_mut_el();
+				let _tie = e.borrow_mut_el();
 				self.set_tie_for(None);
 				//if let Some(en) = tie.end_note() { en.borrow_mut_el().set_tie_back(None) }
 			},
@@ -325,13 +325,14 @@ impl Note {
 		}
 	}
 
-	pub fn add_spanner(&mut self, l: SpannerRef) {
+	pub fn add_spanner(&mut self, _l: SpannerRef) {
 		unimplemented!()
 	}
-	pub fn remove_spanner(&mut self, l: SpannerRef) {
+	pub fn remove_spanner(&mut self, _l: SpannerRef) {
 		unimplemented!()
 	}
 
+	#[allow(irrefutable_let_patterns)]
 	pub fn add_parentheses(&mut self) {
 		let s = Symbol::new(self.score().clone());
 		if let mut s = s.borrow_mut_el() {

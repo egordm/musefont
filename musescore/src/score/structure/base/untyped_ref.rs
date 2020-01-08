@@ -208,3 +208,9 @@ decl_elem_ref! { enum (ChordRef, ChordWeak, is_chord -> ChordType) -> ChordRestT
 	Chord(Chord),
 	Rest(Rest),
 }}
+
+decl_elem_ref! { enum (DurationElementRef, DurationElementWeak, is_duration_element -> DurationElementType) -> DurationElement {
+	Chord(Chord),
+	Rest(Rest),
+	Tuplet(Tuplet),
+}}

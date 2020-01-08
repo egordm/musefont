@@ -1,7 +1,7 @@
 use log::{debug};
+use crate::*;
 use crate::score::*;
 use std::convert::TryInto;
-use crate::constants;
 
 /// One measure in a system
 #[derive(Debug, Clone)]
@@ -75,7 +75,6 @@ impl Measure {
 		self.duration() * staff.borrow_el().timestretch(&self.time())
 	}
 
-
 	pub fn create_staves(&mut self, staff_id: i32) {
 		for n in self.mstaves.len()..staff_id as usize + 1 {
 			if let Some(staff) = self.score().staff(n as i32) {
@@ -124,7 +123,7 @@ impl Measure {
 			(None, Some(r)) => self.segments.range(..r.ticks()),
 			(None, None) => self.segments.range(..)
 		};
-		ret.map(|(t, v)| v)
+		ret.map(|(_, v)| v)
 	}
 
 	pub fn segment_next_iter(&self, tick: Fraction) -> impl DoubleEndedIterator<Item=&El<Segment>> {
@@ -154,9 +153,9 @@ impl Measure {
 		}
 		return None;
 	}
-	pub fn tick_to_segment(&self, t: Fraction, st: SegmentType) -> Option<El<Segment>> {
+	pub fn tick_to_segment(&self, t: Fraction, _st: SegmentType) -> Option<El<Segment>> {
 		let t = t - self.time();
-		let seg = self.segments.get(t.ticks())?;
+		let seg = self.segments.get(t.ticks())?; // TODO: allow multiple same keys
 		if seg.borrow_el().rel_time() == t { Some(seg.clone()) } else { None }
 	}
 	/// Search for a segment of type st at measure relative position t.

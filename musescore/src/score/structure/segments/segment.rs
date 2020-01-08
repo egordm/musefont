@@ -120,14 +120,15 @@ impl Segment {
 	pub fn is_keysig_announce(&self) -> bool { self.is_type(SegmentTypeMask::KEYSIG_ANNOUNCE) }
 	pub fn is_timesig_announce(&self) -> bool { self.is_type(SegmentTypeMask::TIMESIG_ANNOUNCE) }
 
+	#[allow(unused_assignments)]
 	pub fn add_chordrest(&mut self, e: ChordRef) {
 		let track = self.track();
 		if track % constants::VOICES as i32 > 0 {
-			let mut visible = false;
-			if let ChordRef::Chord(e) = e{
+			let mut _visible = false;
+			if let ChordRef::Chord(_e) = e{
 				// TODO: needed?
 			} else {
-				visible = e.as_trait().visible();
+				_visible = e.as_trait().visible();
 			}
 		}
 	}
@@ -172,12 +173,12 @@ impl Segment {
 		}
 	}
 
-	pub fn insert_staff(&mut self, staff: i32) {
+	pub fn insert_staff(&mut self, _staff: i32) {
 		// TODO: impl
 		unimplemented!()
 	}
 
-	pub fn remove_staff(&mut self, staff: i32) {
+	pub fn remove_staff(&mut self, _staff: i32) {
 		// TODO: impl
 		unimplemented!()
 	}

@@ -1,4 +1,3 @@
-use crate::*;
 use crate::score::*;
 
 /// Global staff data not directly related to drawing.

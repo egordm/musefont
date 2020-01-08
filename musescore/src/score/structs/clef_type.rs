@@ -1,5 +1,3 @@
-use super::*;
-
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct ClefTypeGroup {
 	concert_clef: ClefType,

@@ -1,5 +1,4 @@
 use crate::font::*;
-use crate::*;
 
 #[derive(Clone, Debug)]
 pub struct KeySigEvent {

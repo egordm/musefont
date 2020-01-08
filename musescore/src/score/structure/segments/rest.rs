@@ -1,7 +1,6 @@
 use crate::*;
 use crate::score::*;
 use crate::font::SymName;
-use crate::{remove_element, Point2F};
 
 #[derive(Debug, Clone)]
 pub struct Rest {

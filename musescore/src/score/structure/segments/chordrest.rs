@@ -1,5 +1,4 @@
 use crate::score::*;
-use crate::font::SymName;
 use crate::remove_element;
 
 #[derive(Debug, Clone)]

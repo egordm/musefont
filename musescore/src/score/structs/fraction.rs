@@ -5,8 +5,8 @@ use std::cmp::Ordering;
 #[derive(Clone, Copy, Debug)]
 pub struct Fraction {
 	// TODO: implement arithmetic
-	numerator: i32,
-	denominator: i32,
+	pub numerator: i32,
+	pub denominator: i32,
 }
 
 impl Default for Fraction {
