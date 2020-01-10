@@ -1,7 +1,5 @@
 [workspace]
 members = [
-    "musefont",
-#    "musefont_python",
-    "musefont_render",
     "musescore",
+    "musescore_preview",
 ]

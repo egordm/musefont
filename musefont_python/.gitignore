@@ -1,4 +1,0 @@
-/target
-Cargo.lock
-/libs/release/*.so
-/libs/debug/*.so

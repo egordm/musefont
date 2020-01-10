@@ -1,0 +1,10 @@
+[package]
+name = "musescore_preview"
+version = "0.1.0"
+authors = ["Egor Dmitriev <egordmitriev2@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+musescore = { path = "../musescore" }
+ggez = "0.5"
+cgmath =  { version = "0.17", features = ["mint"]}
