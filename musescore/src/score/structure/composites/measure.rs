@@ -2,6 +2,7 @@ use log::{debug};
 use crate::*;
 use crate::score::*;
 use std::convert::TryInto;
+use bitflags::_core::ops::RangeBounds;
 
 /// One measure in a system
 #[derive(Debug, Clone)]
@@ -10,7 +11,7 @@ pub struct Measure {
 
 	mstaves: Vec<MStaff>,
 	measure_data: MeasureData,
-	segments: OrderedCollecton<El<Segment>>,
+	segments: SegmentMap,
 
 	/// > 0 if this is a multi measure rest
 	/// 0 if this is the start of a mm rest (_mmRest != 0)
@@ -33,7 +34,7 @@ impl Measure {
 		element: ElementData::new(score),
 		mstaves: vec![],
 		measure_data: Default::default(),
-		segments: OrderedCollecton::new(),
+		segments: SegmentMap::new(),
 		mm_rest_count: 0,
 		mm_rest: None,
 		timesig: Fraction::new(4, 4),
@@ -43,8 +44,7 @@ impl Measure {
 		break_mm_rest: false
 	})}
 
-	pub fn segments(&self) -> &OrderedCollecton<El<Segment>> { &self.segments }
-	pub fn set_segments(&mut self, v: OrderedCollecton<El<Segment>>) { self.segments = v }
+	pub fn segments(&self) -> &SegmentMap { &self.segments }
 
 	pub fn mm_rest(&self) -> Option<MeasureRef> { self.mm_rest.as_ref()?.upgrade() }
 	pub fn set_mm_rest(&mut self, v: Option<MeasureRefWeak>) { self.mm_rest = v }
@@ -75,9 +75,9 @@ impl Measure {
 		self.duration() * staff.borrow_el().timestretch(&self.time())
 	}
 
-	pub fn create_staves(&mut self, staff_id: i32) {
+	pub fn create_staves(&mut self, staff_id: StaffId) {
 		for n in self.mstaves.len()..staff_id as usize + 1 {
-			if let Some(staff) = self.score().staff(n as i32) {
+			if let Some(staff) = self.score().staff(n as StaffId) {
 				let mut s = MStaff::default();
 				let lines = StaffLines::new(self.score().clone());
 				s.set_lines(Some(lines.clone()));
@@ -116,28 +116,20 @@ impl Measure {
 		}
 	}
 
-	pub fn segment_iter_range(&self, l: Option<Fraction>, r: Option<Fraction>) -> impl DoubleEndedIterator<Item=&El<Segment>> {
-		let ret = match (l, r) {
-			(Some(l), Some(r)) => self.segments.range(l.ticks()..r.ticks()),
-			(Some(l), None) => self.segments.range(l.ticks()..),
-			(None, Some(r)) => self.segments.range(..r.ticks()),
-			(None, None) => self.segments.range(..)
-		};
-		ret.map(|(_, v)| v)
+	pub fn segment_iter_range(&self, r: impl RangeBounds<Fraction>) -> impl DoubleEndedIterator<Item=&El<Segment>> {
+		self.segments.range(r).map(|(_, v)| v)
 	}
 
-	pub fn segment_next_iter(&self, tick: Fraction) -> impl DoubleEndedIterator<Item=&El<Segment>> {
-		self.segment_iter_range(Some(Fraction::from_ticks(tick.ticks())), None)
+	pub fn segment_next_iter(&self, time: Fraction) -> impl DoubleEndedIterator<Item=&El<Segment>> {
+		self.segment_iter_range(time..)
 	}
-	pub fn segment_prev_iter(&self, tick: Fraction) -> impl DoubleEndedIterator<Item=&El<Segment>> {
-		self.segment_iter_range(None, Some(Fraction::from_ticks(tick.ticks() + 1))).rev()
+	pub fn segment_prev_iter(&self, time: Fraction) -> impl DoubleEndedIterator<Item=&El<Segment>> {
+		self.segment_iter_range(..Fraction::from_ticks(time.ticks() + 1)).rev()
 	}
 
 	/// Search for chord at position \a tick in \a track
-	pub fn find_chord(&self, mut t: Fraction, track: i32) -> Option<El<Chord>> {
-		t -= self.time();
-		let seg = self.segments.get(t.ticks())?;
-		if seg.borrow_el().rel_time() == t {
+	pub fn find_chord(&self, t: Fraction, track: Track) -> Option<El<Chord>> {
+		for seg in self.segments.iter_ty(t - self.time(), SegmentType::Chord).map(|(_, v)| v) {
 			if let Some(ElementRef::Chord(chord)) = seg.borrow_el().element(track) {
 				return Some(chord.clone());
 			}
@@ -145,22 +137,20 @@ impl Measure {
 		return None;
 	}
 	/// Search for chord or rest at position \a tick at \a staff in \a voice.
-	pub fn find_chordrest(&self, mut t: Fraction, track: i32) -> Option<ChordRef> {
-		t -= self.time();
-		let seg = self.segments.get(t.ticks())?;
-		if seg.borrow_el().rel_time() == t {
-			return seg.borrow_el().element(track).and_then(|e| e.clone().try_into().ok());
+	pub fn find_chordrest(&self, t: Fraction, track: Track) -> Option<ChordRef> {
+		for seg in self.segments.iter_ty(t - self.time(), SegmentType::Chord).map(|(_, v)| v) {
+			if let Some(v) = seg.borrow_el().element(track).and_then(|e| e.clone().try_into().ok()) {
+				return Some(v);
+			}
 		}
 		return None;
 	}
-	pub fn tick_to_segment(&self, t: Fraction, _st: SegmentType) -> Option<El<Segment>> {
-		let t = t - self.time();
-		let seg = self.segments.get(t.ticks())?; // TODO: allow multiple same keys
-		if seg.borrow_el().rel_time() == t { Some(seg.clone()) } else { None }
+	pub fn segment_at(&self, t: Fraction, ty: SegmentType) -> Option<El<Segment>> {
+		self.segments.get_ty(t - self.time(), ty).cloned()
 	}
 	/// Search for a segment of type st at measure relative position t.
 	pub fn find_segment_r(&self, t: Fraction, st: SegmentType) -> Option<El<Segment>> {
-		self.tick_to_segment(t + self.time(), st)
+		self.segment_at(t + self.time(), st)
 	}
 	/// Get a segment of type st at relative tick position t.
 	/// If the segment does not exist, it is created.
@@ -179,14 +169,13 @@ impl Measure {
 		}
 	}
 
-	pub fn insert_staves(&mut self, s_staff: i32, e_staff: i32) {
+	pub fn insert_staves(&mut self, s_staff: StaffId, e_staff: StaffId) {
 		for e in self.elements() {
-			if e.as_trait().track() == -1 { continue; }
 			let mut staff_id = e.as_trait().staff_id();
 			if staff_id >= s_staff && !e.as_trait().system_flag() {
 				let voice = e.as_trait().voice();
 				staff_id += e_staff - s_staff;
-				e.as_trait_mut().set_track(staff_id * constants::VOICES as i32 + voice)
+				e.as_trait_mut().set_track(staff_id * constants::VOICES as StaffId + voice)
 			}
 		}
 		for s in self.segments().iter_vals() {
@@ -213,7 +202,7 @@ impl MeasureTrait for Measure {
 						return;
 					}
 				}
-				self.segments.set(t.ticks(), e.clone());
+				self.segments.insert(e.clone());
 
 				if e.borrow_el().header() { self.set_header(true); }
 				if e.borrow_el().trailer() { self.set_trailer(true); }
@@ -236,7 +225,7 @@ impl MeasureTrait for Measure {
 	fn remove(&mut self, e: &ElementRef) {
 		match e {
 			ElementRef::Segment(e) => {
-				self.segments.remove(e.borrow_el().rel_time().ticks());
+				self.segments.remove(e);
 				if e.borrow_el().header() {
 					// TODO: try unset
 				}

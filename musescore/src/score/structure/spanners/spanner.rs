@@ -25,7 +25,7 @@ pub struct SpannerData {
 	tick: Fraction,
 	ticks: Fraction,
 	/// tick end position
-	track2: i32,
+	track2: Track,
 	broken: bool,
 
 	segments: Vec<SpannerSegmentRef>,
@@ -48,8 +48,8 @@ pub trait SpannerTrait: Element {
 	fn set_tick(&mut self, v: Fraction) { self.spanner_data_mut().tick = v }
 	fn ticks(&self) -> Fraction { self.spanner_data().ticks }
 	fn set_ticks(&mut self, v: Fraction) { self.spanner_data_mut().ticks = v }
-	fn track2(&self) -> i32 { self.spanner_data().track2 }
-	fn set_track2(&mut self, v: i32) { self.spanner_data_mut().track2 = v }
+	fn track2(&self) -> Track { self.spanner_data().track2 }
+	fn set_track2(&mut self, v: Track) { self.spanner_data_mut().track2 = v }
 	
 	fn broken(&self) -> bool { self.spanner_data().broken }
 	fn set_broken(&mut self, v: bool) { self.spanner_data_mut().broken = v }
@@ -63,10 +63,10 @@ pub trait SpannerTrait: Element {
 		match p {
 			PropertyId::SpannerTick => SpannerTrait::tick(self).ticks().into(),
 			PropertyId::SpannerTicks => self.ticks().ticks().into(),
-			PropertyId::SpannerTrack2 => self.track2().into(),
+			PropertyId::SpannerTrack2 => (self.track2() as u32).into(),
 			PropertyId::Anchor => ValueVariant::from_enum(self.anchor()),
-			PropertyId::LocationStaves => ((self.track2() / constants::VOICES as i32) - (self.track() / constants::VOICES as i32)).into(),
-			PropertyId::LocationVoices => ((self.track2() % constants::VOICES as i32) - (self.track() / constants::VOICES as i32)).into(),
+			PropertyId::LocationStaves => (((self.track2() / constants::VOICES as Track) - (self.track() / constants::VOICES as Track)) as u32).into(),
+			PropertyId::LocationVoices => (((self.track2() % constants::VOICES as Track) - (self.track() / constants::VOICES as Track)) as u32).into(),
 			PropertyId::LocationFractions => self.ticks().ticks().into(),
 			// TODO: location property
 			_ => ValueVariant::None

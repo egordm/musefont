@@ -2,6 +2,9 @@ use crate::*;
 use std::ops::{Mul, MulAssign, Div, DivAssign, Add, AddAssign, Sub, SubAssign};
 use std::cmp::Ordering;
 
+pub type TimeTicks = i32;
+pub const INVALID_TIME: TimeTicks = -1;
+
 #[derive(Clone, Copy, Debug)]
 pub struct Fraction {
 	// TODO: implement arithmetic

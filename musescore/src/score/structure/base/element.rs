@@ -1,7 +1,9 @@
 use crate::*;
 use crate::score::*;
 
-pub type Track = i32;
+pub type Track = u16;
+pub type Voice = u16;
+pub type StaffId = u16;
 
 pub fn new_element<T: Element + Clone>(e: T) -> El<T>
 	where ElementRef: From<El<T>>
@@ -107,9 +109,9 @@ pub trait Element: ScoreElement {
 	// Score properties
 	fn track(&self) -> Track { self.el_data().track }
 	fn set_track(&mut self, v: Track) { self.el_data_mut().track = v }
-	fn staff_id(&self) -> i32 { self.track() >> 2 }
-	fn voice(&self) -> i32 { self.track() & 3 }
-	fn set_voice(&mut self, v: i32) { self.set_track((self.track() / constants::VOICES as i32) * constants::VOICES as i32 + v) }
+	fn staff_id(&self) -> StaffId { self.track() >> 2 }
+	fn voice(&self) -> Voice { self.track() & 3 }
+	fn set_voice(&mut self, v: Voice) { self.set_track((self.track() / constants::VOICES as Track) * constants::VOICES as Track + v) }
 
 	fn time(&self) -> Fraction {
 		let mut iter = self.parent_iter();
@@ -125,7 +127,6 @@ pub trait Element: ScoreElement {
 
 	// Score main elements
 	fn staff(&self) -> Option<El<Staff>> {
-		if self.track() == -1 { return None; }
 		self.score().staff(self.staff_id())
 	}
 	fn part(&self) -> Option<El<Part>> {
@@ -139,8 +140,8 @@ pub trait Element: ScoreElement {
 	fn get_element_property(&self, p: PropertyId) -> ValueVariant {
 		match p {
 			PropertyId::Tick => self.time().ticks().into(),
-			PropertyId::Track => self.track().into(),
-			PropertyId::Voice => self.voice().into(),
+			PropertyId::Track => (self.track() as u32).into(),
+			PropertyId::Voice => (self.voice() as u32).into(),
 			PropertyId::Position => self.pos().into(),
 			PropertyId::Visible => self.visible().into(),
 			PropertyId::Selected => self.selected().into(),
@@ -159,8 +160,8 @@ pub trait Element: ScoreElement {
 	}
 	fn set_element_property(&mut self, p: PropertyId, v: ValueVariant) -> bool {
 		match p {
-			PropertyId::Track => v.with_value(|v| self.set_track(v)),
-			PropertyId::Voice => v.with_value(|v| self.set_voice(v)),
+			PropertyId::Track => v.with_value(|v: u32| self.set_track(v as Track)),
+			PropertyId::Voice => v.with_value(|v: u32| self.set_voice(v as Voice)),
 			PropertyId::Position => v.with_value(|v| self.set_pos(v)),
 			PropertyId::Visible => v.with_value(|v| self.set_visible(v)),
 			PropertyId::Selected => v.with_value(|v| self.set_selected(v)),

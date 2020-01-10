@@ -3,10 +3,16 @@ use super::super::*;
 use std::convert::{TryInto, TryFrom};
 use std::any::Any;
 
+macro_rules! count {
+    () => (0usize);
+    ( $x:tt $($xs:tt)* ) => (1usize + count!($($xs)*));
+}
+
 macro_rules! conv_elem_ref {
 { enum ElementRef { $($Variant:ident($Type:ty)),* $(,)* } } => {
 
 };
+
 { enum $RefName: ident { $($Variant:ident($Type:ty)),* $(,)* } } => {
 	impl TryFrom<ElementRef> for $RefName {
 		type Error = ();
@@ -26,10 +32,29 @@ macro_rules! decl_elem_ref {{
 		$($Variant:ident($Type:ty)),* $(,)*
 	}
 } => {
+	#[repr(u8)]
 	#[derive(Clone, Debug, Copy, Eq, PartialEq)]
 	pub enum $RefTypeName {
 		Invalid,
 		$($Variant),*
+	}
+
+	impl TryFrom<usize> for $RefTypeName {
+		type Error = ();
+
+		fn try_from(value: usize) -> Result<Self, Self::Error> {
+			if value < Self::count() {
+				Ok(unsafe { std::mem::transmute(value as u8) })
+			} else {
+				Err(())
+			}
+		}
+	}
+
+	impl $RefTypeName {
+		pub const fn count() -> usize {
+			count!($($Variant)*)
+		}
 	}
 
 	pub fn $type_check(t: ElementType) -> bool {

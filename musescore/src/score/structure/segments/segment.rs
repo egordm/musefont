@@ -65,8 +65,8 @@ impl Segment {
 	pub fn set_dot_pos_x(&mut self, v: Vec<f32>) { self.dot_pos_x = v }
 
 	pub fn elements(&self) -> &Vec<Option<ElementRef>> { &self.elist }
-	pub fn element(&self, track: i32) -> Option<&ElementRef> { self.elist.get(track as usize)?.as_ref() }
-	pub fn set_element(&mut self, track: i32, e: Option<ElementRef>) { self.elist[track as usize] = e }
+	pub fn element(&self, track: Track) -> Option<&ElementRef> { self.elist.get(track as usize)?.as_ref() }
+	pub fn set_element(&mut self, track: Track, e: Option<ElementRef>) { self.elist[track as usize] = e }
 
 	pub fn next(&self) -> Option<El<Segment>> {
 		self.measure()?.borrow_el().segment_next_iter(self.time()).skip(1).next().cloned()
@@ -83,7 +83,7 @@ impl Segment {
 			.filter(|e| e.borrow_el().is_type(t)).next().cloned()
 	}
 
-	pub fn next_chordrest(&self, track: i32, backwards: bool) -> Option<ChordRef> {
+	pub fn next_chordrest(&self, track: Track, backwards: bool) -> Option<ChordRef> {
 		let f = |segment: &El<Segment>| {
 			if let Some(e) = segment.borrow_el().element(track) {
 				if e.get_type() != ElementType::Chord && e.get_type() != ElementType::Rest {
@@ -123,7 +123,7 @@ impl Segment {
 	#[allow(unused_assignments)]
 	pub fn add_chordrest(&mut self, e: ChordRef) {
 		let track = self.track();
-		if track % constants::VOICES as i32 > 0 {
+		if track % constants::VOICES as Track > 0 {
 			let mut _visible = false;
 			if let ChordRef::Chord(_e) = e{
 				// TODO: needed?
@@ -173,12 +173,12 @@ impl Segment {
 		}
 	}
 
-	pub fn insert_staff(&mut self, _staff: i32) {
+	pub fn insert_staff(&mut self, _staff: StaffId) {
 		// TODO: impl
 		unimplemented!()
 	}
 
-	pub fn remove_staff(&mut self, _staff: i32) {
+	pub fn remove_staff(&mut self, _staff: StaffId) {
 		// TODO: impl
 		unimplemented!()
 	}
@@ -208,7 +208,7 @@ pub trait SegmentTrait: Element {
 	fn system(&self) -> Option<El<System>> { self.measure()?.borrow_el().system() }
 }
 
-bitflags! { pub struct SegmentTypeMask: i32 {
+bitflags! { pub struct SegmentTypeMask: u16 {
 	const INVALID                   = 0x00000000;
 	const BEGIN_BARLINE             = 0x00000001;
 	const HEADER_CLEF               = 0x00000002;
@@ -223,7 +223,6 @@ bitflags! { pub struct SegmentTypeMask: i32 {
 	const END_BARLINE               = 0x00000400;
 	const KEYSIG_ANNOUNCE           = 0x00000800;
 	const TIMESIG_ANNOUNCE          = 0x00001000;
-	const ALL                       = -1;
 	const BARLINE_TYPE              = Self::BEGIN_BARLINE.bits | Self::START_REPEAT_BARLINE.bits | Self::BARLINE.bits | Self::END_BARLINE.bits;
 }}
 

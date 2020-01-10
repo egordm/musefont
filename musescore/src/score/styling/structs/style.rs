@@ -152,6 +152,15 @@ impl TryInto<u32> for ValueVariant {
 		if let ValueVariant::UInt(v) = self { Ok(v) } else { Err(()) }
 	}
 }
+impl TryInto<u16> for ValueVariant {
+	type Error = ();
+	fn try_into(self) -> Result<u16, Self::Error> {
+		if let ValueVariant::UInt(v) = self { Ok(v as u16) } else { Err(()) }
+	}
+}
+impl From<u16> for ValueVariant {
+	fn from(v: u16) -> Self { ValueVariant::UInt(v as u32) }
+}
 impl From<u32> for ValueVariant {
 	fn from(v: u32) -> Self { ValueVariant::UInt(v) }
 }

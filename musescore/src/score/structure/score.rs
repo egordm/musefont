@@ -32,7 +32,7 @@ impl Score {
 	pub fn note_head_width(&self) -> f32 { self.inner().note_head_width }
 
 	pub fn staves(&self) -> Ref<StaffList> { Ref::map(self.inner(), |r| &r.staves) }
-	pub fn staff(&self, i: i32) -> Option<El<Staff>> { self.inner().staves.get(i as usize).cloned() }
+	pub fn staff(&self, i: StaffId) -> Option<El<Staff>> { self.inner().staves.get(i as usize).cloned() }
 }
 
 impl std::fmt::Debug for Score {
