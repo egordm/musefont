@@ -38,7 +38,7 @@ impl Segment {
 		segment_type: SegmentTypeMask::INVALID,
 		rel_time: Fraction::new(0, 1),
 		duration: Fraction::new(0, 1),
-		extra_leading_space: 0.0,
+		extra_leading_space: Spatium(0.0),
 		stretch: false,
 		annotations: vec![],
 		elist: vec![],

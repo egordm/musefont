@@ -4,6 +4,7 @@ pub mod style;
 pub mod style_id;
 pub mod text_style_id;
 pub mod types;
+pub mod value_variant;
 
 #[doc(inline)]
 pub use align::*;
@@ -17,3 +18,5 @@ pub use style_id::*;
 pub use text_style_id::*;
 #[doc(inline)]
 pub use types::*;
+#[doc(inline)]
+pub use value_variant::*;

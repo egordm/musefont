@@ -1191,31 +1191,31 @@ pub(super) fn style_default_values() -> [(StyleName, ValueVariant); STYLE_COUNT]
 	(StyleName::PageOddBottomMargin, ValueVariant::Float(20.0/constants::INCH)),
 	(StyleName::PageTwosided, ValueVariant::Bool(true)),
 
-	(StyleName::StaffUpperBorder, ValueVariant::Spatium(7.0)),
-	(StyleName::StaffLowerBorder, ValueVariant::Spatium(7.0)),
-	(StyleName::StaffDistance, ValueVariant::Spatium(6.5)),
-	(StyleName::AkkoladeDistance, ValueVariant::Spatium(6.5)),
-	(StyleName::MinSystemDistance, ValueVariant::Spatium(8.5)),
-	(StyleName::MaxSystemDistance, ValueVariant::Spatium(15.0)),
+	(StyleName::StaffUpperBorder, ValueVariant::Spatium(Spatium(7.0))),
+	(StyleName::StaffLowerBorder, ValueVariant::Spatium(Spatium(7.0))),
+	(StyleName::StaffDistance, ValueVariant::Spatium(Spatium(6.5))),
+	(StyleName::AkkoladeDistance, ValueVariant::Spatium(Spatium(6.5))),
+	(StyleName::MinSystemDistance, ValueVariant::Spatium(Spatium(8.5))),
+	(StyleName::MaxSystemDistance, ValueVariant::Spatium(Spatium(15.0))),
 
 	(StyleName::LyricsPlacement, ValueVariant::UInt(Placement::Below as u32)),
 	(StyleName::LyricsPosAbove, ValueVariant::Point(Point2F::new(0.0, -2.0))),
 	(StyleName::LyricsPosBelow, ValueVariant::Point(Point2F::new(0.0, 3.0))),
-	(StyleName::LyricsMinTopDistance, ValueVariant::Spatium(1.0)),
-	(StyleName::LyricsMinBottomDistance, ValueVariant::Spatium(2.0)),
-	(StyleName::LyricsMinDistance, ValueVariant::Spatium(0.0)),
+	(StyleName::LyricsMinTopDistance, ValueVariant::Spatium(Spatium(1.0))),
+	(StyleName::LyricsMinBottomDistance, ValueVariant::Spatium(Spatium(2.0))),
+	(StyleName::LyricsMinDistance, ValueVariant::Spatium(Spatium(0.0))),
 	(StyleName::LyricsLineHeight, ValueVariant::Float(1.0)),
-	(StyleName::LyricsDashMinLength, ValueVariant::Spatium(0.4)),
-	(StyleName::LyricsDashMaxLength, ValueVariant::Spatium(0.8)),
-	(StyleName::LyricsDashMaxDistance, ValueVariant::Spatium(16.0)),
+	(StyleName::LyricsDashMinLength, ValueVariant::Spatium(Spatium(0.4))),
+	(StyleName::LyricsDashMaxLength, ValueVariant::Spatium(Spatium(0.8))),
+	(StyleName::LyricsDashMaxDistance, ValueVariant::Spatium(Spatium(16.0))),
 	(StyleName::LyricsDashForce, ValueVariant::Bool(true)),
 	(StyleName::LyricsAlignVerseNumber, ValueVariant::Bool(true)),
-	(StyleName::LyricsLineThickness, ValueVariant::Spatium(0.1)),
+	(StyleName::LyricsLineThickness, ValueVariant::Spatium(Spatium(0.1))),
 	(StyleName::LyricsMelismaAlign, ValueVariant::UInt((Align::LEFT | Align::BASELINE).into())),
 
-	(StyleName::LyricsMelismaPad, ValueVariant::Spatium(0.10)), // the empty space before a melisma line
-	(StyleName::LyricsDashPad, ValueVariant::Spatium(0.05)), // the min. empty space before and after a dash
-	(StyleName::LyricsDashLineThickness, ValueVariant::Spatium(0.15)), // in sp. units
+	(StyleName::LyricsMelismaPad, ValueVariant::Spatium(Spatium(0.10))), // the empty space before a melisma line
+	(StyleName::LyricsDashPad, ValueVariant::Spatium(Spatium(0.05))), // the min. empty space before and after a dash
+	(StyleName::LyricsDashLineThickness, ValueVariant::Spatium(Spatium(0.15))), // in sp. units
 	(StyleName::LyricsDashYposRatio, ValueVariant::Float(0.67)), // the fraction of lyrics font x-height to raise the dashes above text base line
 
 	(StyleName::LyricsOddFontFace, ValueVariant::String("FreeSerif".to_string())),
@@ -1251,23 +1251,23 @@ pub(super) fn style_default_values() -> [(StyleName, ValueVariant); STYLE_COUNT]
 	(StyleName::FiguredBassLineHeight, ValueVariant::Float(1.0)),
 	(StyleName::FiguredBassAlignment, ValueVariant::Int(0)),
 	(StyleName::FiguredBassStyle, ValueVariant::Int(0)),
-	(StyleName::SystemFrameDistance, ValueVariant::Spatium(7.0)),
-	(StyleName::FrameSystemDistance, ValueVariant::Spatium(7.0)),
-	(StyleName::MinMeasureWidth, ValueVariant::Spatium(5.0)),
-	(StyleName::BarWidth, ValueVariant::Spatium(0.16)),
-	(StyleName::DoubleBarWidth, ValueVariant::Spatium(0.16)),
+	(StyleName::SystemFrameDistance, ValueVariant::Spatium(Spatium(7.0))),
+	(StyleName::FrameSystemDistance, ValueVariant::Spatium(Spatium(7.0))),
+	(StyleName::MinMeasureWidth, ValueVariant::Spatium(Spatium(5.0))),
+	(StyleName::BarWidth, ValueVariant::Spatium(Spatium(0.16))),
+	(StyleName::DoubleBarWidth, ValueVariant::Spatium(Spatium(0.16))),
 
-	(StyleName::EndBarWidth, ValueVariant::Spatium(0.5)),
-	(StyleName::DoubleBarDistance, ValueVariant::Spatium(0.40 + 0.16)),
-	(StyleName::EndBarDistance, ValueVariant::Spatium(0.40 + (0.16 + 0.50) * 0.5)),
-	(StyleName::RepeatBarlineDotSeparation, ValueVariant::Spatium(0.40 + 0.46 * 0.5)),
+	(StyleName::EndBarWidth, ValueVariant::Spatium(Spatium(0.5))),
+	(StyleName::DoubleBarDistance, ValueVariant::Spatium(Spatium(0.40 + 0.16))),
+	(StyleName::EndBarDistance, ValueVariant::Spatium(Spatium(0.40 + (0.16 + 0.50) * 0.5))),
+	(StyleName::RepeatBarlineDotSeparation, ValueVariant::Spatium(Spatium(0.40 + 0.46 * 0.5))),
 	(StyleName::RepeatBarTips, ValueVariant::Bool(false)),
 	(StyleName::StartBarlineSingle, ValueVariant::Bool(false)),
 	(StyleName::StartBarlineMultiple, ValueVariant::Bool(true)),
-	(StyleName::BracketWidth, ValueVariant::Spatium(0.45)),
-	(StyleName::BracketDistance, ValueVariant::Spatium(0.1)),
-	(StyleName::AkkoladeWidth, ValueVariant::Spatium(1.6)),
-	(StyleName::AkkoladeBarDistance, ValueVariant::Spatium(0.4)),
+	(StyleName::BracketWidth, ValueVariant::Spatium(Spatium(0.45))),
+	(StyleName::BracketDistance, ValueVariant::Spatium(Spatium(0.1))),
+	(StyleName::AkkoladeWidth, ValueVariant::Spatium(Spatium(1.6))),
+	(StyleName::AkkoladeBarDistance, ValueVariant::Spatium(Spatium(0.4))),
 
 	(StyleName::DividerLeft, ValueVariant::Bool(false)),
 	(StyleName::DividerLeftSym, ValueVariant::String("systemDivider".to_string())),
@@ -1278,53 +1278,53 @@ pub(super) fn style_default_values() -> [(StyleName, ValueVariant); STYLE_COUNT]
 	(StyleName::DividerRightX, ValueVariant::Float(0.0)),
 	(StyleName::DividerRightY, ValueVariant::Float(0.0)),
 
-	(StyleName::ClefLeftMargin, ValueVariant::Spatium(0.8)),     // 0.64 (gould: <= 1)
-	(StyleName::KeysigLeftMargin, ValueVariant::Spatium(0.5)),
-	(StyleName::AmbitusMargin, ValueVariant::Spatium(0.5)),
+	(StyleName::ClefLeftMargin, ValueVariant::Spatium(Spatium(0.8))),     // 0.64 (gould: <= 1)
+	(StyleName::KeysigLeftMargin, ValueVariant::Spatium(Spatium(0.5))),
+	(StyleName::AmbitusMargin, ValueVariant::Spatium(Spatium(0.5))),
 
-	(StyleName::TimesigLeftMargin, ValueVariant::Spatium(0.5)),
+	(StyleName::TimesigLeftMargin, ValueVariant::Spatium(Spatium(0.5))),
 	(StyleName::TimesigScale, ValueVariant::Point(Point2F::new(1.0, 1.0))),
-	(StyleName::MidClefKeyRightMargin, ValueVariant::Spatium(1.0)),
-	(StyleName::ClefKeyRightMargin, ValueVariant::Spatium(0.8)),
-	(StyleName::ClefKeyDistance, ValueVariant::Spatium(1.0)),   // gould: 1 - 1.25
-	(StyleName::ClefTimesigDistance, ValueVariant::Spatium(1.0)),
-	(StyleName::KeyTimesigDistance, ValueVariant::Spatium(1.0)),    // gould: 1 - 1.5
-	(StyleName::KeyBarlineDistance, ValueVariant::Spatium(1.0)),
-	(StyleName::SystemHeaderDistance, ValueVariant::Spatium(2.5)),     // gould: 2.5
-	(StyleName::SystemHeaderTimeSigDistance, ValueVariant::Spatium(2.0)),  // gould: 2.0
+	(StyleName::MidClefKeyRightMargin, ValueVariant::Spatium(Spatium(1.0))),
+	(StyleName::ClefKeyRightMargin, ValueVariant::Spatium(Spatium(0.8))),
+	(StyleName::ClefKeyDistance, ValueVariant::Spatium(Spatium(1.0))),   // gould: 1 - 1.25
+	(StyleName::ClefTimesigDistance, ValueVariant::Spatium(Spatium(1.0))),
+	(StyleName::KeyTimesigDistance, ValueVariant::Spatium(Spatium(1.0))),    // gould: 1 - 1.5
+	(StyleName::KeyBarlineDistance, ValueVariant::Spatium(Spatium(1.0))),
+	(StyleName::SystemHeaderDistance, ValueVariant::Spatium(Spatium(2.5))),     // gould: 2.5
+	(StyleName::SystemHeaderTimeSigDistance, ValueVariant::Spatium(Spatium(2.0))),  // gould: 2.0
 
-	(StyleName::ClefBarlineDistance, ValueVariant::Spatium(0.5)),
-	(StyleName::TimesigBarlineDistance, ValueVariant::Spatium(0.5)),
-	(StyleName::StemWidth, ValueVariant::Spatium(0.13)),      // 0.09375
+	(StyleName::ClefBarlineDistance, ValueVariant::Spatium(Spatium(0.5))),
+	(StyleName::TimesigBarlineDistance, ValueVariant::Spatium(Spatium(0.5))),
+	(StyleName::StemWidth, ValueVariant::Spatium(Spatium(0.13))),      // 0.09375
 	(StyleName::ShortenStem, ValueVariant::Bool(true)),
-	(StyleName::ShortStemProgression, ValueVariant::Spatium(0.25)),
-	(StyleName::ShortestStem, ValueVariant::Spatium(2.25)),
-	(StyleName::BeginRepeatLeftMargin, ValueVariant::Spatium(1.0)),
-	(StyleName::MinNoteDistance, ValueVariant::Spatium(0.25)),      // 0.4
-	(StyleName::BarNoteDistance, ValueVariant::Spatium(1.0)),     // was 1.2
+	(StyleName::ShortStemProgression, ValueVariant::Spatium(Spatium(0.25))),
+	(StyleName::ShortestStem, ValueVariant::Spatium(Spatium(2.25))),
+	(StyleName::BeginRepeatLeftMargin, ValueVariant::Spatium(Spatium(1.0))),
+	(StyleName::MinNoteDistance, ValueVariant::Spatium(Spatium(0.25))),      // 0.4
+	(StyleName::BarNoteDistance, ValueVariant::Spatium(Spatium(1.0))),     // was 1.2
 
-	(StyleName::BarAccidentalDistance, ValueVariant::Spatium(0.3)),
-	(StyleName::MultiMeasureRestMargin, ValueVariant::Spatium(1.2)),
-	(StyleName::NoteBarDistance, ValueVariant::Spatium(1.0)),
+	(StyleName::BarAccidentalDistance, ValueVariant::Spatium(Spatium(0.3))),
+	(StyleName::MultiMeasureRestMargin, ValueVariant::Spatium(Spatium(1.2))),
+	(StyleName::NoteBarDistance, ValueVariant::Spatium(Spatium(1.0))),
 	(StyleName::MeasureSpacing, ValueVariant::Float(1.2)),
-	(StyleName::StaffLineWidth, ValueVariant::Spatium(0.08)),     // 0.09375
-	(StyleName::LedgerLineWidth, ValueVariant::Spatium(0.16)),     // 0.1875
-	(StyleName::LedgerLineLength, ValueVariant::Spatium(0.6)),     // notehead width + this value
-	(StyleName::AccidentalDistance, ValueVariant::Spatium(0.22)),
-	(StyleName::AccidentalNoteDistance, ValueVariant::Spatium(0.22)),
+	(StyleName::StaffLineWidth, ValueVariant::Spatium(Spatium(0.08))),     // 0.09375
+	(StyleName::LedgerLineWidth, ValueVariant::Spatium(Spatium(0.16))),     // 0.1875
+	(StyleName::LedgerLineLength, ValueVariant::Spatium(Spatium(0.6))),     // notehead width + this value
+	(StyleName::AccidentalDistance, ValueVariant::Spatium(Spatium(0.22))),
+	(StyleName::AccidentalNoteDistance, ValueVariant::Spatium(Spatium(0.22))),
 
-	(StyleName::BeamWidth, ValueVariant::Spatium(0.5)),     // was 0.48
+	(StyleName::BeamWidth, ValueVariant::Spatium(Spatium(0.5))),     // was 0.48
 	(StyleName::BeamDistance, ValueVariant::Float(0.5)),     // 0.25sp units
-	(StyleName::BeamMinLen, ValueVariant::Spatium(1.32)),     // 1.316178 exactly notehead widthen beams
+	(StyleName::BeamMinLen, ValueVariant::Spatium(Spatium(1.32))),     // 1.316178 exactly notehead widthen beams
 	(StyleName::BeamNoSlope, ValueVariant::Bool(false)),
 
 	(StyleName::DotMag, ValueVariant::Float(1.0)),
-	(StyleName::DotNoteDistance, ValueVariant::Spatium(0.35)),
-	(StyleName::DotRestDistance, ValueVariant::Spatium(0.25)),
-	(StyleName::DotDotDistance, ValueVariant::Spatium(0.5)),
-	(StyleName::PropertyDistanceHead, ValueVariant::Spatium(1.0)),
-	(StyleName::PropertyDistanceStem, ValueVariant::Spatium(1.8)),
-	(StyleName::PropertyDistance, ValueVariant::Spatium(1.0)),
+	(StyleName::DotNoteDistance, ValueVariant::Spatium(Spatium(0.35))),
+	(StyleName::DotRestDistance, ValueVariant::Spatium(Spatium(0.25))),
+	(StyleName::DotDotDistance, ValueVariant::Spatium(Spatium(0.5))),
+	(StyleName::PropertyDistanceHead, ValueVariant::Spatium(Spatium(1.0))),
+	(StyleName::PropertyDistanceStem, ValueVariant::Spatium(Spatium(1.8))),
+	(StyleName::PropertyDistance, ValueVariant::Spatium(Spatium(1.0))),
 
 	(StyleName::ArticulationMag, ValueVariant::Float(1.0)),
 	(StyleName::ArticulationPosAbove, ValueVariant::Point(Point2F::new(0.0, 0.0))),
@@ -1338,9 +1338,9 @@ pub(super) fn style_default_values() -> [(StyleName, ValueVariant); STYLE_COUNT]
 	(StyleName::HairpinPosBelow, ValueVariant::Point(Point2F::new(0.0, 3.5))),
 	(StyleName::HairpinLinePosAbove, ValueVariant::Point(Point2F::new(0.0, -3.0))),
 	(StyleName::HairpinLinePosBelow, ValueVariant::Point(Point2F::new(0.0, 4.0))),
-	(StyleName::HairpinHeight, ValueVariant::Spatium(1.2)),
-	(StyleName::HairpinContHeight, ValueVariant::Spatium(0.5)),
-	(StyleName::HairpinLineWidth, ValueVariant::Spatium(0.13)),
+	(StyleName::HairpinHeight, ValueVariant::Spatium(Spatium(1.2))),
+	(StyleName::HairpinContHeight, ValueVariant::Spatium(Spatium(0.5))),
+	(StyleName::HairpinLineWidth, ValueVariant::Spatium(Spatium(0.13))),
 	(StyleName::HairpinFontFace, ValueVariant::String("FreeSerif".to_string())),
 	(StyleName::HairpinFontSize, ValueVariant::Float(12.0)),
 	(StyleName::HairpinFontSpatiumDependent, ValueVariant::Bool(true)),
@@ -1364,10 +1364,10 @@ pub(super) fn style_default_values() -> [(StyleName, ValueVariant); STYLE_COUNT]
 	(StyleName::PedalPlacement, ValueVariant::UInt(Placement::Below as u32)),
 	(StyleName::PedalPosAbove, ValueVariant::Point(Point2F::new(0.0, -4.))),
 	(StyleName::PedalPosBelow, ValueVariant::Point(Point2F::new(0.0, 4.))),
-	(StyleName::PedalLineWidth, ValueVariant::Spatium(0.15)),
+	(StyleName::PedalLineWidth, ValueVariant::Spatium(Spatium(0.15))),
 	(StyleName::PedalLineStyle, ValueVariant::UInt(LineStyle::SolidLine as u32)),
 	(StyleName::PedalBeginTextOffset, ValueVariant::Point(Point2F::new(0.0, 0.15))),
-	(StyleName::PedalHookHeight, ValueVariant::Spatium(-1.2)),
+	(StyleName::PedalHookHeight, ValueVariant::Spatium(Spatium(-1.2))),
 	(StyleName::PedalFontFace, ValueVariant::String("FreeSerif".to_string())),
 	(StyleName::PedalFontSize, ValueVariant::Float(12.0)),
 	(StyleName::PedalFontSpatiumDependent, ValueVariant::Bool(true)),
@@ -1389,9 +1389,9 @@ pub(super) fn style_default_values() -> [(StyleName, ValueVariant); STYLE_COUNT]
 	(StyleName::VibratoPosAbove, ValueVariant::Point(Point2F::new(0.0, -1.))),
 	(StyleName::VibratoPosBelow, ValueVariant::Point(Point2F::new(0.0, 1.))),
 
-	(StyleName::HarmonyFretDist, ValueVariant::Spatium(1.0)),
-	(StyleName::MinHarmonyDistance, ValueVariant::Spatium(0.5)),
-	(StyleName::MaxHarmonyBarDistance, ValueVariant::Spatium(3.0)),
+	(StyleName::HarmonyFretDist, ValueVariant::Spatium(Spatium(1.0))),
+	(StyleName::MinHarmonyDistance, ValueVariant::Spatium(Spatium(0.5))),
+	(StyleName::MaxHarmonyBarDistance, ValueVariant::Spatium(Spatium(3.0))),
 
 	(StyleName::HarmonyPlacement, ValueVariant::UInt(Placement::Above as u32)),
 	(StyleName::RomanNumeralPlacement, ValueVariant::UInt(Placement::Below as u32)),
@@ -1464,16 +1464,16 @@ pub(super) fn style_default_values() -> [(StyleName, ValueVariant); STYLE_COUNT]
 	(StyleName::CapoPosition, ValueVariant::Int(0)),
 	(StyleName::FretNumMag, ValueVariant::Float(2.0)),
 	(StyleName::FretNumPos, ValueVariant::Int(0)),
-	(StyleName::FretY, ValueVariant::Spatium(2.0)),
-	(StyleName::FretMinDistance, ValueVariant::Spatium(0.5)),
+	(StyleName::FretY, ValueVariant::Spatium(Spatium(2.0))),
+	(StyleName::FretMinDistance, ValueVariant::Spatium(Spatium(0.5))),
 	(StyleName::FretMag, ValueVariant::Float(1.0)),
 	(StyleName::FretPlacement, ValueVariant::UInt(Placement::Above as u32)),
 	(StyleName::FretStrings, ValueVariant::Int(6)),
 	(StyleName::FretFrets, ValueVariant::Int(5)),
 	(StyleName::FretNut, ValueVariant::Bool(true)),
 	(StyleName::FretDotSize, ValueVariant::Float(1.0)),
-	(StyleName::FretStringSpacing, ValueVariant::Spatium(0.7)),
-	(StyleName::FretFretSpacing, ValueVariant::Spatium(0.8)),
+	(StyleName::FretStringSpacing, ValueVariant::Spatium(Spatium(0.7))),
+	(StyleName::FretFretSpacing, ValueVariant::Spatium(Spatium(0.8))),
 
 	(StyleName::ShowPageNumber, ValueVariant::Bool(true)),
 	(StyleName::ShowPageNumberOne, ValueVariant::Bool(false)),
@@ -1516,7 +1516,7 @@ pub(super) fn style_default_values() -> [(StyleName, ValueVariant); STYLE_COUNT]
 
 	(StyleName::CreateMultiMeasureRests, ValueVariant::Bool(false)),
 	(StyleName::MinEmptyMeasures, ValueVariant::Int(2)),
-	(StyleName::MinMMRestWidth, ValueVariant::Spatium(4.)),
+	(StyleName::MinMMRestWidth, ValueVariant::Spatium(Spatium(4.))),
 	(StyleName::HideEmptyStaves, ValueVariant::Bool(false)),
 	(StyleName::DontHideStavesInFirstSystem, ValueVariant::Bool(true)),
 	(StyleName::HideInstrumentNameIfOneInstrument, ValueVariant::Bool(true)),
@@ -1525,15 +1525,15 @@ pub(super) fn style_default_values() -> [(StyleName, ValueVariant); STYLE_COUNT]
 	(StyleName::StaccatoGateTime, ValueVariant::Int(50)),
 	(StyleName::SlurGateTime, ValueVariant::Float(100.)),
 
-	(StyleName::ArpeggioNoteDistance, ValueVariant::Spatium(0.5)),
-	(StyleName::ArpeggioLineWidth, ValueVariant::Spatium(0.18)),
-	(StyleName::ArpeggioHookLen, ValueVariant::Spatium(0.8)),
+	(StyleName::ArpeggioNoteDistance, ValueVariant::Spatium(Spatium(0.5))),
+	(StyleName::ArpeggioLineWidth, ValueVariant::Spatium(Spatium(0.18))),
+	(StyleName::ArpeggioHookLen, ValueVariant::Spatium(Spatium(0.8))),
 	(StyleName::ArpeggioHiddenInStdIfTab, ValueVariant::Bool(false)),
-	(StyleName::SlurEndWidth, ValueVariant::Spatium(0.07)),
-	(StyleName::SlurMidWidth, ValueVariant::Spatium(0.15)),
-	(StyleName::SlurDottedWidth, ValueVariant::Spatium(0.10)),
-	(StyleName::MinTieLength, ValueVariant::Spatium(1.0)),
-	(StyleName::SlurMinDistance, ValueVariant::Spatium(0.5)),
+	(StyleName::SlurEndWidth, ValueVariant::Spatium(Spatium(0.07))),
+	(StyleName::SlurMidWidth, ValueVariant::Spatium(Spatium(0.15))),
+	(StyleName::SlurDottedWidth, ValueVariant::Spatium(Spatium(0.10))),
+	(StyleName::MinTieLength, ValueVariant::Spatium(Spatium(1.0))),
+	(StyleName::SlurMinDistance, ValueVariant::Spatium(Spatium(0.5))),
 	(StyleName::SectionPause, ValueVariant::Float(3.0)),
 	(StyleName::MusicalSymbolFont, ValueVariant::String("Emmentaler".to_string())),
 	(StyleName::MusicalTextFont, ValueVariant::String("MScore Text".to_string())),
@@ -1559,8 +1559,8 @@ pub(super) fn style_default_values() -> [(StyleName, ValueVariant); STYLE_COUNT]
 	(StyleName::OddFooterR, ValueVariant::String("$p".to_string())),
 
 	(StyleName::VoltaPosAbove, ValueVariant::Point(Point2F::new(0.0, -3.0))),
-	(StyleName::VoltaHook, ValueVariant::Spatium(1.9)),
-	(StyleName::VoltaLineWidth, ValueVariant::Spatium(0.1)),
+	(StyleName::VoltaHook, ValueVariant::Spatium(Spatium(1.9))),
+	(StyleName::VoltaLineWidth, ValueVariant::Spatium(Spatium(0.1))),
 	(StyleName::VoltaLineStyle, ValueVariant::UInt(LineStyle::SolidLine as u32)),
 	(StyleName::VoltaFontFace, ValueVariant::String("FreeSerif".to_string())),
 	(StyleName::VoltaFontSize, ValueVariant::Float(11.0)),
@@ -1611,9 +1611,9 @@ pub(super) fn style_default_values() -> [(StyleName, ValueVariant); STYLE_COUNT]
 
 	(StyleName::OttavaPosAbove, ValueVariant::Point(Point2F::new(0.0, -3.0))),
 	(StyleName::OttavaPosBelow, ValueVariant::Point(Point2F::new(0.0, 3.0))),
-	(StyleName::OttavaHookAbove, ValueVariant::Spatium(1.9)),
-	(StyleName::OttavaHookBelow, ValueVariant::Spatium(-1.9)),
-	(StyleName::OttavaLineWidth, ValueVariant::Spatium(0.1)),
+	(StyleName::OttavaHookAbove, ValueVariant::Spatium(Spatium(1.9))),
+	(StyleName::OttavaHookBelow, ValueVariant::Spatium(Spatium(-1.9))),
+	(StyleName::OttavaLineWidth, ValueVariant::Spatium(Spatium(0.1))),
 	(StyleName::OttavaLineStyle, ValueVariant::UInt(LineStyle::DashLine as u32)),
 	(StyleName::OttavaNumbersOnly, ValueVariant::Bool(true)),
 	(StyleName::OttavaFontFace, ValueVariant::String("FreeSerif".to_string())),
@@ -1631,10 +1631,10 @@ pub(super) fn style_default_values() -> [(StyleName, ValueVariant); STYLE_COUNT]
 
 	(StyleName::TabClef, ValueVariant::UInt(ClefType::Tab as u32)),
 
-	(StyleName::TremoloWidth, ValueVariant::Spatium(1.2)),  // tremolo stroke width: notehead width
-	(StyleName::TremoloBoxHeight, ValueVariant::Spatium(0.65)),
-	(StyleName::TremoloStrokeWidth, ValueVariant::Spatium(0.5)),  // was 0.35
-	(StyleName::TremoloDistance, ValueVariant::Spatium(0.8)),
+	(StyleName::TremoloWidth, ValueVariant::Spatium(Spatium(1.2))),  // tremolo stroke width: notehead width
+	(StyleName::TremoloBoxHeight, ValueVariant::Spatium(Spatium(0.65))),
+	(StyleName::TremoloStrokeWidth, ValueVariant::Spatium(Spatium(0.5))),  // was 0.35
+	(StyleName::TremoloDistance, ValueVariant::Spatium(Spatium(0.8))),
 	(StyleName::TremoloPlacement, ValueVariant::UInt(TremoloPlacement::Default as u32)),
 
 	(StyleName::LinearStretch, ValueVariant::Float(1.5)),
@@ -1643,13 +1643,13 @@ pub(super) fn style_default_values() -> [(StyleName, ValueVariant); STYLE_COUNT]
 
 	(StyleName::TupletMaxSlope, ValueVariant::Float(0.5)),
 	(StyleName::TupletOufOfStaff, ValueVariant::Bool(true)),
-	(StyleName::TupletVHeadDistance, ValueVariant::Spatium(0.5)),
-	(StyleName::TupletVStemDistance, ValueVariant::Spatium(0.25)),
-	(StyleName::TupletStemLeftDistance, ValueVariant::Spatium(0.5)),
-	(StyleName::TupletStemRightDistance, ValueVariant::Spatium(0.5)),
-	(StyleName::TupletNoteLeftDistance, ValueVariant::Spatium(0.0)),
-	(StyleName::TupletNoteRightDistance, ValueVariant::Spatium(0.0)),
-	(StyleName::TupletBracketWidth, ValueVariant::Spatium(0.1)),
+	(StyleName::TupletVHeadDistance, ValueVariant::Spatium(Spatium(0.5))),
+	(StyleName::TupletVStemDistance, ValueVariant::Spatium(Spatium(0.25))),
+	(StyleName::TupletStemLeftDistance, ValueVariant::Spatium(Spatium(0.5))),
+	(StyleName::TupletStemRightDistance, ValueVariant::Spatium(Spatium(0.5))),
+	(StyleName::TupletNoteLeftDistance, ValueVariant::Spatium(Spatium(0.0))),
+	(StyleName::TupletNoteRightDistance, ValueVariant::Spatium(Spatium(0.0))),
+	(StyleName::TupletBracketWidth, ValueVariant::Spatium(Spatium(0.1))),
 	(StyleName::TupletDirection, ValueVariant::UInt(DirectionV::Auto as u32)),
 	(StyleName::TupletNumberType, ValueVariant::UInt(TupletNumberType::ShowNumber as u32)),
 	(StyleName::TupletBracketType, ValueVariant::UInt(TupletBracketType::AutoBracket as u32)),
@@ -1659,7 +1659,7 @@ pub(super) fn style_default_values() -> [(StyleName, ValueVariant); STYLE_COUNT]
 	(StyleName::TupletFontStyle, ValueVariant::UInt(FontStyle::ITALIC.into())),
 	(StyleName::TupletColor, ValueVariant::Color([0, 0, 0, 255])),
 	(StyleName::TupletAlign, ValueVariant::UInt((Align::CENTER).into())),
-	(StyleName::TupletBracketHookHeight, ValueVariant::Spatium(1.0)),
+	(StyleName::TupletBracketHookHeight, ValueVariant::Spatium(Spatium(1.0))),
 	(StyleName::TupletOffset, ValueVariant::Point(Point2F::default())),
 	(StyleName::TupletFrameType, ValueVariant::UInt(FrameType::NoFrame as u32)),
 	(StyleName::TupletFramePadding, ValueVariant::Float(0.2)),
@@ -1670,18 +1670,18 @@ pub(super) fn style_default_values() -> [(StyleName, ValueVariant); STYLE_COUNT]
 
 	(StyleName::BarreLineWidth, ValueVariant::Float(1.0)),
 	(StyleName::ScaleBarlines, ValueVariant::Bool(true)),
-	(StyleName::BarGraceDistance, ValueVariant::Spatium(0.6)),
-	(StyleName::MinVerticalDistance, ValueVariant::Spatium(0.5)),
+	(StyleName::BarGraceDistance, ValueVariant::Spatium(Spatium(0.6))),
+	(StyleName::MinVerticalDistance, ValueVariant::Spatium(Spatium(0.5))),
 	(StyleName::OrnamentStyle, ValueVariant::UInt(OrnamentStyle::Default as u32)),
 	(StyleName::Spatium, ValueVariant::Float(constants::SPATIUM20)),
 
-	(StyleName::AutoplaceHairpinDynamicsDistance, ValueVariant::Spatium(0.5)),
+	(StyleName::AutoplaceHairpinDynamicsDistance, ValueVariant::Spatium(Spatium(0.5))),
 
 	(StyleName::DynamicsPlacement, ValueVariant::UInt(Placement::Below as u32)),
 	(StyleName::DynamicsPosAbove, ValueVariant::Point(Point2F::new(0.0, -3.0))),
 	(StyleName::DynamicsPosBelow, ValueVariant::Point(Point2F::new(0.0, 4.0))),
 
-	(StyleName::DynamicsMinDistance, ValueVariant::Spatium(0.5)),
+	(StyleName::DynamicsMinDistance, ValueVariant::Spatium(Spatium(0.5))),
 	(StyleName::AutoplaceVerticalAlignRange, ValueVariant::UInt(VerticalAlignRange::System as u32)),
 
 	(StyleName::TextLinePlacement, ValueVariant::UInt(Placement::Above as u32)),
@@ -1694,7 +1694,7 @@ pub(super) fn style_default_values() -> [(StyleName, ValueVariant); STYLE_COUNT]
 	(StyleName::TextLineFrameFgColor, ValueVariant::Color([0, 0, 0, 255])),
 	(StyleName::TextLineFrameBgColor, ValueVariant::Color([255, 255, 255, 0])),
 
-	(StyleName::TremoloBarLineWidth, ValueVariant::Spatium(0.12)),
+	(StyleName::TremoloBarLineWidth, ValueVariant::Spatium(Spatium(0.12))),
 	(StyleName::JumpPosAbove, ValueVariant::Point(Point2F::new(0.0, -2.0))),
 	(StyleName::MarkerPosAbove, ValueVariant::Point(Point2F::new(0.0, -2.0))),
 
@@ -1911,7 +1911,7 @@ pub(super) fn style_default_values() -> [(StyleName, ValueVariant); STYLE_COUNT]
 	(StyleName::TempoPlacement, ValueVariant::UInt(Placement::Above as u32)),
 	(StyleName::TempoPosAbove, ValueVariant::Point(Point2F::new(0.0, -2.0))),
 	(StyleName::TempoPosBelow, ValueVariant::Point(Point2F::new(0.0, 3.0))),
-	(StyleName::TempoMinDistance, ValueVariant::Spatium(0.5)),
+	(StyleName::TempoMinDistance, ValueVariant::Spatium(Spatium(0.5))),
 	(StyleName::TempoFrameType, ValueVariant::UInt(FrameType::NoFrame as u32)),
 	(StyleName::TempoFramePadding, ValueVariant::Float(0.2)),
 	(StyleName::TempoFrameWidth, ValueVariant::Float(0.1)),
@@ -1973,7 +1973,7 @@ pub(super) fn style_default_values() -> [(StyleName, ValueVariant); STYLE_COUNT]
 	(StyleName::SystemTextPlacement, ValueVariant::UInt(Placement::Above as u32)),
 	(StyleName::SystemTextPosAbove, ValueVariant::Point(Point2F::new(0.0, -2.0))),
 	(StyleName::SystemTextPosBelow, ValueVariant::Point(Point2F::new(0.0, 3.5))),
-	(StyleName::SystemTextMinDistance, ValueVariant::Spatium(0.5)),
+	(StyleName::SystemTextMinDistance, ValueVariant::Spatium(Spatium(0.5))),
 	(StyleName::SystemTextFrameType, ValueVariant::UInt(FrameType::NoFrame as u32)),
 	(StyleName::SystemTextFramePadding, ValueVariant::Float(0.2)),
 	(StyleName::SystemTextFrameWidth, ValueVariant::Float(0.1)),
@@ -1991,7 +1991,7 @@ pub(super) fn style_default_values() -> [(StyleName, ValueVariant); STYLE_COUNT]
 	(StyleName::StaffTextPlacement, ValueVariant::UInt(Placement::Above as u32)),
 	(StyleName::StaffTextPosAbove, ValueVariant::Point(Point2F::new(0.0, -2.0))),
 	(StyleName::StaffTextPosBelow, ValueVariant::Point(Point2F::new(0.0, 3.5))),
-	(StyleName::StaffTextMinDistance, ValueVariant::Spatium(0.5)),
+	(StyleName::StaffTextMinDistance, ValueVariant::Spatium(Spatium(0.5))),
 	(StyleName::StaffTextFrameType, ValueVariant::UInt(FrameType::NoFrame as u32)),
 	(StyleName::StaffTextFramePadding, ValueVariant::Float(0.2)),
 	(StyleName::StaffTextFrameWidth, ValueVariant::Float(0.1)),
@@ -2014,7 +2014,7 @@ pub(super) fn style_default_values() -> [(StyleName, ValueVariant); STYLE_COUNT]
 	(StyleName::RehearsalMarkPlacement, ValueVariant::UInt(Placement::Above as u32)),
 	(StyleName::RehearsalMarkPosAbove, ValueVariant::Point(Point2F::new(0.0, -3.0))),
 	(StyleName::RehearsalMarkPosBelow, ValueVariant::Point(Point2F::new(0.0, 4.0))),
-	(StyleName::RehearsalMarkMinDistance, ValueVariant::Spatium(0.5)),
+	(StyleName::RehearsalMarkMinDistance, ValueVariant::Spatium(Spatium(0.5))),
 
 	(StyleName::RepeatLeftFontFace, ValueVariant::String("FreeSerif".to_string())),
 	(StyleName::RepeatLeftFontSize, ValueVariant::Float(20.0)),
@@ -2078,7 +2078,7 @@ pub(super) fn style_default_values() -> [(StyleName, ValueVariant); STYLE_COUNT]
 	(StyleName::GlissandoFrameRound, ValueVariant::Int(0)),
 	(StyleName::GlissandoFrameFgColor, ValueVariant::Color([0, 0, 0, 255])),
 	(StyleName::GlissandoFrameBgColor, ValueVariant::Color([255, 255, 255, 0])),
-	(StyleName::GlissandoLineWidth, ValueVariant::Spatium(0.15)),
+	(StyleName::GlissandoLineWidth, ValueVariant::Spatium(Spatium(0.15))),
 	(StyleName::GlissandoText, ValueVariant::String("gliss.".to_string())),
 
 	(StyleName::BendFontFace, ValueVariant::String("FreeSerif".to_string())),
@@ -2094,8 +2094,8 @@ pub(super) fn style_default_values() -> [(StyleName, ValueVariant); STYLE_COUNT]
 	(StyleName::BendFrameRound, ValueVariant::Int(0)),
 	(StyleName::BendFrameFgColor, ValueVariant::Color([0, 0, 0, 255])),
 	(StyleName::BendFrameBgColor, ValueVariant::Color([255, 255, 255, 0])),
-	(StyleName::BendLineWidth, ValueVariant::Spatium(0.15)),
-	(StyleName::BendArrowWidth, ValueVariant::Spatium(0.5)),
+	(StyleName::BendLineWidth, ValueVariant::Spatium(Spatium(0.15))),
+	(StyleName::BendArrowWidth, ValueVariant::Spatium(Spatium(0.5))),
 
 	(StyleName::HeaderFontFace, ValueVariant::String("FreeSerif".to_string())),
 	(StyleName::HeaderFontSize, ValueVariant::Float(8.0)),
@@ -2135,7 +2135,7 @@ pub(super) fn style_default_values() -> [(StyleName, ValueVariant); STYLE_COUNT]
 	(StyleName::InstrumentChangePlacement, ValueVariant::UInt(Placement::Above as u32)),
 	(StyleName::InstrumentChangePosAbove, ValueVariant::Point(Point2F::new(0.0, -2.0))),
 	(StyleName::InstrumentChangePosBelow, ValueVariant::Point(Point2F::new(0.0, 3.5))),
-	(StyleName::InstrumentChangeMinDistance, ValueVariant::Spatium(0.5)),
+	(StyleName::InstrumentChangeMinDistance, ValueVariant::Spatium(Spatium(0.5))),
 	(StyleName::InstrumentChangeFrameType, ValueVariant::UInt(FrameType::NoFrame as u32)),
 	(StyleName::InstrumentChangeFramePadding, ValueVariant::Float(0.2)),
 	(StyleName::InstrumentChangeFrameWidth, ValueVariant::Float(0.1)),
@@ -2153,7 +2153,7 @@ pub(super) fn style_default_values() -> [(StyleName, ValueVariant); STYLE_COUNT]
 	(StyleName::StickingPlacement, ValueVariant::UInt(Placement::Below as u32)),
 	(StyleName::StickingPosAbove, ValueVariant::Point(Point2F::new(0.0, -2.0))),
 	(StyleName::StickingPosBelow, ValueVariant::Point(Point2F::new(0.0, 2.0))),
-	(StyleName::StickingMinDistance, ValueVariant::Spatium(0.5)),
+	(StyleName::StickingMinDistance, ValueVariant::Spatium(Spatium(0.5))),
 	(StyleName::StickingFrameType, ValueVariant::UInt(FrameType::NoFrame as u32)),
 	(StyleName::StickingFramePadding, ValueVariant::Float(0.2)),
 	(StyleName::StickingFrameWidth, ValueVariant::Float(0.1)),
@@ -2269,11 +2269,11 @@ pub(super) fn style_default_values() -> [(StyleName, ValueVariant); STYLE_COUNT]
 	(StyleName::LetRingFontStyle, ValueVariant::UInt(FontStyle::NORMAL.into())),
 	(StyleName::LetRingColor, ValueVariant::Color([0, 0, 0, 255])),
 	(StyleName::LetRingTextAlign, ValueVariant::UInt((Align::LEFT | Align::VCENTER).into())),
-	(StyleName::LetRingHookHeight, ValueVariant::Spatium(0.6)),
+	(StyleName::LetRingHookHeight, ValueVariant::Spatium(Spatium(0.6))),
 	(StyleName::LetRingPlacement, ValueVariant::UInt(Placement::Below as u32)),
 	(StyleName::LetRingPosAbove, ValueVariant::Point(Point2F::new(0.0, 0.0))),
 	(StyleName::LetRingPosBelow, ValueVariant::Point(Point2F::new(0.0, 0.0))),
-	(StyleName::LetRingLineWidth, ValueVariant::Spatium(0.15)),
+	(StyleName::LetRingLineWidth, ValueVariant::Spatium(Spatium(0.15))),
 	(StyleName::LetRingLineStyle, ValueVariant::UInt(LineStyle::DashLine as u32)),
 	(StyleName::LetRingBeginTextOffset, ValueVariant::Point(Point2F::new(0.0, 0.15))),
 	(StyleName::LetRingText, ValueVariant::String("let ring".to_string())),
@@ -2291,11 +2291,11 @@ pub(super) fn style_default_values() -> [(StyleName, ValueVariant); STYLE_COUNT]
 	(StyleName::PalmMuteFontStyle, ValueVariant::UInt(FontStyle::NORMAL.into())),
 	(StyleName::PalmMuteColor, ValueVariant::Color([0, 0, 0, 255])),
 	(StyleName::PalmMuteTextAlign, ValueVariant::UInt((Align::LEFT | Align::VCENTER).into())),
-	(StyleName::PalmMuteHookHeight, ValueVariant::Spatium(0.6)),
+	(StyleName::PalmMuteHookHeight, ValueVariant::Spatium(Spatium(0.6))),
 	(StyleName::PalmMutePlacement, ValueVariant::UInt(Placement::Below as u32)),
 	(StyleName::PalmMutePosAbove, ValueVariant::Point(Point2F::new(0.0, -4.0))),
 	(StyleName::PalmMutePosBelow, ValueVariant::Point(Point2F::new(0.0, 4.0))),
-	(StyleName::PalmMuteLineWidth, ValueVariant::Spatium(0.15)),
+	(StyleName::PalmMuteLineWidth, ValueVariant::Spatium(Spatium(0.15))),
 	(StyleName::PalmMuteLineStyle, ValueVariant::UInt(LineStyle::DashLine as u32)),
 	(StyleName::PalmMuteBeginTextOffset, ValueVariant::Point(Point2F::new(0.0, 0.15))),
 	(StyleName::PalmMuteText, ValueVariant::String("P.M.".to_string())),
@@ -2309,24 +2309,24 @@ pub(super) fn style_default_values() -> [(StyleName, ValueVariant); STYLE_COUNT]
 
 	(StyleName::FermataPosAbove, ValueVariant::Point(Point2F::new(0.0, -1.0))),
 	(StyleName::FermataPosBelow, ValueVariant::Point(Point2F::new(0.0, 1.0))),
-	(StyleName::FermataMinDistance, ValueVariant::Spatium(0.4)),
+	(StyleName::FermataMinDistance, ValueVariant::Spatium(Spatium(0.4))),
 
 	(StyleName::FingeringPlacement, ValueVariant::UInt(Placement::Above as u32)),
 
-	(StyleName::ArticulationMinDistance, ValueVariant::Spatium(0.5)),
-	(StyleName::FingeringMinDistance, ValueVariant::Spatium(0.5)),
-	(StyleName::HairpinMinDistance, ValueVariant::Spatium(0.7)),
-	(StyleName::LetRingMinDistance, ValueVariant::Spatium(0.7)),
-	(StyleName::OttavaMinDistance, ValueVariant::Spatium(0.7)),
-	(StyleName::PalmMuteMinDistance, ValueVariant::Spatium(0.7)),
-	(StyleName::PedalMinDistance, ValueVariant::Spatium(0.7)),
-	(StyleName::RepeatMinDistance, ValueVariant::Spatium(0.5)),
-	(StyleName::TextLineMinDistance, ValueVariant::Spatium(0.7)),
-	(StyleName::TrillMinDistance, ValueVariant::Spatium(1.0)),
-	(StyleName::VibratoMinDistance, ValueVariant::Spatium(1.0)),
-	(StyleName::VoltaMinDistance, ValueVariant::Spatium(1.0)),
-	(StyleName::FiguredBassMinDistance, ValueVariant::Spatium(0.5)),
-	(StyleName::TupletMinDistance, ValueVariant::Spatium(0.5)),
+	(StyleName::ArticulationMinDistance, ValueVariant::Spatium(Spatium(0.5))),
+	(StyleName::FingeringMinDistance, ValueVariant::Spatium(Spatium(0.5))),
+	(StyleName::HairpinMinDistance, ValueVariant::Spatium(Spatium(0.7))),
+	(StyleName::LetRingMinDistance, ValueVariant::Spatium(Spatium(0.7))),
+	(StyleName::OttavaMinDistance, ValueVariant::Spatium(Spatium(0.7))),
+	(StyleName::PalmMuteMinDistance, ValueVariant::Spatium(Spatium(0.7))),
+	(StyleName::PedalMinDistance, ValueVariant::Spatium(Spatium(0.7))),
+	(StyleName::RepeatMinDistance, ValueVariant::Spatium(Spatium(0.5))),
+	(StyleName::TextLineMinDistance, ValueVariant::Spatium(Spatium(0.7))),
+	(StyleName::TrillMinDistance, ValueVariant::Spatium(Spatium(1.0))),
+	(StyleName::VibratoMinDistance, ValueVariant::Spatium(Spatium(1.0))),
+	(StyleName::VoltaMinDistance, ValueVariant::Spatium(Spatium(1.0))),
+	(StyleName::FiguredBassMinDistance, ValueVariant::Spatium(Spatium(0.5))),
+	(StyleName::TupletMinDistance, ValueVariant::Spatium(Spatium(0.5))),
 
 	(StyleName::AutoplaceEnabled, ValueVariant::Bool(true)),
 ]}

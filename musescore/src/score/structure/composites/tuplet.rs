@@ -46,7 +46,7 @@ impl Tuplet {
 		direction: DirectionV::Down,
 		number_type: TupletNumberType::ShowNumber,
 		bracket_type: TupletBracketType::AutoBracket,
-		bracket_width: 0.0,
+		bracket_width: Spatium(0.0),
 		has_bracket: false,
 		ratio: Default::default(),
 		base_len: Default::default(),

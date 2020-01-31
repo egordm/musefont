@@ -53,7 +53,7 @@ impl Accidental {
 	fn set_custom_property(&mut self, p: PropertyId, v: ValueVariant) -> bool {
 		match p {
 			PropertyId::AccidentalType => v.with_enum(|v| self.set_accidental_type(v)),
-			PropertyId::Small => v.with_value(|v| self.set_small(v)),
+			PropertyId::Small => v.with_value(|v: bool| self.set_small(v)),
 			PropertyId::AccidentalBracket => v.with_enum(|v| self.set_bracket(v)),
 			PropertyId::Role => v.with_enum(|v| self.set_role(v)),
 			_ => false,

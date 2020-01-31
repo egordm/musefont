@@ -9,6 +9,7 @@ pub mod key;
 pub mod ordered_collection;
 pub mod pitchspelling;
 pub mod segment_map;
+pub mod spatium;
 pub mod staff_type;
 
 #[doc(inline)]
@@ -33,5 +34,7 @@ pub use ordered_collection::*;
 pub use pitchspelling::*;
 #[doc(inline)]
 pub use segment_map::*;
+#[doc(inline)]
+pub use spatium::*;
 #[doc(inline)]
 pub use staff_type::*;

@@ -72,11 +72,11 @@ impl Default for StaffType {
 	fn default() -> Self { Self {
 		group: StaffGroup::Standard,
 		user_mag: 1.0,
-		voffset: 0.0,
+		voffset: Spatium(0.0),
 		small: false,
 		lines: 5,
 		step_offset: 0,
-		line_distance: 1.0,
+		line_distance: Spatium(1.0),
 		show_bar_lines: true,
 		show_ledger_lines: true,
 		stemless: false,

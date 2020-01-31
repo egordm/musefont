@@ -26,7 +26,7 @@ pub struct ElementData {
 	/// offset from reference position, set by autoplace or user
 	offset: Point2F,
 	/// autoplace min distance
-	min_dist: f32,
+	min_dist: Spatium,
 	/// staffIdx * VOICES + voice
 	track: Track,
 	flags: ElementFlags,
@@ -39,7 +39,7 @@ impl ElementData {
 		scale: 1.0,
 		pos: Default::default(),
 		offset: Default::default(),
-		min_dist: 0.0,
+		min_dist: Spatium(0.0),
 		track: 0,
 		flags: ElementFlags::NOTHING
 	}}
@@ -166,7 +166,7 @@ pub trait Element: ScoreElement {
 			PropertyId::Visible => v.with_value(|v| self.set_visible(v)),
 			PropertyId::Selected => v.with_value(|v| self.set_selected(v)),
 			PropertyId::Offset => v.with_value(|v| self.set_offset(v)),
-			PropertyId::MinDistance => v.with_spatium(|v| self.el_data_mut().min_dist = v),
+			PropertyId::MinDistance => v.with_value(|v| self.el_data_mut().min_dist = v),
 			PropertyId::Placement => v.with_enum(|v| self.set_placement(v)),
 			PropertyId::Autoplace => v.with_value(|v| self.set_autoplace(v)),
 			PropertyId::SystemFlag => v.with_value(|v| self.set_system_flag(v)),
