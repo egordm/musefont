@@ -1,8 +1,6 @@
 use super::*;
 use crate::score::Spatium;
 
-pub type Color = [u8; 4];
-
 #[derive(Clone, Debug)]
 pub struct Style {
 	values: Vec<ValueVariant>,

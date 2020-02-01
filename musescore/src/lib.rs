@@ -4,6 +4,7 @@ extern crate num_traits;
 #[macro_use]
 extern crate bitflags;
 
+pub mod drawing;
 pub mod font;
 pub mod score;
 pub mod structs;

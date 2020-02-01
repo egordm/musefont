@@ -1,4 +1,5 @@
 use crate::score::*;
+use crate::Color;
 
 #[derive(Debug, Clone)]
 pub struct LineSpanner {

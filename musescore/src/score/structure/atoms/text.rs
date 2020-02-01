@@ -1,5 +1,5 @@
 use crate::score::*;
-use crate::{RectF, Point2F};
+use crate::{RectF, Point2F, Color};
 
 #[derive(Debug, Clone)]
 pub struct Text {

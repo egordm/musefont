@@ -4,6 +4,8 @@ pub type Size2F = euclid::default::Size2D<f32>;
 pub type Size2U = euclid::default::Size2D<u32>;
 pub type RectF = euclid::default::Rect<f32>;
 
+pub type Color = [u8; 4];
+
 pub const VEC_ZERO: Vec2F = Vec2F::new(0., 0.);
 pub const POINT_ZERO: Point2F = Point2F::new(0., 0.);
 pub const SIZE_ONE: Size2F = Size2F::new(1., 1.);

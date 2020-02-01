@@ -1,4 +1,5 @@
 use crate::score::*;
+use crate::Color;
 
 /// Global staff data not directly related to drawing.
 #[derive(Debug, Clone)]

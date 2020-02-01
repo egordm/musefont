@@ -1,5 +1,5 @@
 use crate::*;
-use crate::score::Color;
+use crate::Color;
 
 #[derive(Clone, Debug)]
 pub struct Polyline {
