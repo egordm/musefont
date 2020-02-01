@@ -1,4 +1,6 @@
 use super::*;
+use crate::*;
+use std::convert::TryInto;
 
 #[derive(Clone, Debug)]
 pub struct Sym {
@@ -35,6 +37,10 @@ impl Sym {
 	pub fn is_valid(&self) -> bool { self.code != -1 }
 
 	pub const fn code(&self) -> i32 { self.code }
+
+	pub fn get_char(&self) -> Option<char> {
+		std::char::from_u32(self.code.try_into().ok()?)
+	}
 
 	pub const fn index(&self) -> u32 { self.index }
 

@@ -31,6 +31,8 @@ impl ScoreFont {
 	pub fn family(&self) -> &String { &self.family }
 	pub fn sym(&self, id: impl Into<SymId>) -> &Sym { &self.symbols[id.into() as usize] }
 
+	pub fn font(&self) -> &Font { &self.font }
+
 	pub fn bbox(&self, id: impl Into<SymId>, mag: &Size2F) -> RectF {
 		let bb = self.sym(id).bbox();
 		RectF::new(bb.origin, Size2F::new(bb.size.width * mag.width, bb.size.height * mag.height))

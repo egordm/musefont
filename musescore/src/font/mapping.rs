@@ -2,6 +2,7 @@ use crate::*;
 use super::*;
 use std::{collections::HashMap, path::Path};
 use num_traits::FromPrimitive;
+use crate::font::load::FontLoadingError;
 
 pub type SymLut = HashMap<&'static str, SymName>;
 

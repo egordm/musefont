@@ -1,6 +1,6 @@
 pub use crate::*;
 pub use super::*;
-use font_kit::loaders::freetype::Font;
+use font_kit::loaders::default::Font;
 use std::{path::Path, fs::File};
 
 macro_rules! impl_display {
