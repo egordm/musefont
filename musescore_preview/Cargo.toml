@@ -6,5 +6,12 @@ edition = "2018"
 
 [dependencies]
 musescore = { path = "../musescore" }
-ggez = "0.5"
-cgmath =  { version = "0.17", features = ["mint"]}
+pathfinder_canvas = { git = "https://github.com/servo/pathfinder.git", features = ["pf-text"] }
+pathfinder_color = { git = "https://github.com/servo/pathfinder.git" }
+pathfinder_content = { git = "https://github.com/servo/pathfinder.git" }
+pathfinder_geometry = { git = "https://github.com/servo/pathfinder.git" }
+pathfinder_gl = { git = "https://github.com/servo/pathfinder.git" }
+pathfinder_gpu = { git = "https://github.com/servo/pathfinder.git" }
+pathfinder_renderer = { git = "https://github.com/servo/pathfinder.git" }
+gl = "0.6"
+glutin = "0.21"

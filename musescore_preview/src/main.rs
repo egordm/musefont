@@ -1,96 +1,103 @@
-use cgmath;
+use glutin::{ContextBuilder, EventsLoop, WindowBuilder, GlRequest, GlProfile, dpi::PhysicalSize, Event, WindowEvent, KeyboardInput, ControlFlow, VirtualKeyCode};
+use pathfinder_geometry::vector::{Vector2I, Vector2F};
+use pathfinder_renderer::gpu::renderer::Renderer;
+use pathfinder_gl::{GLDevice, GLVersion};
+use pathfinder_gpu::resources::{FilesystemResourceLoader, ResourceLoader};
+use pathfinder_renderer::gpu::options::{DestFramebuffer, RendererOptions};
+use pathfinder_color::ColorF;
+use pathfinder_canvas::{CanvasRenderingContext2D, CanvasFontContext, Path2D, LineJoin};
+use pathfinder_content::stroke::{LineCap};
+use pathfinder_renderer::concurrent::scene_proxy::SceneProxy;
+use pathfinder_renderer::concurrent::rayon::RayonExecutor;
+use pathfinder_renderer::options::BuildOptions;
 
-use ggez;
-use ggez::event;
-use ggez::graphics;
-use ggez::graphics::{Color, DrawMode, DrawParam, LineCap, LineJoin};
-use ggez::nalgebra::Point2;
-use ggez::timer;
-use ggez::{Context, GameResult};
-use std::env;
-use std::path;
+use musescore::*;
+use std::path::{PathBuf};
+use musescore::font::{ScoreFont, FontMapping, SymName};
 
-struct MainState {
-	image2_nearest: graphics::Image,
-	meshes: Vec<graphics::Mesh>,
-}
+pub fn main() {
+	let mut event_loop = EventsLoop::new();
+	let hidpi_factor = event_loop.get_primary_monitor().get_hidpi_factor();
+	let window_size = Vector2I::new(640, 480);
+	let physical_window_size = PhysicalSize::new(window_size.x() as f64, window_size.y() as f64);
+	let logical_window_size = physical_window_size.to_logical(hidpi_factor);
 
-impl MainState {
-	/// Load images and create meshes.
-	fn new(ctx: &mut Context) -> GameResult<MainState> {
-		let mut image2_nearest = graphics::Image::new(ctx, "/shot.png")?;
-		image2_nearest.set_filter(graphics::FilterMode::Nearest);
+	// Open a window.
+	let window_builder = WindowBuilder::new().with_title("Musescore Preview")
+		.with_dimensions(logical_window_size);
 
-		let meshes = vec![build_mesh(ctx)?];
-		let s = MainState {
-			image2_nearest,
-			meshes,
-		};
+	// Create an OpenGL 3.x context for Pathfinder to use.
+	let gl_context = ContextBuilder::new().with_gl(GlRequest::Latest)
+		.with_gl_profile(GlProfile::Core)
+		.build_windowed(window_builder, &event_loop)
+		.unwrap();
 
-		Ok(s)
-	}
-}
+	// Load OpenGL, and make the context current.
+	let gl_context = unsafe { gl_context.make_current().unwrap() };
+	gl::load_with(|name| gl_context.get_proc_address(name) as *const _);
 
-fn build_mesh(ctx: &mut Context) -> GameResult<graphics::Mesh> {
-	let mb = &mut graphics::MeshBuilder::new();
-
-	mb.polyline(
-		DrawMode::Stroke(graphics::StrokeOptions::default()
-			.with_line_cap(LineCap::Round)
-			.with_line_join(LineJoin::Round)
-			.with_line_width(4.)),
-		&[
-			Point2::new(200.0, 200.0),
-			Point2::new(400.0, 200.0),
-		],
-		Color::new(1.0, 0.0, 0.0, 1.0),
-	)?;
-
-	mb.build(ctx)
-}
-
-impl event::EventHandler for MainState {
-	fn update(&mut self, ctx: &mut Context) -> GameResult {
-		Ok(())
-	}
-
-	fn draw(&mut self, ctx: &mut Context) -> GameResult {
-		graphics::clear(ctx, [0.1, 0.2, 0.3, 1.0].into());
-
-		// Draw an image with some options, and different filter modes.
-		graphics::draw(
-			ctx,
-			&self.image2_nearest,
-			graphics::DrawParam::new()
-				.dest(cgmath::Point2::new(400.0, 400.0))
-				.scale(cgmath::Vector2::new(10.0, 10.0)),
-		)?;
-
-		// Draw some pre-made meshes
-		for m in &self.meshes {
-			graphics::draw(ctx, m, DrawParam::new())?;
-		}
-
-		// Finished drawing, show it all on the screen!
-		graphics::present(ctx)?;
-		Ok(())
-	}
-}
-
-pub fn main() -> GameResult {
-	let resource_dir = if let Ok(manifest_dir) = env::var("CARGO_MANIFEST_DIR") {
-		let mut path = path::PathBuf::from(manifest_dir);
-		path.push("resources");
-		path
-	} else {
-		path::PathBuf::from("./resources")
+	let resource_loader = FilesystemResourceLoader {
+		directory: PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("resources")
 	};
 
-	let cb = ggez::ContextBuilder::new("drawing", "ggez").add_resource_path(resource_dir);
+	// Create a Pathfinder renderer.
+	let mut renderer = Renderer::new(
+		GLDevice::new(GLVersion::GL3, 0),
+		&resource_loader,
+		DestFramebuffer::full_window(window_size),
+		RendererOptions { background_color: Some(ColorF::white()) }
+	);
 
-	let (ctx, events_loop) = &mut cb.build()?;
+	// Make a canvas. We're going to draw a house.
+	let mut canvas = CanvasRenderingContext2D::new(
+		CanvasFontContext::from_system_source(), window_size.to_f32());
 
-	println!("{}", graphics::renderer_info(ctx)?);
-	let state = &mut MainState::new(ctx).unwrap();
-	event::run(ctx, events_loop, state)
+	canvas.set_line_width(3.0);
+	canvas.set_line_cap(LineCap::Round);
+	canvas.set_line_join(LineJoin::Round);
+
+	let config = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../assets/fonts/smufl");
+	let path = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../assets/fonts/gootville");
+	let filename = "gootville.otf";
+	let config = FontMapping::load(&config).unwrap();
+	let font = font::load(&path, filename, &config).expect("Font must load!");
+
+	canvas.set_font(font.font().clone());
+	let sym = font.sym(SymName::NoteheadBlack);
+	let sym_char = sym.get_char().expect("Should be a valid character");
+	canvas.set_font_size(64.);
+	canvas.fill_text(&sym_char.to_string(), Vector2F::new(50.0, 50.0));
+	//sym.code()
+
+	let mut path = Path2D::new();
+	path.move_to(Vector2F::new(50.0, 140.0));
+	path.line_to(Vector2F::new(150.0, 60.0));
+	path.line_to(Vector2F::new(250.0, 140.0));
+	path.close_path();
+	canvas.stroke_path(path);
+
+	let mut path = Path2D::new();
+	path.move_to(Vector2F::new(50.0, 240.0));
+	path.quadratic_curve_to(Vector2F::new(100., 290.), Vector2F::new(150.0, 240.0));
+	canvas.stroke_path(path);
+
+	// Render the canvas to screen.
+	let scene = SceneProxy::from_scene(canvas.into_scene(), RayonExecutor);
+	scene.build_and_render(&mut renderer, BuildOptions::default());
+	gl_context.swap_buffers().unwrap();
+
+	// Wait for a keypress.
+	event_loop.run_forever(|event| {
+		match event {
+			Event::WindowEvent { event: WindowEvent::CloseRequested, .. } |
+			Event::WindowEvent {
+				event: WindowEvent::KeyboardInput {
+					input: KeyboardInput { virtual_keycode: Some(VirtualKeyCode::Escape), .. },
+					..
+				},
+				..
+			} => ControlFlow::Break,
+			_ => ControlFlow::Continue,
+		}
+	})
 }
