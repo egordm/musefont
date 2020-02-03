@@ -1,7 +1,7 @@
 use crate::score::*;
 use crate::Color;
 
-/// Global staff data not directly related to drawing.
+/// Global staff data not directly related to renderer.
 #[derive(Debug, Clone)]
 pub struct Staff {
 	element: ElementData,

@@ -74,7 +74,7 @@ pub struct Note {
 	/// list of note dots (some can be null, read only)
 	dots: Vec<El<NoteDot>>,
 
-	cached_notehead_sym: SymName,
+	pub(crate) cached_notehead_sym: SymName,
 }
 
 impl Note {
