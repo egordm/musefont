@@ -45,7 +45,14 @@ impl<T> El<T> {
 	pub fn downgrade(&self) -> ElWeak<T> { ElWeak(Rc::downgrade(&self.0)) }
 
 	pub fn borrow_el(&self) -> Ref<T> { RefCell::borrow(&self.0) }
+	pub fn with<F: FnMut(Ref<T>) -> R, R>(&self, mut f: F) -> R {
+		f(self.borrow_el())
+	}
+
 	pub fn borrow_mut_el(&self) -> RefMut<T> { RefCell::borrow_mut(&self.0) }
+	pub fn with_mut<F: FnMut(RefMut<T>) -> R, R>(&self, mut f: F) -> R {
+		f(self.borrow_mut_el())
+	}
 }
 
 impl<T> Into<ElWeak<T>> for El<T> {

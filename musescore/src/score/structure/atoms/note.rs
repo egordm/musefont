@@ -264,7 +264,7 @@ impl Note {
 			dir = if chord.as_trait().up() { DirectionV::Up } else { DirectionV::Down };
 			head_type = chord.as_trait().duration_type().head_type()
 		}
-		if head_type != NoteheadType::Auto { head_type = self.head_type }
+		if self.head_type != NoteheadType::Auto { head_type = self.head_type }
 
 		if self.head_group() == NoteheadGroup::Custom {
 			if let (Some(_chord), Some(_staff)) = (self.chord(), self.staff()) {

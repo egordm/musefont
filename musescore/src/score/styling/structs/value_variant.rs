@@ -112,3 +112,15 @@ impl TryInto<u16> for ValueVariant {
 impl From<u16> for ValueVariant {
 	fn from(v: u16) -> Self { ValueVariant::UInt(v as u32) }
 }
+
+#[cfg(test)]
+mod tests {
+	use super::*;
+
+	#[test]
+	fn test_type() {
+		assert_eq!(ValueVariant::Float(16.).flt(), 16.);
+		assert_eq!(ValueVariant::Bool(false).bool(), false);
+		assert_eq!(ValueVariant::Spatium(Spatium(17.)).spt(), Spatium(17.));
+	}
+}

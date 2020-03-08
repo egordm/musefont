@@ -33,6 +33,10 @@ impl Score {
 
 	pub fn staves(&self) -> Ref<StaffList> { Ref::map(self.inner(), |r| &r.staves) }
 	pub fn staff(&self, i: StaffId) -> Option<El<Staff>> { self.inner().staves.get(i as usize).cloned() }
+
+	pub fn add(&mut self, _e: ElementRef) {
+		unimplemented!()
+	}
 }
 
 impl std::fmt::Debug for Score {

@@ -16,7 +16,7 @@ impl Style {
 	}
 
 	pub fn precompute_values(&mut self) {
-		let spatium = self.value(StyleName::Spatium).clone().spt();
+		let spatium = self.value(StyleName::Spatium).clone().flt();
 		for (id, v) in self.values.iter().enumerate() {
 			if let ValueVariant::Spatium(v) = v {
 				self.precomputed_values[id] = v.points(spatium.into());
@@ -64,3 +64,15 @@ impl Style {
 	// TODO: loading
 }
 
+#[cfg(test)]
+mod tests {
+	use super::*;
+
+	#[test]
+	fn test_type() {
+		let style = Style::new();
+
+		dbg!(style.value(StyleName::Spatium));
+		assert_eq!(style.value(StyleName::Spatium).clone().flt(), 25.);
+	}
+}
