@@ -23,6 +23,8 @@ impl LineF {
 	pub fn y1(&self) -> f32 { self.p1.y }
 	pub fn x2(&self) -> f32 { self.p2.x }
 	pub fn y2(&self) -> f32 { self.p2.y }
+
+	pub fn rect(&self) -> RectF { RectF::from_ps(self.p1, self.p2).norm() }
 }
 
 impl Add<Vec2F> for LineF {

@@ -4,6 +4,7 @@ use crate::score::*;
 pub type Track = u16;
 pub type Voice = u16;
 pub type StaffId = u16;
+pub type ElementStyle = (PropertyId, StyleName);
 
 pub fn new_element<T: Element + Clone>(e: T) -> El<T>
 	where ElementRef: From<El<T>>
@@ -134,6 +135,13 @@ pub trait Element: ScoreElement {
 	}
 
 	// Properties
+	fn load_properties(&mut self, es: &[ElementStyle]) {
+		for (property, style_name) in es {
+			//self.set_property(property, )
+			unimplemented!()
+		}
+	}
+
 	fn get_property(&self, p: PropertyId) -> ValueVariant {
 		self.get_element_property(p)
 	}

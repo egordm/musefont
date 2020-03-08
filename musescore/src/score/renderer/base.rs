@@ -8,9 +8,12 @@ pub trait Renderer<T: Element> {
 }
 
 pub struct RendererState {
-
+	debug: bool,
 }
 
 impl RendererState {
-	pub fn new() -> Self { Self {} }
+	pub fn new() -> Self { Self { debug: false } }
+
+	pub fn set_debug(&mut self, v: bool) { self.debug = v }
+	pub fn debug(&self) -> bool { self.debug }
 }

@@ -6,6 +6,8 @@ use pathfinder_canvas as canvas;
 use pathfinder_geometry::vector::Vector2F;
 use pathfinder_geometry::transform2d::Transform2F;
 use musescore::font::ScoreFont;
+use pathfinder_canvas::FillStyle;
+use std::f32::consts::PI;
 
 pub struct PfPainter<'a> {
 	canvas: &'a mut Canvas,
@@ -50,7 +52,7 @@ impl<'a> Painter for PfPainter<'a> {
 			},
 			Instruction::Symbol(symbol) => {
 				self.canvas.set_fill_style(canvas::FillStyle::Color(convert_color(self.color.clone())));
-				self.canvas.set_font_size(symbol.scale().width);
+				self.canvas.set_font_size(symbol.scale().width); // TODO: this should not vary?
 
 				let scale = Vector2F::new(1., symbol.scale().height / symbol.scale().width);
 				let scale_inv = Vector2F::new(1. / scale.x(), 1. / scale.y());
@@ -62,6 +64,22 @@ impl<'a> Painter for PfPainter<'a> {
 				self.canvas.fill_text(&symbol.sym_char().to_string(), pos);
 				self.canvas.set_current_transform(&cur_transform);
 
+			}
+			Instruction::Rect(rect, stroke_width) => {
+				self.canvas.set_stroke_style(canvas::FillStyle::Color(convert_color(self.color.clone())));
+				let rect = pathfinder_geometry::rect::RectF::new(
+					pathfinder_geometry::vector::Vector2F::new(rect.origin.x, rect.origin.y),
+					pathfinder_geometry::vector::Vector2F::new(rect.size.width, rect.size.height),
+				);
+				self.canvas.set_line_width(stroke_width);
+				self.canvas.stroke_rect(rect);
+			},
+			Instruction::Point(pos, size) => {
+				self.canvas.set_fill_style(canvas::FillStyle::Color(convert_color(self.color.clone())));
+				let mut point = canvas::Path2D::new();
+				let pos = pathfinder_geometry::vector::Vector2F::new(pos.x, pos.y);
+				point.ellipse(pos, Vector2F::new(size, size), 0., 0., PI * 2.);
+				self.canvas.fill_path(point)
 			}
 		}
 	}

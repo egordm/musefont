@@ -5,6 +5,10 @@ pub type Size2U = euclid::default::Size2D<u32>;
 pub type RectF = euclid::default::Rect<f32>;
 
 pub type Color = [u8; 4];
+pub const COLOR_BLACK: Color = [0x00, 0x00, 0x00, 0xFF];
+pub const COLOR_RED: Color = [0xFF, 0x00, 0x00, 0xFF];
+pub const COLOR_GREEN: Color = [0x00, 0xFF, 0x00, 0xFF];
+pub const COLOR_BLUE: Color = [0x00, 0x00, 0xFF, 0xFF];
 
 pub const VEC_ZERO: Vec2F = Vec2F::new(0., 0.);
 pub const POINT_ZERO: Point2F = Point2F::new(0., 0.);

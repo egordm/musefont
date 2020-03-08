@@ -2,6 +2,7 @@ pub use crate::*;
 pub use super::*;
 use font_kit::loaders::default::Font;
 use std::{path::Path, fs::File};
+use crate::constants::SPATIUM20;
 
 macro_rules! impl_display {
     ($enum:ident, {$($variant:pat => $fmt_string:expr),+$(,)* }) => {
@@ -83,9 +84,9 @@ pub fn load(path: &Path, filename: &str, config: &FontMapping) -> Result<ScoreFo
 fn compute_metrics(sym: &mut Sym, code: u32, font: &Font) -> Result<(), Error> {
 	if let Some(char) = std::char::from_u32(code) {
 		if let Some(glyph_id) = font.glyph_for_char(char) {
-			let down_scale = 10.;
+			let down_scale = SPATIUM20 / font.metrics().units_per_em as f32;
 			// typographic_bounds returns size of 1em defined by font->units_per_em
-			let bb = font.typographic_bounds(glyph_id).map_err(Error::Glyph)? / down_scale;
+			let bb = font.typographic_bounds(glyph_id).map_err(Error::Glyph)? * down_scale;
 			sym.code = code as i32;
 			sym.index = glyph_id;
 			sym.bbox = bb;
@@ -97,15 +98,16 @@ fn compute_metrics(sym: &mut Sym, code: u32, font: &Font) -> Result<(), Error> {
 
 fn parse_sym(sym: &mut Sym, data: &json::JsonValue) -> Result<(), Error> {
 	const SCALE: f32 = constants::SPATIUM20;
+	const CSCALE: f32 = constants::SPATIUM20 / 1000.;
 	for (k, v) in data.entries() {
 		match k {
 			"stemDownNW" => {
 				let (x, y) = (v[0].as_f32().unwrap_or_default(), v[1].as_f32().unwrap_or_default());
-				sym.stem_down_nw = Point2F::new(4.0 * constants::DPI_F * x, 4.0 * constants::DPI_F * -y);
+				sym.stem_down_nw = Point2F::new(constants::DPI_F * x, constants::DPI_F * -y);
 			},
 			"stemUpSE" => {
 				let (x, y) = (v[0].as_f32().unwrap_or_default(), v[1].as_f32().unwrap_or_default());
-				sym.stem_up_se = Point2F::new(4.0 * constants::DPI_F * x, 4.0 * constants::DPI_F * -y);
+				sym.stem_up_se = Point2F::new(constants::DPI_F * x, constants::DPI_F * -y);
 			},
 			"cutOutNE" => {
 				let (x, y) = (v[0].as_f32().unwrap_or_default(), v[1].as_f32().unwrap_or_default());

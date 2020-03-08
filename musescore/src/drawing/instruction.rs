@@ -1,11 +1,13 @@
 use crate::drawing::Path;
 use crate::font::SymName;
-use crate::{Size2F, Point2F};
+use crate::{Size2F, Point2F, RectF};
 
 #[derive(Clone, Debug, PartialEq)]
 pub enum Instruction {
 	Path(Path),
+	Rect(RectF, f32),
 	Symbol(Symbol),
+	Point(Point2F, f32),
 }
 
 #[derive(Clone, Debug, PartialEq)]

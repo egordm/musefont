@@ -3,7 +3,9 @@ use std::convert::TryInto;
 
 #[derive(Clone, Debug)]
 pub struct Sym {
+	// Character code
 	pub(super) code: i32,
+	// Aka Glyph Id
 	pub(super) index: u32,
 	pub(super) bbox: RectF,
 	pub(super) advance: f32,
@@ -47,9 +49,13 @@ impl Sym {
 
 	pub const fn advance(&self) -> f32 { self.advance }
 
-	pub fn stem_down_nw(&self) -> Point2F { self.stem_down_nw - self.bbox.origin.to_vector() }
+	pub fn stem_down_nw(&self) -> Point2F {
+		self.stem_down_nw
+	}
 
-	pub fn stem_up_se(&self) -> Point2F { self.stem_up_se - self.bbox.origin.to_vector() }
+	pub fn stem_up_se(&self) -> Point2F {
+		self.stem_up_se
+	}
 
 	pub const fn cut_out_ne(&self) -> &Point2F { &self.cut_out_ne }
 

@@ -20,8 +20,11 @@ impl Stem {
 		len: 0.0
 	})}
 
+	// Returns line width unscaled
 	pub fn line_width(&self) -> f32 { self.line_width }
-	pub fn set_line_width(&mut self, v: f32) { self.line_width = v }
+	pub fn set_line_width(&mut self, v: f32) {
+		self.line_width = v
+	}
 
 	pub fn user_len(&self) -> f32 { self.user_len }
 	pub fn set_user_len(&mut self, v: f32) { self.user_len = v }
@@ -40,6 +43,9 @@ impl Stem {
 		p.x += self.line_width * 0.5 * self.scale(); // TODO: unneeded?
 		p
 	}
+
+	pub(crate) fn set_line(&mut self, line: LineF) { self.line = line }
+	pub fn line(&self) -> &LineF { &self.line }
 
 	fn get_custom_property(&self, p: PropertyId) -> ValueVariant {
 		match p {
