@@ -50,19 +50,28 @@ pub fn draw(painter: &mut PfPainter) {
 	});
 	chord.borrow_mut_el().add(stem.clone().into());
 
+	let hook = Hook::new(score.clone());
+	hook.with_mut(|mut e| {
+		e.set_scale(6.);
+		e.set_hook_type(HookType::Flag64thUp);
+		e.set_pos(Point2F::new(360., 100.));
+	});
+
 
 	NoteRenderer::layout(note.clone());
 	NoteRenderer::render(note.clone(), &mut state, painter);
 	StemRenderer::layout(stem.clone());
 	StemRenderer::render(stem.clone(), &mut state, painter);
+	HookRenderer::layout(hook.clone());
+	HookRenderer::render(hook.clone(), &mut state, painter);
 
 	let sym = font.sym(font::SymName::Flag16thUp);
 	let sym_char = sym.get_char().expect("Should be a valid character");
 
-	painter.draw(drawing::Symbol::new(
+	/*painter.draw(drawing::Symbol::new(
 		font::SymName::NoteheadBlack,
 		sym_char,
 		Size2F::new(128., 64.),
 		Point2F::new(50., 50.)
-	).into());
+	).into());*/
 }

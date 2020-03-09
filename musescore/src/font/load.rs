@@ -1,5 +1,6 @@
 pub use crate::*;
 pub use super::*;
+use crate::num_traits::FromPrimitive;
 use font_kit::loaders::default::Font;
 use std::{path::Path, fs::File};
 use crate::constants::SPATIUM20;
@@ -50,7 +51,9 @@ pub fn load(path: &Path, filename: &str, config: &FontMapping) -> Result<ScoreFo
 
 	// Compute metrics for all symbols
 	for (id, code) in config.sym_codes.iter().cloned().enumerate() {
-		compute_metrics(&mut font.symbols[id], code, &font.font)?;
+		// TODO: can probably just join the array of symnames.
+		let sym = SymName::from_usize(id).expect("SymId must correspond to a symbol");
+		compute_metrics(sym, &mut font.symbols[id], code, &font.font)?;
 	}
 
 	// Load symbol data
@@ -76,21 +79,27 @@ pub fn load(path: &Path, filename: &str, config: &FontMapping) -> Result<ScoreFo
 
 	// TODO: style
 
-	compute_metrics(&mut font.symbols[SymName::Space as usize], 32, &font.font)?;
+	compute_metrics(SymName::Space, &mut font.symbols[SymName::Space as usize], 32, &font.font)?;
 	Ok(font)
 }
 
 
-fn compute_metrics(sym: &mut Sym, code: u32, font: &Font) -> Result<(), Error> {
+fn compute_metrics(_sym_name: SymName, sym: &mut Sym, code: u32, font: &Font) -> Result<(), Error> {
 	if let Some(char) = std::char::from_u32(code) {
 		if let Some(glyph_id) = font.glyph_for_char(char) {
 			let down_scale = SPATIUM20 / font.metrics().units_per_em as f32;
 			// typographic_bounds returns size of 1em defined by font->units_per_em
-			let bb = font.typographic_bounds(glyph_id).map_err(Error::Glyph)? * down_scale;
+			let mut bb = font.typographic_bounds(glyph_id).map_err(Error::Glyph)? * down_scale;
+			// Looks like one needs to flip the bb vertically?
+			bb.origin.y = -(bb.size.height + bb.origin.y);
 			sym.code = code as i32;
 			sym.index = glyph_id;
 			sym.bbox = bb;
 			sym.advance = font.advance(glyph_id).map_err(Error::Glyph)?.x / down_scale;
+
+			if _sym_name == SymName::Flag64thUp {
+				let i = 0;
+			}
 		}
 	}
 	Ok(())

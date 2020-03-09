@@ -24,18 +24,16 @@ impl Renderer<Note> for NoteRenderer {
 
 	fn render(e: El<Note>, state: &mut RendererState, painter: PainterRef) {
 		e.with(|e| {
-			let nh_char = e.score().font().sym(e.cached_notehead_sym).get_char().expect("Expected valid font");
 			let spatium = e.score().spatium();
-			painter.draw(drawing::Symbol::new(
+			painter.draw(drawing::Symbol::from_font(
+				&*e.font(),
 				e.cached_notehead_sym,
-				nh_char,
+				e.pos(),
 				Size2F::new(e.scale() * spatium, e.scale() * spatium),
-				e.pos()
 			).into());
 
 			if state.debug() {
 				painter.set_color(crate::COLOR_GREEN);
-				let a = e.bbox().clone();
 				painter.draw(drawing::Instruction::Rect(e.bbox().translate(e.pos().to_vector()), 1.));
 				painter.set_color(crate::COLOR_BLUE);
 				painter.draw(drawing::Instruction::Point(e.pos(), 2.));

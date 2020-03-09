@@ -40,6 +40,10 @@ impl Hook {
 			HookType::Flag1024thDown => SymName::Flag1024thDown,
 		})
 	}
+
+	pub fn sym(&self) -> SymName {
+		self.element.sym()
+	}
 }
 
 impl Element for Hook {

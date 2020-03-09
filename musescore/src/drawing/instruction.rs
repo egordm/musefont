@@ -1,5 +1,5 @@
 use crate::drawing::Path;
-use crate::font::SymName;
+use crate::font::{SymName, ScoreFont};
 use crate::{Size2F, Point2F, RectF};
 
 #[derive(Clone, Debug, PartialEq)]
@@ -30,6 +30,13 @@ impl Symbol {
 			scale,
 			pos
 		}
+	}
+
+	pub fn from_font(font: &ScoreFont, sym_name: SymName, pos: Point2F, scale: Size2F) -> Self {
+		let sym = font.sym(sym_name);
+		// TODO: probably should just render some weird character
+		let sym_char = sym.get_char().expect("Symbol should have a valid character.");
+		Self::new(sym_name, sym_char, scale, pos)
 	}
 
 	pub fn sym(&self) -> &SymName { &self.symbol }
