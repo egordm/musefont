@@ -29,6 +29,7 @@ impl Score {
 
 	pub fn style(&self) -> Ref<Style> { Ref::map(self.inner(), |r| &r.style) }
 	pub fn spatium(&self) -> f32 { self.style().value_f32(StyleName::Spatium) }
+	pub fn point(&self, sp: Spatium) -> f32 { sp.0 * self.spatium() }
 	pub fn note_head_width(&self) -> f32 { self.inner().note_head_width }
 
 	pub fn staves(&self) -> Ref<StaffList> { Ref::map(self.inner(), |r| &r.staves) }

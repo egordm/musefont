@@ -40,3 +40,39 @@ impl Renderer<Hook> for HookRenderer {
 		});
 	}
 }
+
+pub(crate) fn hook_adjustment(font: &str, hooks: HookType, up: bool, small: bool) -> f32 {
+	let hooks = hooks.index();
+	let fallback = hooks > 5; // && use fallback font
+
+	let font = "Gonville";
+	match (font, fallback) {
+		("Emmentaler", false) => {
+			if up {
+				if hooks > 2 { (hooks as f32 - 2.) * (if small { 0.75 } else { 1. }) }
+				else { 0. }
+			} else {
+				if hooks == 3 { if small { 0.75 } else { 1. } }
+				else if hooks > 3 { (hooks as f32 - 2.) * (if small { 0.5 } else { 0.75 }) }
+				else { 0. }
+			}
+		},
+		("Gonville", false) => {
+			if up {
+				if hooks > 2 { (hooks as f32 - 2.) * (if small { 0.5 } else { 0.75 }) }
+				else { 0. }
+			} else {
+				if hooks > 1 { (hooks as f32 - 1.) * (if small { 0.5 } else { 0.75 }) }
+				else { 0. }
+			}
+		}
+		("MuseJazz", _) => {
+			if hooks > 2 { (hooks as f32 - 2.) * (if small { 0.75 } else { 1. }) }
+			else { 0. }
+		}
+		_ => {
+			if hooks > 2 { (hooks as f32 - 2.) * (if small { 0.5 } else { 0.75 }) }
+			else { 0. }
+		}
+	}
+}

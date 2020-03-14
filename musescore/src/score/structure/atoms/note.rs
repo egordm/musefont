@@ -261,8 +261,8 @@ impl Note {
 		let mut head_type = NoteheadType::Quarter;
 
 		if let Some(chord) = self.chord() {
-			dir = if chord.as_trait().up() { DirectionV::Up } else { DirectionV::Down };
-			head_type = chord.as_trait().duration_type().head_type()
+			dir = if chord.borrow_el().up() { DirectionV::Up } else { DirectionV::Down };
+			head_type = chord.borrow_el().duration_type().head_type()
 		}
 		if self.head_type != NoteheadType::Auto { head_type = self.head_type }
 
@@ -275,7 +275,7 @@ impl Note {
 		let mut key = Key::C;
 		let mut scheme = NoteheadScheme::Normal;
 		if let (Some(chord), Some(staff)) = (self.chord(), self.staff()) {
-			let tick = chord.as_trait().time();
+			let tick = chord.borrow_el().time();
 			if tick >= Fraction::new(0, 1) {
 				let staff = staff.borrow_el();
 				key = staff.key(&tick);

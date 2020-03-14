@@ -69,3 +69,33 @@ impl<T: std::fmt::Debug> std::fmt::Debug for El<T> {
 		self.borrow_el().fmt(f)
 	}
 }
+
+pub trait OptionalEl<T> {
+	fn with<F: FnMut(Ref<T>) -> R, R>(&self, f: F) -> Option<R>;
+
+	fn with_d<F: FnMut(Ref<T>) -> R, R>(&self, f: F, default: R) -> R {
+		self.with(f).unwrap_or(default)
+	}
+
+	fn with_mut<F: FnMut(RefMut<T>) -> R, R>(&self, f: F) -> Option<R>;
+}
+
+impl<T> OptionalEl<T> for Option<El<T>> {
+	fn with<F: FnMut(Ref<T>) -> R, R>(&self, mut f: F) -> Option<R> {
+		Some(f(self.as_ref()?.borrow_el()))
+	}
+
+	fn with_mut<F: FnMut(RefMut<T>) -> R, R>(&self, mut f: F) -> Option<R> {
+		Some(f(self.as_ref()?.borrow_mut_el()))
+	}
+}
+
+impl<T> OptionalEl<T> for Option<&El<T>> {
+	fn with<F: FnMut(Ref<T>) -> R, R>(&self, mut f: F) -> Option<R> {
+		Some(f(self.as_ref()?.borrow_el()))
+	}
+
+	fn with_mut<F: FnMut(RefMut<T>) -> R, R>(&self, mut f: F) -> Option<R> {
+		Some(f(self.as_ref()?.borrow_mut_el()))
+	}
+}

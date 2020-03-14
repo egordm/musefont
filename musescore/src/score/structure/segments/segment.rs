@@ -61,8 +61,8 @@ impl Segment {
 	pub fn annotations(&self) -> &Vec<ElementRef> { &self.annotations }
 	pub fn set_annotations(&mut self, v: Vec<ElementRef>) { self.annotations = v }
 
-	pub fn dot_pos_x(&self) -> &Vec<f32> { &self.dot_pos_x }
-	pub fn set_dot_pos_x(&mut self, v: Vec<f32>) { self.dot_pos_x = v }
+	pub fn dot_pos_x(&self, staff_id: StaffId) -> f32 { self.dot_pos_x[staff_id as usize] }
+	pub fn set_dot_pos_x(&mut self, staff_id: StaffId, v: f32) { self.dot_pos_x[staff_id as usize] = v }
 
 	pub fn elements(&self) -> &Vec<Option<ElementRef>> { &self.elist }
 	pub fn element(&self, track: Track) -> Option<&ElementRef> { self.elist.get(track as usize)?.as_ref() }

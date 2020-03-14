@@ -33,7 +33,7 @@ impl Stem {
 	pub fn set_len(&mut self, v: f32) { self.len = v.abs() }
 
 	pub fn up(&self) -> bool {
-		if let Some(chord) = self.chord() { chord.as_trait().up() } else { true }
+		if let Some(chord) = self.chord() { chord.borrow_el().up() } else { true }
 	}
 	pub fn stem_len(&self) -> f32 { if self.up() { -self.len } else { self.len }}
 	pub fn p2(&self) -> Point2F { self.line.p2 }
@@ -52,7 +52,7 @@ impl Stem {
 			PropertyId::LineWidth => self.line_width().into(),
 			PropertyId::UserLen => self.user_len().into(),
 			PropertyId::StemDirection => {
-				if let Some(ChordRef::Chord(chord)) = self.chord() {
+				if let Some(chord) = self.chord() {
 					ValueVariant::from_enum(chord.borrow_el().stem_direction())
 				} else { ValueVariant::None }
 
@@ -65,7 +65,7 @@ impl Stem {
 			PropertyId::LineWidth => v.with_value(|v| self.set_line_width(v)),
 			PropertyId::UserLen => v.with_value(|v| self.set_user_len(v)),
 			PropertyId::StemDirection => v.with_enum(|v| {
-				if let Some(ChordRef::Chord(chord)) = self.chord() {
+				if let Some(chord) = self.chord() {
 					chord.borrow_mut_el().set_stem_direction(v)
 				}
 			}),

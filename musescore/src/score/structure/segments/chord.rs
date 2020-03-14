@@ -64,13 +64,25 @@ impl Chord {
 	pub fn set_notes(&mut self, v: Vec<El<Note>>) { self.notes = v }
 	pub fn ledger_lines(&self) -> &Option<El<LedgerLine>> { &self.ledger_lines }
 	pub fn set_ledger_lines(&mut self, v: Option<El<LedgerLine>>) { self.ledger_lines = v }
-	pub fn stem(&self) -> &Option<El<Stem>> { &self.stem }
+	pub fn notehead_width(&self) -> f32 {
+		let mut nhw = self.score().note_head_width();
+		if self.note_type() != NoteType::Normal {
+			nhw *= self.score().style().value_f32(StyleName::GraceNoteMag);
+		}
+		return nhw * self.scale()
+	}
+
+	pub fn stem(&self) -> Option<&El<Stem>> { self.stem.as_ref() }
 	pub fn set_stem(&mut self, v: Option<El<Stem>>) { self.stem = v }
-	pub fn stem_slash(&self) -> &Option<El<StemSlash>> { &self.stem_slash }
+	pub fn stem_slash(&self) -> Option<&El<StemSlash>> { self.stem_slash.as_ref() }
 	pub fn set_stem_slash(&mut self, v: Option<El<StemSlash>>) { self.stem_slash = v }
-	pub fn hook(&self) -> &Option<El<Hook>> { &self.hook }
+	pub fn stem_pos_x(&self) -> f32 {
+		if self.up() { self.notehead_width() } else { 0.}
+	}
+
+	pub fn hook(&self) -> Option<&El<Hook>> { self.hook.as_ref() }
 	pub fn set_hook(&mut self, v: Option<El<Hook>>) { self.hook = v }
-	pub fn arpeggio(&self) -> &Option<ElWeak<Arpeggio>> { &self.arpeggio }
+	pub fn arpeggio(&self) -> Option<&ElWeak<Arpeggio>> { self.arpeggio.as_ref() }
 	pub fn set_arpeggio(&mut self, v: Option<ElWeak<Arpeggio>>) { self.arpeggio = v }
 
 	pub fn tremolo(&self) -> &Option<ElWeak<Tremolo>> { &self.tremolo }
@@ -108,6 +120,13 @@ impl Chord {
 			PropertyId::StemDirection => v.with_enum(|v| self.set_stem_direction(v)),
 			_ => false,
 		}
+	}
+
+	pub fn dot_pos_x(&self) -> f32 {
+		if let Some(segment) = self.segment() {
+			return segment.borrow_el().dot_pos_x(self.staff_id());
+		}
+		return -1000.0;
 	}
 }
 
@@ -255,10 +274,7 @@ impl Chord {
 			for n in self.notes() {
 				let tie = (if backwards { n.borrow_el().tie_back() } else { n.borrow_el().tie_for() })?;
 				let nn = (if backwards { tie.borrow_el().start_note() } else { tie.borrow_el().end_note() })?;
-				let ch = nn.borrow_el().chord();
-				if let ChordRef::Chord(nn_chord) = ch? {
-					if nn_chord != chord { return None; }
-				} else { return None; }
+				if chord != nn.borrow_el().chord()? { return None }
 			}
 
 			return Some(chord);

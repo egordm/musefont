@@ -57,18 +57,18 @@ impl Measure {
 	pub fn no_mode(&self) -> MeasureNumberMode { self.no_mode }
 	pub fn set_no_mode(&mut self, v: MeasureNumberMode) { self.no_mode = v }
 
-	pub fn has_voices(&self, staff_id: i32) -> bool { self.mstaves[staff_id as usize].has_voices() }
-	pub fn set_has_voices(&mut self, staff_id: i32, v: bool) { self.mstaves[staff_id as usize].set_has_voices(v) }
-	pub fn lines(&self, staff_id: i32) -> &Option<El<StaffLines>> { self.mstaves[staff_id as usize].lines() }
-	pub fn set_lines(&mut self, staff_id: i32, v: Option<El<StaffLines>>) { self.mstaves[staff_id as usize].set_lines(v) }
+	pub fn has_voices(&self, staff_id: StaffId) -> bool { self.mstaves[staff_id as usize].has_voices() }
+	pub fn set_has_voices(&mut self, staff_id: StaffId, v: bool) { self.mstaves[staff_id as usize].set_has_voices(v) }
+	pub fn lines(&self, staff_id: StaffId) -> &Option<El<StaffLines>> { self.mstaves[staff_id as usize].lines() }
+	pub fn set_lines(&mut self, staff_id: StaffId, v: Option<El<StaffLines>>) { self.mstaves[staff_id as usize].set_lines(v) }
 
-	pub fn vspacer_up(&self, staff_id: i32) -> &Option<El<Spacer>> { self.mstaves[staff_id as usize].vspacer_up() }
-	pub fn vspacer_down(&self, staff_id: i32) -> &Option<El<Spacer>> { self.mstaves[staff_id as usize].vspacer_down() }
+	pub fn vspacer_up(&self, staff_id: StaffId) -> &Option<El<Spacer>> { self.mstaves[staff_id as usize].vspacer_up() }
+	pub fn vspacer_down(&self, staff_id: StaffId) -> &Option<El<Spacer>> { self.mstaves[staff_id as usize].vspacer_down() }
 
-	pub fn staff_visible(&self, staff_id: i32) -> bool { self.mstaves[staff_id as usize].visible() }
-	pub fn set_staff_visible(&mut self, staff_id: i32, v: bool) { self.mstaves[staff_id as usize].set_visible(v) }
-	pub fn staff_stemless(&self, staff_id: i32) -> bool { self.mstaves[staff_id as usize].stemless() }
-	pub fn set_staff_stemless(&mut self, staff_id: i32, v: bool) { self.mstaves[staff_id as usize].set_stemless(v) }
+	pub fn staff_visible(&self, staff_id: StaffId) -> bool { self.mstaves[staff_id as usize].visible() }
+	pub fn set_staff_visible(&mut self, staff_id: StaffId, v: bool) { self.mstaves[staff_id as usize].set_visible(v) }
+	pub fn stemless(&self, staff_id: StaffId) -> bool { self.mstaves[staff_id as usize].stemless() }
+	pub fn set_staff_stemless(&mut self, staff_id: StaffId, v: bool) { self.mstaves[staff_id as usize].set_stemless(v) }
 
 	pub fn is_irregular(&self) -> bool { self.timesig != self.duration() }
 	pub fn stretched_len(&self, staff: &El<Staff>) -> Fraction {

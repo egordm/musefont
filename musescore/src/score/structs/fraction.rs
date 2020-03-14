@@ -27,6 +27,10 @@ impl Fraction {
 		self.reduce();
 		self
 	}
+
+	pub fn is_zero(&self) -> bool {
+		self.numerator == 0
+	}
 }
 
 impl Into<i32> for Fraction {

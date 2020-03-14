@@ -46,7 +46,10 @@ impl StaffLines {
 }
 
 impl AtomTrait for StaffLines {
-	fn chord(&self) -> Option<ChordRef> { None }
+	fn chord(&self) -> Option<El<Chord>> { None }
+	fn chord_rest(&self) -> Option<ChordRef> {
+		None
+	}
 	fn segment(&self) -> Option<El<Segment>> { None }
 	fn measure(&self) -> Option<MeasureRef> {
 		self.parent().and_then(|e| MeasureRef::try_from(e).ok())

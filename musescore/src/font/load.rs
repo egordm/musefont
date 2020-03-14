@@ -96,10 +96,6 @@ fn compute_metrics(_sym_name: SymName, sym: &mut Sym, code: u32, font: &Font) ->
 			sym.index = glyph_id;
 			sym.bbox = bb;
 			sym.advance = font.advance(glyph_id).map_err(Error::Glyph)?.x / down_scale;
-
-			if _sym_name == SymName::Flag64thUp {
-				let i = 0;
-			}
 		}
 	}
 	Ok(())
@@ -107,7 +103,6 @@ fn compute_metrics(_sym_name: SymName, sym: &mut Sym, code: u32, font: &Font) ->
 
 fn parse_sym(sym: &mut Sym, data: &json::JsonValue) -> Result<(), Error> {
 	const SCALE: f32 = constants::SPATIUM20;
-	const CSCALE: f32 = constants::SPATIUM20 / 1000.;
 	for (k, v) in data.entries() {
 		match k {
 			"stemDownNW" => {

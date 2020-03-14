@@ -6,7 +6,6 @@ use pathfinder_canvas as canvas;
 use pathfinder_geometry::vector::Vector2F;
 use pathfinder_geometry::transform2d::Transform2F;
 use musescore::font::ScoreFont;
-use pathfinder_canvas::FillStyle;
 use std::f32::consts::PI;
 
 pub struct PfPainter<'a> {
