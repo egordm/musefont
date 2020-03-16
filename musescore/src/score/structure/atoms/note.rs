@@ -3,10 +3,7 @@ use crate::score::*;
 use crate::font::SymName;
 use crate::num_traits::FromPrimitive;
 
-pub type Line = i32;
 pub type Pitch = i32;
-
-pub const INVALID_LINE: Line = -1;
 
 /// Graphic representation of a note.
 #[derive(Debug, Clone)]
@@ -56,7 +53,7 @@ pub struct Note {
 	pitch: Pitch,
 
 	/// fixed line number if _fixed == true
-	fixed_line: i32,
+	fixed_line: Line,
 	/// pitch offset in cent, playable only by internal synthesizer
 	tuning: f32,
 
@@ -92,12 +89,12 @@ impl Note {
 		head_group: NoteheadGroup::Normal,
 		head_type: NoteheadType::Auto,
 		subchannel: 0,
-		line: INVALID_LINE,
+		line: Line::default(),
 		fret: -1,
 		string: -1,
 		tpc: (Tpc::TpcInvalid, Tpc::TpcInvalid),
 		pitch: 0,
-		fixed_line: 0,
+		fixed_line: Line::default(),
 		tuning: 0.0,
 		accidental: None,
 		tie_for: None,
@@ -145,8 +142,8 @@ impl Note {
 	pub fn pitch(&self) -> Pitch { self.pitch }
 	pub fn set_pitch(&mut self, v: Pitch) { self.pitch = v }
 
-	pub fn fixed_line(&self) -> i32 { self.fixed_line }
-	pub fn set_fixed_line(&mut self, v: i32) { self.fixed_line = v }
+	pub fn fixed_line(&self) -> Line { self.fixed_line }
+	pub fn set_fixed_line(&mut self, v: Line) { self.fixed_line = v }
 	pub fn tuning(&self) -> f32 { self.tuning }
 	pub fn set_tuning(&mut self, v: f32) { self.tuning = v }
 
@@ -180,13 +177,13 @@ impl Note {
 			PropertyId::DotPosition => ValueVariant::from_enum(self.user_dot_pos()),
 			PropertyId::HeadGroup => ValueVariant::from_enum(self.head_group()),
 			PropertyId::HeadType => ValueVariant::from_enum(self.head_type()),
-			PropertyId::Line => ValueVariant::from_enum(self.line()),
+			PropertyId::Line => self.line().value().into(),
 			PropertyId::Fret => self.fret().into(),
 			PropertyId::String => self.string().into(),
 			PropertyId::Tpc1 => ValueVariant::from_enum(self.tpc.0),
 			PropertyId::Tpc2 => ValueVariant::from_enum(self.tpc.1),
 			PropertyId::Pitch => ValueVariant::from_enum(self.pitch()),
-			PropertyId::FixedLine => self.fixed_line().into(),
+			PropertyId::FixedLine => self.fixed_line().value().into(),
 			PropertyId::Tuning => self.tuning().into(),
 			_ => ValueVariant::None
 		}
@@ -200,13 +197,13 @@ impl Note {
 			PropertyId::DotPosition => v.with_enum(|v| self.set_user_dot_pos(v)),
 			PropertyId::HeadGroup => v.with_enum(|v| self.set_head_group(v)),
 			PropertyId::HeadType => v.with_enum(|v| self.set_head_type(v)),
-			PropertyId::Line => v.with_enum(|v| self.set_line(v)),
+			PropertyId::Line => v.with_value(|v: Spatium| self.set_line(Line::from(v))),
 			PropertyId::Fret => v.with_value(|v| self.set_fret(v)),
 			PropertyId::String => v.with_value(|v| self.set_string(v)),
 			PropertyId::Tpc1 => v.with_enum(|v| self.tpc.0 = v),
 			PropertyId::Tpc2 => v.with_enum(|v| self.tpc.1 = v),
 			PropertyId::Pitch => v.with_enum(|v| self.set_pitch(v)),
-			PropertyId::FixedLine => v.with_value(|v| self.set_fixed_line(v)),
+			PropertyId::FixedLine => v.with_value(|v: Spatium| self.set_fixed_line(v.into())),
 			PropertyId::Tuning => v.with_value(|v| self.set_tuning(v)),
 			_ => false,
 		}
@@ -332,20 +329,19 @@ impl Note {
 		unimplemented!()
 	}
 
-	#[allow(irrefutable_let_patterns)]
 	pub fn add_parentheses(&mut self) {
 		let s = Symbol::new(self.score().clone());
-		if let mut s = s.borrow_mut_el() {
+		s.with_mut(|mut s| {
 			s.set_sym(SymName::NoteheadParenthesisLeft);
 			s.set_parent(Some(self.get_ref()));
-		}
+		});
 		self.elements.push(s.into());
 
 		let s = Symbol::new(self.score().clone());
-		if let mut s = s.borrow_mut_el() {
+		s.with_mut(|mut s| {
 			s.set_sym(SymName::NoteheadParenthesisRight);
 			s.set_parent(Some(self.get_ref()));
-		}
+		});
 		self.elements.push(s.into());
 	}
 }

@@ -4,11 +4,14 @@ use crate::score::*;
 #[derive(Debug, Clone)]
 pub struct Stem {
 	element: ElementData,
-
+	// Line representing the stem in points
 	line: LineF,
+	// Line width in points
 	line_width: f32,
-	user_len: f32,
-	len: f32,
+	// User length in spatiums
+	user_len: Spatium,
+	// Length in spatiums
+	len: Spatium,
 }
 
 impl Stem {
@@ -16,8 +19,8 @@ impl Stem {
 		element: ElementData::new(score),
 		line: Default::default(),
 		line_width: 0.0,
-		user_len: 0.0,
-		len: 0.0
+		user_len: Spatium::default(),
+		len: Spatium::default()
 	})}
 
 	// Returns line width unscaled
@@ -26,16 +29,16 @@ impl Stem {
 		self.line_width = v
 	}
 
-	pub fn user_len(&self) -> f32 { self.user_len }
-	pub fn set_user_len(&mut self, v: f32) { self.user_len = v }
+	pub fn user_len(&self) -> Spatium { self.user_len }
+	pub fn set_user_len(&mut self, v: Spatium) { self.user_len = v }
 
-	pub fn len(&self) -> f32 { self.len }
-	pub fn set_len(&mut self, v: f32) { self.len = v.abs() }
+	pub fn len(&self) -> Spatium { self.len }
+	pub fn set_len(&mut self, v: Spatium) { self.len = Spatium(v.0.abs()) }
 
 	pub fn up(&self) -> bool {
 		if let Some(chord) = self.chord() { chord.borrow_el().up() } else { true }
 	}
-	pub fn stem_len(&self) -> f32 { if self.up() { -self.len } else { self.len }}
+	pub fn stem_len(&self) -> Spatium { if self.up() { -self.len } else { self.len }}
 	pub fn p2(&self) -> Point2F { self.line.p2 }
 	/// in chord coordinates
 	pub fn hook_pos(&self) -> Point2F {

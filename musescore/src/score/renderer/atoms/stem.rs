@@ -27,7 +27,7 @@ impl Renderer<Stem> for StemRenderer {
 			}
 
 			let lw5 = e.line_width() * 0.5 * e.scale();
-			let line = LineF::new(Point2F::new(0., y1), Point2F::new(0., l));
+			let line = LineF::new(Point2F::new(0., y1), Point2F::new(0., l.0));
 			e.set_line(line.clone());
 			let bbox = e.line().rect().adjust(Point2F::new(-lw5, -lw5), Point2F::new(lw5, lw5));
 			e.set_bbox(bbox);
@@ -65,11 +65,11 @@ impl StemRenderer {
 	}
 
 	/// Get the default stem length for given chord
-	fn default_stem_len(er: &El<Chord>) -> f32 {
+	fn default_stem_len(er: &El<Chord>) -> Spatium {
 		er.with(|e| {
 			let hook_type = e.duration_type().hook_type();
-			let (ul, dl) = (e.up_line(), e.down_line());
-			let line_distance = e.staff().with_d(|st| st.line_distance(&e.time()), 1.);
+			let (ul, dl) = (e.up_line().value().0 as i32, e.down_line().value().0 as i32);
+			let line_distance = e.staff().with_d(|st| st.line_distance(&e.time()), Spatium(1.));
 			let mut shorten_stem = e.style().value_bool(StyleName::ShortenStem);
 
 			if hook_type.index() >= 2 || e.tremolo().is_some() {
@@ -97,7 +97,7 @@ impl StemRenderer {
 				stem_len *= normal_stem_len * e.style().value_f32(StyleName::GraceNoteMag);
 				if e.up() { stem_len *= -1. }
 			} else {
-				let staff_height = e.staff().with_d(|st| st.lines(&e.time()), 4) as f32 * line_distance;
+				let staff_height = e.staff().with_d(|st| st.lines(&e.time()).value().0, 4.) as f32 * line_distance.0;
 				let dn_mirror = e.down_note().with_d(|dn| dn.mirror(), false);
 				if e.up() { // stem up
 					let dy = dl as f32 * 0.5;                        // note-side vert. pos.
@@ -131,7 +131,7 @@ impl StemRenderer {
 			let min_abs_len = Self::min_abs_stem_len(&er);
 			if sign * stem_len_points < min_abs_len { stem_len_points = sign * min_abs_len }
 
-			return -stem_len_points;
+			return Spatium(-stem_len_points);
 		})
 	}
 

@@ -173,7 +173,7 @@ impl Staff {
 
 	pub fn lines(&self, tick: &Fraction) -> Line { self.staff_type(tick).lines() }
 	pub fn set_lines(&mut self, tick: &Fraction, v: Line) { self.staff_type_mut(tick).set_lines(v) }
-	pub fn line_distance(&self, tick: &Fraction) -> f32 { self.staff_type(tick).line_distance().0 }
+	pub fn line_distance(&self, tick: &Fraction) -> Spatium { self.staff_type(tick).line_distance() }
 
 	pub fn spatium(&self, tick: &Fraction) -> f32 {
 		self.score().spatium() * self.mag(tick)
