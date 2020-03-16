@@ -146,10 +146,6 @@ impl Renderer<Chord> for ChordRenderer {
 		// Create ledger lines
 		ChordRenderer::add_ledger_lines(e.clone());
 
-		for note in e.borrow_el().notes() {
-			NoteRenderer::layout_after(note.clone());
-		}
-
 		// That should be it. Now check if it works?
 		// TODO: add layoutStem1 (should be in different place but yeah who cares)
 		//unimplemented!()

@@ -7,30 +7,6 @@ pub struct NoteRenderer {
 
 }
 
-impl NoteRenderer {
-	/// called after final position of note is set
-	pub fn layout_after(e: El<Note>) {
-		e.with(|e| {
-			let dots = e.chord().map(|c| c.borrow_el().dots()).unwrap_or_default();
-			if dots > 0 {
-				let d = e.score().point(e.style().value_spatium(StyleName::DotNoteDistance)) * e.scale();
-				let dd = e.score().point(e.style().value_spatium(StyleName::DotDotDistance)) * e.scale();
-				let x = e.chord().map(|c| c.with(|c|
-					c.dot_pos_x() - e.pos().x - c.pos().x
-				)).unwrap_or(0.);
-				let mut xx = x + d;
-				for dot in e.dots() {
-					let pos = dot.borrow_el().pos();
-					dot.borrow_mut_el().set_pos(Point2F::new(xx, pos.y));
-					xx += dd;
-				}
-			}
-		});
-
-		// TODO: Layout attached elements
-	}
-}
-
 impl Renderer<Note> for NoteRenderer {
 	fn layout(e: El<Note>) {
 		// Two types of borrows are  redundant in this case. But serve as an example of two phases

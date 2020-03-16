@@ -9,10 +9,7 @@ impl Renderer<Hook> for HookRenderer {
 	fn layout(e: El<Hook>) {
 		e.with_mut(|mut e| {
 			let scale = e.scale();
-			let bb = e.score().font().bbox(
-				e.sym(),
-				&Size2F::new(scale, scale)
-			);
+			let bb = e.score().font().bbox(e.sym(), &(scale, scale).into());
 			e.set_bbox(bb);
 		});
 	}
@@ -41,12 +38,12 @@ impl Renderer<Hook> for HookRenderer {
 	}
 }
 
-pub(crate) fn hook_adjustment(font: &str, hooks: HookType, up: bool, small: bool) -> f32 {
+pub fn hook_len_adjustment(font: &str, hooks: HookType, up: bool, small: bool) -> Spatium {
 	let hooks = hooks.index();
 	let fallback = hooks > 5; // && use fallback font
 
 	let font = "Gonville";
-	match (font, fallback) {
+	let value = match (font, fallback) {
 		("Emmentaler", false) => {
 			if up {
 				if hooks > 2 { (hooks as f32 - 2.) * (if small { 0.75 } else { 1. }) }
@@ -74,5 +71,6 @@ pub(crate) fn hook_adjustment(font: &str, hooks: HookType, up: bool, small: bool
 			if hooks > 2 { (hooks as f32 - 2.) * (if small { 0.5 } else { 0.75 }) }
 			else { 0. }
 		}
-	}
+	};
+	Spatium(value)
 }

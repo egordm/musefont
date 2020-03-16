@@ -83,7 +83,7 @@ impl StemRenderer {
 			}
 
 			let mut normal_stem_len = if e.small() { 2.5 } else { 3.5 }
-				+ hook_adjustment(&e.font().name(), hook_type, e.up(), e.small());
+				+ hook_len_adjustment(&e.font().name(), hook_type, e.up(), e.small()).0;
 			if hook_type != HookType::None && e.up() && e.duration_type().dots() != 0 {
 				// Avoid collision of dot with the hook
 				if (ul & 1) != 0 { normal_stem_len += 0.5; }
