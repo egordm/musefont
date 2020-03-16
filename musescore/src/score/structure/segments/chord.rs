@@ -62,8 +62,10 @@ impl Chord {
 
 	pub fn notes(&self) -> &Vec<El<Note>> { &self.notes }
 	pub fn set_notes(&mut self, v: Vec<El<Note>>) { self.notes = v }
+
 	pub fn ledger_lines(&self) -> &Option<El<LedgerLine>> { &self.ledger_lines }
 	pub fn set_ledger_lines(&mut self, v: Option<El<LedgerLine>>) { self.ledger_lines = v }
+
 	pub fn notehead_width(&self) -> f32 {
 		let mut nhw = self.score().note_head_width();
 		if self.note_type() != NoteType::Normal {
@@ -77,14 +79,14 @@ impl Chord {
 	pub fn stem_slash(&self) -> Option<&El<StemSlash>> { self.stem_slash.as_ref() }
 	pub fn set_stem_slash(&mut self, v: Option<El<StemSlash>>) { self.stem_slash = v }
 	pub fn stem_pos_x(&self) -> f32 {
-		if self.up() { self.notehead_width() } else { 0.}
+		if self.up() { self.notehead_width() / 0.266 } else { 0.}
 	}
 
 	pub fn hook(&self) -> Option<&El<Hook>> { self.hook.as_ref() }
 	pub fn set_hook(&mut self, v: Option<El<Hook>>) { self.hook = v }
+
 	pub fn arpeggio(&self) -> Option<&ElWeak<Arpeggio>> { self.arpeggio.as_ref() }
 	pub fn set_arpeggio(&mut self, v: Option<ElWeak<Arpeggio>>) { self.arpeggio = v }
-
 	pub fn tremolo(&self) -> &Option<ElWeak<Tremolo>> { &self.tremolo }
 	pub fn set_tremolo(&mut self, v: Option<ElWeak<Tremolo>>) { self.tremolo = v }
 	pub fn ends_glissando(&self) -> bool { self.ends_glissando }
@@ -92,9 +94,9 @@ impl Chord {
 
 	pub fn grace_notes(&self) -> &Vec<El<Chord>> { &self.grace_notes }
 	pub fn set_grace_notes(&mut self, v: Vec<El<Chord>>) { self.grace_notes = v }
-
 	pub fn grace_index(&self) -> i32 { self.grace_index }
 	pub fn set_grace_index(&mut self, v: i32) { self.grace_index = v }
+
 	pub fn stem_direction(&self) -> DirectionV { self.stem_direction }
 	pub fn set_stem_direction(&mut self, v: DirectionV) { self.stem_direction = v }
 	pub fn note_type(&self) -> NoteType { self.note_type }
@@ -123,10 +125,7 @@ impl Chord {
 	}
 
 	pub fn dot_pos_x(&self) -> f32 {
-		if let Some(segment) = self.segment() {
-			return segment.borrow_el().dot_pos_x(self.staff_id());
-		}
-		return -1000.0;
+		self.segment().with_d(|s| s.dot_pos_x(self.staff_id()), -1000.0)
 	}
 }
 
@@ -159,8 +158,8 @@ impl Chord {
 		self.notes.iter().max_by(|a, b| a.borrow_el().line().cmp(&b.borrow_el().line()))
 	}
 	/// Use upstring if tab
-	pub fn up_line(&self) -> Line {  self.up_note().map(|e| e.borrow_el().line()).unwrap_or_default() }
-	pub fn down_line(&self) -> Line { self.down_note().map(|e| e.borrow_el().line()).unwrap_or_default() }
+	pub fn up_line(&self) -> Line {  self.up_note().with_d(|e| e.line(), Line::default()) }
+	pub fn down_line(&self) -> Line { self.down_note().with_d(|e| e.line(), Line::default()) }
 
 	pub fn parent_chord(&self) -> Option<ChordRef> {
 		self.parent().and_then(|e| ChordRef::try_from(e).ok())
@@ -195,9 +194,9 @@ impl Chord {
 
 				// notes should be sorted by line position but it's often not yet possible since
 				// line is unknown use pitch instead, and line as a second sort criteria.
-				let (note_pitch, note_line) = (e.borrow_el().pitch(), e.borrow_el().line());
+				let (note_pitch, note_line) = e.with(|e| (e.pitch(), e.line()));
 				for i in 0..self.notes.len() {
-					let (other_pitch, other_line) = (self.notes[i].borrow_el().pitch(), self.notes[i].borrow_el().line());
+					let (other_pitch, other_line) = self.notes[i].with(|e| (e.pitch(), e.line()));
 					if note_pitch <= other_pitch {
 						if note_pitch == other_pitch && note_line >= other_line {
 							self.notes.insert(i + 1, e.clone());

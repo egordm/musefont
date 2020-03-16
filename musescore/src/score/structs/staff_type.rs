@@ -7,7 +7,7 @@ pub struct StaffType {
 	user_mag: f32,
 	voffset: Spatium,
 	small: bool,
-	lines: u32,
+	lines: Line,
 	step_offset: i32,
 	line_distance: Spatium,
 
@@ -41,8 +41,8 @@ impl StaffType {
 	pub fn small(&self) -> bool { self.small }
 	pub fn set_small(&mut self, v: bool) { self.small = v }
 
-	pub fn lines(&self) -> u32 { self.lines }
-	pub fn set_lines(&mut self, v: u32) { self.lines = v }
+	pub fn lines(&self) -> Line { self.lines }
+	pub fn set_lines(&mut self, v: Line) { self.lines = v }
 
 	pub fn step_offset(&self) -> i32 { self.step_offset }
 	pub fn set_step_offset(&mut self, v: i32) { self.step_offset = v }
@@ -74,7 +74,7 @@ impl Default for StaffType {
 		user_mag: 1.0,
 		voffset: Spatium(0.0),
 		small: false,
-		lines: 5,
+		lines: Line::from(5),
 		step_offset: 0,
 		line_distance: Spatium(1.0),
 		show_bar_lines: true,

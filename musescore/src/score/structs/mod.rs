@@ -6,6 +6,7 @@ pub mod fraction;
 pub mod instrument;
 pub mod interval;
 pub mod key;
+pub mod line;
 pub mod ordered_collection;
 pub mod pitchspelling;
 pub mod segment_map;
@@ -28,6 +29,8 @@ pub use instrument::Instrument;
 pub use interval::Interval;
 #[doc(inline)]
 pub use key::*;
+#[doc(inline)]
+pub use line::*;
 #[doc(inline)]
 pub use ordered_collection::*;
 #[doc(inline)]
