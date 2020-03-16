@@ -8,3 +8,5 @@ pub const DPMM: f32 = DPI / INCH;
 pub const DIVISION: i32 = 480;
 
 pub const VOICES: usize = 4;
+
+pub const DEFAULT_DPI: f32 = 96.;
