@@ -12,7 +12,7 @@ impl Renderer<Stem> for StemRenderer {
 		e.with_mut(|mut e| {
 			let up = e.up();
 			let vscale = if up { -1. } else { 1. };
-			let mut l = (e.len() + e.user_len()) * vscale;
+			let mut l = ((e.len() + e.user_len()) * vscale).points(e.spatium());
 			let mut y1 = 0.;
 
 			if let Some(c) = e.chord() {
@@ -27,7 +27,7 @@ impl Renderer<Stem> for StemRenderer {
 			}
 
 			let lw5 = e.line_width() * 0.5 * e.scale();
-			let line = LineF::new(Point2F::new(0., y1), Point2F::new(0., l.0));
+			let line = LineF::new(Point2F::new(0., y1), Point2F::new(0., l));
 			e.set_line(line.clone());
 			let bbox = e.line().rect().adjust(Point2F::new(-lw5, -lw5), Point2F::new(lw5, lw5));
 			e.set_bbox(bbox);
@@ -60,78 +60,66 @@ impl Renderer<Stem> for StemRenderer {
 
 impl StemRenderer {
 	/// Get the default stem length for given chord
-	fn min_abs_stem_len(e: &El<Chord>) -> f32 {
-		0.0 // TODO: tremolo
-	}
-
-	/// Get the default stem length for given chord
 	fn default_stem_len(er: &El<Chord>) -> Spatium {
 		er.with(|e| {
 			let hook_type = e.duration_type().hook_type();
-			let (ul, dl) = (e.up_line().value().0 as i32, e.down_line().value().0 as i32);
-			let line_distance = e.staff().with_d(|st| st.line_distance(&e.time()), Spatium(1.));
+			let (up_line, down_line) = (e.up_line(), e.down_line());
+
 			let mut shorten_stem = e.style().value_bool(StyleName::ShortenStem);
+			if hook_type.index() >= 2 || e.tremolo().is_some() { shorten_stem = true; }
 
-			if hook_type.index() >= 2 || e.tremolo().is_some() {
-				shorten_stem = true;
-			}
-
-			let progression = e.style().value_spatium(StyleName::ShortStemProgression);
-			let mut shortest = e.style().value_spatium(StyleName::ShortestStem).0;
+			let mut min_len = e.style().value_spatium(StyleName::ShortestStem);
 			if hook_type != HookType::None {
-				shortest = shortest.min(if e.up() { 3.0 } else { 3.5 });
+				min_len = min_len.min(if e.up() { Spatium(3.) } else { Spatium(3.5) });
 			}
 
-			let mut normal_stem_len = if e.small() { 2.5 } else { 3.5 }
-				+ hook_len_adjustment(&e.font().name(), hook_type, e.up(), e.small()).0;
+			let mut normal_len = if e.small() { Spatium(2.5) } else { Spatium(3.5) }
+				+ hook_len_adjustment(&e.font().name(), hook_type, e.up(), e.small());
 			if hook_type != HookType::None && e.up() && e.duration_type().dots() != 0 {
 				// Avoid collision of dot with the hook
-				if (ul & 1) != 0 { normal_stem_len += 0.5; }
+				if up_line.is_half_step() { normal_len = normal_len.ceil(); }
 				else { shorten_stem = false; }
 			}
 
+			let progression = e.style().value_spatium(StyleName::ShortStemProgression);
 			let mut stem_len;
 			if e.is_grace() {
 				// grace notes stems are not subject to normal stem rules
-				stem_len = (ul - dl) as f32 * 0.5;
-				stem_len *= normal_stem_len * e.style().value_f32(StyleName::GraceNoteMag);
+				let grace_mag = e.style().value_f32(StyleName::GraceNoteMag);
+				stem_len = (up_line - down_line).value() + normal_len * grace_mag;
 				if e.up() { stem_len *= -1. }
 			} else {
-				let staff_height = e.staff().with_d(|st| st.lines(&e.time()).value().0, 4.) as f32 * line_distance.0;
-				let dn_mirror = e.down_note().with_d(|dn| dn.mirror(), false);
+				let staff_height = e.staff().with_d(|st| st.lines(&e.time()), Line::from(4)).value();
+				let mirror = e.down_note().with_d(|dn| dn.mirror(), false);
 				if e.up() { // stem up
-					let dy = dl as f32 * 0.5;                        // note-side vert. pos.
-					let mut sel = ul as f32 * 0.5 - normal_stem_len; // stem end vert. pos
+					let dy = down_line.value();                        // note-side vert. pos.
+					let mut sel = up_line.value() + normal_len; // stem end vert. pos
 
 					// if stem ends above top line (with some exceptions), shorten it
-					if shorten_stem && sel < 0.0 && (hook_type == HookType::None || !dn_mirror) {
-						sel -= sel * progression.0;
+					if shorten_stem && sel > staff_height && (hook_type == HookType::None || !mirror) {
+						sel -= (sel - staff_height) * progression;
 					}
-					sel = sel.min(staff_height * 0.5); // if stem ends below ('>') staff mid position, stretch it to mid position
-					stem_len = sel - dy;  // actual stem length
-					if -stem_len < shortest { stem_len = -shortest } // is stem too short lengthen it to shortest possible length
+					// if stem ends below ('>') staff mid position, stretch it to mid position
+					sel = sel.min(staff_height);
+					// actual stem length
+					stem_len = (sel - dy).max(min_len);
 				} else {
-					let uy = ul as f32 * 0.5;                        // note-side vert. pos.
-					let mut sel = dl as f32 * 0.5 + normal_stem_len; // stem end vert. pos.
+					let uy = up_line.value();                        // note-side vert. pos.
+					let mut sel = down_line.value() - normal_len; // stem end vert. pos.
 
 					// if stem ends below bottom line (with some exceptions), shorten it
-					if shorten_stem && sel > staff_height && (hook_type == HookType::None || dn_mirror) {
-						sel -= (sel - staff_height) * progression.0;
+					if shorten_stem && sel < Spatium(0.) && (hook_type == HookType::None || mirror) {
+						sel -= sel * progression;
 					}
 					// if stem ends above ('<') staff mid position, stretch it to mid position
 					sel = sel.max(staff_height * 0.5);
-					stem_len = (sel - uy).max(shortest);  // actual stem length; lengthen it to shortest possible position
+					// actual stem length; lengthen it to shortest possible position
+					stem_len = (sel - uy).min(-min_len);
 				}
 			}
 
-			// TODO: adjust for tremolo
-
-			let sign = if e.up() { -1.0 } else { 1.0 };
-			let mut stem_len_points = stem_len * e.spatium();
-			let min_abs_len = Self::min_abs_stem_len(&er);
-			if sign * stem_len_points < min_abs_len { stem_len_points = sign * min_abs_len }
-
-			return Spatium(-stem_len_points);
+			let line_distance = e.staff().with_d(|st| st.line_distance(&e.time()), Spatium(1.));
+			return stem_len * line_distance
 		})
 	}
 
@@ -147,24 +135,16 @@ impl StemRenderer {
 		});
 
 		if has_stem {
+			// Create stem if doesnt exists
 			if e.borrow_el().stem().is_none() {
 				let stem = Stem::new(e.borrow_el().score().clone());
 				stem.with_mut(|mut stem| {
-					stem.set_parent(Some(ElementRef::from(e.clone()).downgrade()));
+					stem.set_parent_el(e.clone());
 					stem.set_generated(true);
 				});
 			}
 
-			// Check if a slash is needed.
-			if e.with(|ec| { ec.note_type() == NoteType::Acciaccatura
-				&& !(ec.beam().map(|b| b.borrow_el().elements().next() != Some(&ChordRef::Chord(e.clone()))).unwrap_or(false)) }) {
-				if e.borrow_el().stem_slash().is_none() {
-					e.borrow_mut_el().add(StemSlash::new(e.borrow_el().score().clone()).into())
-				}
-			} else if let Some(slash) = e.borrow_el().stem_slash() {
-				e.borrow_mut_el().remove(&ElementRef::from(slash.clone()))
-			}
-
+			// Set stem width and height
 			if let Some(stem) = e.borrow_el().stem() {
 				stem.with_mut(|mut stem| {
 					let stem_width5 = stem.line_width() * 0.5 * e.borrow_el().scale();
