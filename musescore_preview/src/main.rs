@@ -23,6 +23,8 @@ pub fn draw(painter: &mut PfPainter) {
 	let mut state = RendererState::new();
 	state.set_debug(true);
 	painter.set_score_font(font.clone());
+	painter.set_dpi(96.);
+	painter.set_scale(6.);
 
 	let score = Score::new(font.clone());
 
