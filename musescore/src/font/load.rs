@@ -62,7 +62,8 @@ pub fn load(path: &Path, filename: &str, config: &FontMapping) -> Result<ScoreFo
 	for (sym_name, v) in meta["glyphsWithAnchors"].entries() {
 		let sym_id = config.get_symid(sym_name);
 		if SymName::NoSym == sym_id { continue; }
-		parse_sym(&mut font.symbols[sym_id as usize], v)?;
+		let sym = SymName::from_usize(sym_id as usize).expect("SymId must correspond to a symbol");
+		parse_sym(sym,&mut font.symbols[sym_id as usize], v)?;
 	}
 
 	// TODO: engravings
@@ -87,7 +88,8 @@ pub fn load(path: &Path, filename: &str, config: &FontMapping) -> Result<ScoreFo
 fn compute_metrics(_sym_name: SymName, sym: &mut Sym, code: u32, font: &Font) -> Result<(), Error> {
 	if let Some(char) = std::char::from_u32(code) {
 		if let Some(glyph_id) = font.glyph_for_char(char) {
-			let down_scale = SPATIUM20 / font.metrics().units_per_em as f32;
+			// We downscale the bounds by 10. which should also be done when rendering the font
+			let down_scale = 0.1;
 			// typographic_bounds returns size of 1em defined by font->units_per_em
 			let mut bb = font.typographic_bounds(glyph_id).map_err(Error::Glyph)? * down_scale;
 			// Looks like one needs to flip the bb vertically?
@@ -101,17 +103,17 @@ fn compute_metrics(_sym_name: SymName, sym: &mut Sym, code: u32, font: &Font) ->
 	Ok(())
 }
 
-fn parse_sym(sym: &mut Sym, data: &json::JsonValue) -> Result<(), Error> {
+fn parse_sym(_sym_name: SymName, sym: &mut Sym, data: &json::JsonValue) -> Result<(), Error> {
 	const SCALE: f32 = constants::SPATIUM20;
 	for (k, v) in data.entries() {
 		match k {
 			"stemDownNW" => {
 				let (x, y) = (v[0].as_f32().unwrap_or_default(), v[1].as_f32().unwrap_or_default());
-				sym.stem_down_nw = Point2F::new(constants::DPI_F * x, constants::DPI_F * -y);
+				sym.stem_down_nw = Point2F::new(4. * constants::DPI_F * x, 4. * constants::DPI_F * -y);
 			},
 			"stemUpSE" => {
 				let (x, y) = (v[0].as_f32().unwrap_or_default(), v[1].as_f32().unwrap_or_default());
-				sym.stem_up_se = Point2F::new(constants::DPI_F * x, constants::DPI_F * -y);
+				sym.stem_up_se = Point2F::new(4. * constants::DPI_F * x, 4. * constants::DPI_F * -y);
 			},
 			"cutOutNE" => {
 				let (x, y) = (v[0].as_f32().unwrap_or_default(), v[1].as_f32().unwrap_or_default());

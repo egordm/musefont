@@ -77,6 +77,8 @@ impl ScoreFont {
 		*self.sym(id).cut_out_se() * mag
 	}
 
+	pub fn units_per_em(&self) -> f32 { self.font.metrics().units_per_em as f32 }
+
 	pub fn pixmap(&mut self, id: impl Into<SymId> + Copy, scale: &Size2F, rasterization_options: RasterizationOptions, format: Format) -> Option<&GlyphPixmap> {
 		let key = GlyphKey::new(id.into(), *scale);
 		if !self.cache.contains_key(&key) && self.sym(id).is_valid() {

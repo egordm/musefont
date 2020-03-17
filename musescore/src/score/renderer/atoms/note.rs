@@ -24,12 +24,11 @@ impl Renderer<Note> for NoteRenderer {
 
 	fn render(e: El<Note>, state: &mut RendererState, painter: PainterRef) {
 		e.with(|e| {
-			let spatium = e.score().spatium();
 			painter.draw(drawing::Symbol::from_font(
 				&*e.font(),
 				e.cached_notehead_sym,
 				e.pos(),
-				Size2F::new(e.scale() * spatium, e.scale() * spatium),
+				Size2F::new(e.scale(), e.scale()),
 			).into());
 
 			if state.debug() {

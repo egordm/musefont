@@ -79,7 +79,7 @@ impl Chord {
 	pub fn stem_slash(&self) -> Option<&El<StemSlash>> { self.stem_slash.as_ref() }
 	pub fn set_stem_slash(&mut self, v: Option<El<StemSlash>>) { self.stem_slash = v }
 	pub fn stem_pos_x(&self) -> f32 {
-		if self.up() { self.notehead_width() / 0.266 } else { 0.}
+		if self.up() { self.notehead_width() } else { 0.}
 	}
 
 	pub fn hook(&self) -> Option<&El<Hook>> { self.hook.as_ref() }

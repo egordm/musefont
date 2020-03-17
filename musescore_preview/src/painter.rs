@@ -15,6 +15,7 @@ pub struct PfPainter<'a> {
 	symbol_font: Option<ScoreFont>,
 	world_scale: f32,
 	local_scale: f32,
+	units_per_em: f32,
 }
 
 impl<'a> PfPainter<'a> {
@@ -25,6 +26,7 @@ impl<'a> PfPainter<'a> {
 		symbol_font: None,
 		world_scale: 1.,
 		local_scale: 1.,
+		units_per_em: 1024.,
 	}}
 
 	fn convert_vec(&self, p: &Vec2F) -> Vector2F {
@@ -64,8 +66,9 @@ impl<'a> Painter for PfPainter<'a> {
 			},
 			Instruction::Symbol(symbol) => {
 				self.canvas.set_fill_style(canvas::FillStyle::Color(convert_color(self.color.clone())));
-				// Pathfinder already dpi corrects it
-				self.canvas.set_font_size(symbol.scale().width * self.local_scale); // TODO: this should not vary?
+				// DPI is taken into account using world scale
+				// Dividing units_per_em by 10 since all the bounding boxes are also downscaled
+				self.canvas.set_font_size(self.scale() * symbol.scale().width * self.units_per_em / 10.);
 
 				let scale = Vector2F::new(1., symbol.scale().height / symbol.scale().width);
 				let scale_inv = Vector2F::new(1. / scale.x(), 1. / scale.y());
@@ -112,6 +115,7 @@ impl<'a> Painter for PfPainter<'a> {
 
 	fn set_score_font(&mut self, f: ScoreFont) {
 		self.canvas.set_font(f.font().clone());
+		self.units_per_em = f.units_per_em();
 		self.symbol_font = Some(f);
 	}
 }

@@ -17,13 +17,12 @@ impl Renderer<Hook> for HookRenderer {
 	fn render(e: El<Hook>, state: &mut RendererState, painter: PainterRef) {
 		e.with(|e| {
 			let sym = e.sym();
-			let spatium = e.score().spatium();
 			if sym != SymName::NoSym {
 				painter.draw(drawing::Symbol::from_font(
 					&*e.font(),
 					sym,
 					e.pos(),
-					Size2F::new(e.scale() * spatium, e.scale() * spatium)
+					Size2F::new(e.scale(), e.scale())
 				).into());
 			}
 

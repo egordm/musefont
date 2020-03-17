@@ -15,42 +15,41 @@ pub fn main() {
 }
 
 pub fn draw(painter: &mut PfPainter) {
+	// TODO: font specific overrides
 	let config = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../assets/fonts/smufl");
-	let path = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../assets/fonts/gootville");
+	let path = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../assets/fonts/mscore");
 	let config = font::FontMapping::load(&config).unwrap();
-	let font = font::load(&path, "gootville.otf", &config).expect("Font must load!");
+	let font = font::load(&path, "mscore.ttf", &config).expect("Font must load!");
 
 	let mut state = RendererState::new();
-	state.set_debug(true);
+	state.set_debug(false);
 	painter.set_score_font(font.clone());
 	painter.set_dpi(96.);
-	painter.set_scale(6.);
+	painter.set_scale(4.);
 
 	let score = Score::new(font.clone());
 
 	let chord = Chord::new(score.clone());
 	chord.with_mut(|mut e| {
-		e.set_pos(Point2F::new(200., 200.))
+		e.set_pos(Point2F::new(100., 100.))
 	});
 
 	let note = Note::new(score.clone());
 	chord.borrow_mut_el().add(note.clone().into());
 
 	let stem = Stem::new(score.clone());
+	stem.with_mut(|mut e| {
+		let line_width = e.style().value_spatium(StyleName::StemWidth).points(e.spatium());
+		e.set_line_width(line_width);
+	});
 	chord.borrow_mut_el().add(stem.clone().into());
 
 	let hook = Hook::new(score.clone());
 	hook.with_mut(|mut e| {
 		e.set_hook_type(HookType::Flag64thUp);
 	});
+	//chord.borrow_mut_el().add(hook.clone().into());
 
-
-/*	NoteRenderer::layout(note.clone());
-	NoteRenderer::render(note.clone(), &mut state, painter);
-	StemRenderer::layout(stem.clone());
-	StemRenderer::render(stem.clone(), &mut state, painter);
-	HookRenderer::layout(hook.clone());
-	HookRenderer::render(hook.clone(), &mut state, painter);*/
 
 	ChordRenderer::layout(chord.clone());
 	ChordRenderer::render(chord.clone(), &mut state, painter);
