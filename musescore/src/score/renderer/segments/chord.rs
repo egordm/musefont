@@ -1,7 +1,8 @@
 use crate::font::SymName;
 use crate::score::*;
 use crate::drawing::*;
-use crate::{Point2F, drawing};
+use crate::{Point2F, drawing, Vec2F};
+use crate::score::PropertyId::P1;
 
 pub struct ChordRenderer {
 
@@ -52,17 +53,18 @@ impl Renderer<Chord> for ChordRenderer {
 			// TODO: calculate the real note bound
 		}
 
-		// Layout the hook
-		if let Some(hook) = e.borrow_el().hook() {
-			HookRenderer::layout(hook.clone());
-		}
-
 		// TODO: correct spacing with gracenotes.
 		// TODO: layout all children. Need to add it to trait as assoc (use spacelw and spacerw)
 		// TODO: move stem rendeing somewhere else
 		StemRenderer::layout_chord_stem(&e);
 		if let Some(stem) = e.borrow_el().stem() {
-			StemRenderer::layout(stem.clone())
+			StemRenderer::layout(stem.clone());
+
+			// Layout the hook
+			if let Some(hook) = e.borrow_el().hook() {
+				HookRenderer::layout(hook.clone());
+				HookRenderer::layout_chord_hook(&e);
+			}
 		}
 
 		// Create ledger lines
@@ -80,12 +82,12 @@ impl Renderer<Chord> for ChordRenderer {
 		e.with(|e| {
 			painter.translate(e.pos().to_vector());
 
-			if let Some(hook) = e.hook() {
-				HookRenderer::render(hook.clone(), state, painter);
-			}
-
 			if let Some(stem) = e.stem() {
 				StemRenderer::render(stem.clone(), state, painter);
+
+				if let Some(hook) = e.hook() {
+					HookRenderer::render(hook.clone(), state, painter);
+				}
 			}
 
 			for note in e.notes() {

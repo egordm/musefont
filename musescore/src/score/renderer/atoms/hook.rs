@@ -1,7 +1,7 @@
 use crate::font::SymName;
 use crate::score::*;
 use crate::drawing::PainterRef;
-use crate::{Size2F, drawing, Point2F};
+use crate::{Size2F, drawing, Point2F, Vec2F};
 
 pub struct HookRenderer {}
 
@@ -32,6 +32,22 @@ impl Renderer<Hook> for HookRenderer {
 				painter.set_color(crate::COLOR_BLUE);
 				painter.draw(drawing::Instruction::Point(e.pos(), 2.));
 				painter.set_color(crate::COLOR_BLACK);
+			}
+		});
+	}
+}
+
+impl HookRenderer {
+	/// Called after the stem and the hook are done with their layout
+	pub fn layout_chord_hook(e: &El<Chord>) {
+		e.with(|e| {
+			if let (Some(stem), Some(hook)) = (e.stem(), e.hook()) {
+				// Position the hook properly
+				let p = stem.with(|stem| {
+					let y_offset = hook.with(|hook| if e.up() { hook.bbox().min_y() } else { hook.bbox().max_y() });
+					return stem.hook_pos() - Vec2F::new(stem.width(), y_offset);
+				});
+				hook.borrow_mut_el().set_pos(p);
 			}
 		});
 	}

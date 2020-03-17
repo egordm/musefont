@@ -25,7 +25,7 @@ pub fn draw(painter: &mut PfPainter) {
 	state.set_debug(false);
 	painter.set_score_font(font.clone());
 	painter.set_dpi(96.);
-	painter.set_scale(4.);
+	painter.set_scale(6.);
 
 	let score = Score::new(font.clone());
 
@@ -46,9 +46,9 @@ pub fn draw(painter: &mut PfPainter) {
 
 	let hook = Hook::new(score.clone());
 	hook.with_mut(|mut e| {
-		e.set_hook_type(HookType::Flag64thUp);
+		e.set_hook_type(HookType::Flag8thUp);
 	});
-	//chord.borrow_mut_el().add(hook.clone().into());
+	chord.borrow_mut_el().add(hook.clone().into());
 
 
 	ChordRenderer::layout(chord.clone());
