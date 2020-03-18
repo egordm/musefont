@@ -127,7 +127,7 @@ impl StemRenderer {
 	/// Called before layout spacing of notes.
 	/// Create stem if necessary.
 	/// Should be called in the beam
-	pub fn layout_chord_stem(e: &El<Chord>) {
+	pub fn layout_before(e: &El<Chord>) {
 		let has_stem = e.with(|e| {
 			let stemless_measure = e.measure().with_d(|m| m.stemless(e.staff_id()), false);
 			let stemless_staff= e.staff().with_d(|s| s.staff_type(&e.time()).stemless(), false) && false; // TODO only used for tabbed
@@ -141,7 +141,12 @@ impl StemRenderer {
 				stem.with_mut(|mut stem| {
 					stem.set_parent_el(e.clone());
 					stem.set_generated(true);
+
+					// TODO: Automate this shizzle. Init with props
+					let line_width = stem.style().value_spatium(StyleName::StemWidth).points(stem.spatium());
+					stem.set_line_width(line_width);
 				});
+				e.borrow_mut_el().add(stem.into());
 			}
 
 			// Set stem width and height

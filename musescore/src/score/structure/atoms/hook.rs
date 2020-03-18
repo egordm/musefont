@@ -87,6 +87,10 @@ pub enum HookType {
 }
 
 impl HookType {
+	pub fn direction(self, up: bool) -> HookType {
+		if up { self.up() } else { self.down() }
+	}
+
 	pub fn down(self) -> HookType {
 		if self == HookType::None { self } else if self as u32 <= 8 { HookType::from_u32(self as u32 + 8).unwrap() } else { self }
 	}

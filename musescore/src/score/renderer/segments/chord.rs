@@ -56,14 +56,15 @@ impl Renderer<Chord> for ChordRenderer {
 		// TODO: correct spacing with gracenotes.
 		// TODO: layout all children. Need to add it to trait as assoc (use spacelw and spacerw)
 		// TODO: move stem rendeing somewhere else
-		StemRenderer::layout_chord_stem(&e);
-		if let Some(stem) = e.borrow_el().stem() {
-			StemRenderer::layout(stem.clone());
+		StemRenderer::layout_before(&e);
+		if let Some(stem) = e.with(|e| e.stem().cloned()) {
+			StemRenderer::layout(stem);
 
 			// Layout the hook
+			HookRenderer::layout_before(&e);
 			if let Some(hook) = e.borrow_el().hook() {
 				HookRenderer::layout(hook.clone());
-				HookRenderer::layout_chord_hook(&e);
+				HookRenderer::layout_after(&e);
 			}
 		}
 

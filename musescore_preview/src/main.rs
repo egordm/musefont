@@ -31,25 +31,12 @@ pub fn draw(painter: &mut PfPainter) {
 
 	let chord = Chord::new(score.clone());
 	chord.with_mut(|mut e| {
-		e.set_pos(Point2F::new(100., 100.))
+		e.set_pos(Point2F::new(100., 100.));
+		e.set_duration_type(Duration::new(DurationType::Eighth, 0))
 	});
 
 	let note = Note::new(score.clone());
 	chord.borrow_mut_el().add(note.clone().into());
-
-	let stem = Stem::new(score.clone());
-	stem.with_mut(|mut e| {
-		let line_width = e.style().value_spatium(StyleName::StemWidth).points(e.spatium());
-		e.set_line_width(line_width);
-	});
-	chord.borrow_mut_el().add(stem.clone().into());
-
-	let hook = Hook::new(score.clone());
-	hook.with_mut(|mut e| {
-		e.set_hook_type(HookType::Flag8thUp);
-	});
-	chord.borrow_mut_el().add(hook.clone().into());
-
 
 	ChordRenderer::layout(chord.clone());
 	ChordRenderer::render(chord.clone(), &mut state, painter);

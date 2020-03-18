@@ -38,8 +38,43 @@ impl Renderer<Hook> for HookRenderer {
 }
 
 impl HookRenderer {
+	/// Called before layouting the hook.
+	/// Hook is created when it should exist
+	pub fn layout_before(e: &El<Chord>) {
+		let hook_type = e.with(|e| {
+			let hook_type = e.duration_type().hook_type();
+			if hook_type != HookType::None
+				&& !e.no_stem()
+				&& !e.measure().with_d(|m| m.stemless(e.staff_id()), false) {
+				hook_type.direction(e.up())
+			} else {
+				HookType::None
+			}
+		});
+
+		// Create a hook if needed or delete the hook if it is empty
+		if hook_type != HookType::None {
+			if e.borrow_el().hook().is_none()  {
+				let hook = Hook::new(e.borrow_el().score().clone());
+				hook.with_mut(|mut hook| {
+					hook.set_generated(true);
+				});
+				e.borrow_mut_el().add(hook.into());
+			}
+		} else if let Some(hook) = e.with(|e| e.hook().cloned()) {
+			e.borrow_mut_el().remove(&hook.into())
+		}
+
+		// Set hook type
+		if let Some(hook) = e.borrow_el().hook() {
+			hook.with_mut(|mut hook| {
+				hook.set_hook_type(hook_type)
+			});
+		}
+	}
+
 	/// Called after the stem and the hook are done with their layout
-	pub fn layout_chord_hook(e: &El<Chord>) {
+	pub fn layout_after(e: &El<Chord>) {
 		e.with(|e| {
 			if let (Some(stem), Some(hook)) = (e.stem(), e.hook()) {
 				// Position the hook properly
