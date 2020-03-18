@@ -1,8 +1,6 @@
-use crate::font::SymName;
 use crate::score::*;
 use crate::drawing::*;
-use crate::{Point2F, drawing, Vec2F};
-use crate::score::PropertyId::P1;
+use crate::{Point2F, drawing};
 
 pub struct ChordRenderer {
 
@@ -20,14 +18,14 @@ impl ChordRenderer {
 		}
 
 		// Layout grace notes after
-		for (i, c) in e.borrow_el().grace_notes().iter().enumerate() {
+		for (_i, c) in e.borrow_el().grace_notes().iter().enumerate() {
 			if c.borrow_el().is_grace_before() {
 				ChordRenderer::layout(c.clone());
 			}
 		}
 	}
 
-	fn add_ledger_lines(e: El<Chord>) {
+	fn add_ledger_lines(_e: El<Chord>) {
 		// TODO: add them
 		// unimplemented!()
 	}
@@ -56,6 +54,7 @@ impl Renderer<Chord> for ChordRenderer {
 		// TODO: correct spacing with gracenotes.
 		// TODO: layout all children. Need to add it to trait as assoc (use spacelw and spacerw)
 		// TODO: move stem rendeing somewhere else
+		// TODO: this should probably first check whether beam has a layout
 		StemRenderer::layout_before(&e);
 		if let Some(stem) = e.with(|e| e.stem().cloned()) {
 			StemRenderer::layout(stem);

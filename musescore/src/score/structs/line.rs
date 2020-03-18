@@ -1,6 +1,5 @@
 use crate::score::Spatium;
 use std::ops::{Add, SubAssign, Sub};
-use crate::score::PropertyId::LineStyle;
 use bitflags::_core::ops::AddAssign;
 
 /// Represents a staff line as a means of counting

@@ -1,7 +1,6 @@
 use crate::score::*;
-use crate::drawing::{Painter, PainterRef};
-use crate::{Size2F, drawing, Point2F};
-use crate::score::PropertyId::Color;
+use crate::drawing::{PainterRef};
+use crate::{Size2F, drawing};
 
 pub struct NoteRenderer {
 

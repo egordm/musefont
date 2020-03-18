@@ -1,7 +1,7 @@
 use crate::*;
 use crate::score::*;
 use crate::drawing::{PainterRef};
-use crate::{Point2F, LineF, RectF};
+use crate::{Point2F, LineF};
 
 pub struct StemRenderer {
 
@@ -12,7 +12,7 @@ impl Renderer<Stem> for StemRenderer {
 		e.with_mut(|mut e| {
 			let up = e.up();
 			let vscale = if up { -1. } else { 1. };
-			let mut l = ((e.len() + e.user_len()) * vscale).points(e.spatium());
+			let l = ((e.len() + e.user_len()) * vscale).points(e.spatium());
 			let mut y1 = 0.;
 
 			if let Some(c) = e.chord() {

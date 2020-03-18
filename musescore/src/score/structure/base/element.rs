@@ -136,7 +136,7 @@ pub trait Element: ScoreElement {
 
 	// Properties
 	fn load_properties(&mut self, es: &[ElementStyle]) {
-		for (property, style_name) in es {
+		for (_property, _style_name) in es {
 			//self.set_property(property, )
 			unimplemented!()
 		}

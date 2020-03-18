@@ -1,7 +1,7 @@
 use crate::font::SymName;
 use crate::score::*;
 use crate::drawing::PainterRef;
-use crate::{Size2F, drawing, Point2F, Vec2F};
+use crate::{Size2F, drawing, Vec2F};
 
 pub struct HookRenderer {}
 
@@ -88,11 +88,11 @@ impl HookRenderer {
 	}
 }
 
-pub fn hook_len_adjustment(font: &str, hooks: HookType, up: bool, small: bool) -> Spatium {
+pub fn hook_len_adjustment(_font: &str, hooks: HookType, up: bool, small: bool) -> Spatium {
 	let hooks = hooks.index();
 	let fallback = hooks > 5; // && use fallback font
 
-	let font = "Gonville";
+	let font = "Emmentaler"; // TODO: dont hardcode
 	let value = match (font, fallback) {
 		("Emmentaler", false) => {
 			if up {

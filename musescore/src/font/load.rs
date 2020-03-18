@@ -3,7 +3,6 @@ pub use super::*;
 use crate::num_traits::FromPrimitive;
 use font_kit::loaders::default::Font;
 use std::{path::Path, fs::File};
-use crate::constants::SPATIUM20;
 
 macro_rules! impl_display {
     ($enum:ident, {$($variant:pat => $fmt_string:expr),+$(,)* }) => {
