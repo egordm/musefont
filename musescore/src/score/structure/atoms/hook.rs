@@ -3,6 +3,7 @@ use crate::*;
 use crate::score::*;
 use num_traits::abs;
 use crate::font::SymName;
+use crate::drawing::PainterRef;
 
 /// # [Hook](https://en.wikipedia.org/wiki/Note_value)
 #[derive(Debug, Clone)]
@@ -58,6 +59,14 @@ impl Element for Hook {
 	}
 	fn set_property(&mut self, p: PropertyId, v: ValueVariant) -> bool {
 		self.element.set_custom_property(p, v.clone()) || self.set_element_property(p, v)
+	}
+
+	fn layout(e: El<Self>) where Self: Sized {
+		HookRenderer::layout(e)
+	}
+
+	fn render(e: El<Self>, state: &mut RendererState, painter: PainterRef) where Self: Sized {
+		HookRenderer::render(e, state, painter)
 	}
 }
 

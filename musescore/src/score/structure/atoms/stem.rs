@@ -1,5 +1,6 @@
 use crate::*;
 use crate::score::*;
+use crate::drawing::PainterRef;
 
 #[derive(Debug, Clone)]
 pub struct Stem {
@@ -88,6 +89,14 @@ impl Element for Stem {
 	}
 	fn set_property(&mut self, p: PropertyId, v: ValueVariant) -> bool {
 		self.set_custom_property(p, v.clone()) || self.set_element_property(p, v)
+	}
+
+	fn layout(e: El<Self>) where Self: Sized {
+		StemRenderer::layout(e)
+	}
+
+	fn render(e: El<Self>, state: &mut RendererState, painter: PainterRef) where Self: Sized {
+		StemRenderer::render(e, state, painter)
 	}
 }
 

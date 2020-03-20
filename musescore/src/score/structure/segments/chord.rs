@@ -1,6 +1,7 @@
 use crate::score::*;
 use std::convert::{TryInto, TryFrom};
 use crate::remove_element;
+use crate::drawing::PainterRef;
 
 #[derive(Debug, Clone)]
 pub struct Chord {
@@ -307,6 +308,14 @@ impl Element for Chord {
 	fn set_property(&mut self, p: PropertyId, v: ValueVariant) -> bool {
 		self.set_element_property(p, v.clone()) || self.set_chordrest_property(p, v.clone())
 			|| self.set_duration_property(p, v.clone()) || self.set_custom_property(p, v)
+	}
+
+	fn layout(e: El<Self>) where Self: Sized {
+		ChordRenderer::layout(e)
+	}
+
+	fn render(e: El<Self>, state: &mut RendererState, painter: PainterRef) where Self: Sized {
+		ChordRenderer::render(e, state, painter)
 	}
 }
 

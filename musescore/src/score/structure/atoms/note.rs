@@ -2,6 +2,7 @@ use crate::*;
 use crate::score::*;
 use crate::font::SymName;
 use crate::num_traits::FromPrimitive;
+use crate::drawing::PainterRef;
 
 pub type Pitch = i32;
 
@@ -358,6 +359,14 @@ impl Element for Note {
 	}
 	fn set_property(&mut self, p: PropertyId, v: ValueVariant) -> bool {
 		self.set_element_property(p, v.clone()) || self.set_custom_property(p, v)
+	}
+
+	fn layout(e: El<Self>) where Self: Sized {
+		NoteRenderer::layout(e)
+	}
+
+	fn render(e: El<Self>, state: &mut RendererState, painter: PainterRef) where Self: Sized {
+		NoteRenderer::render(e, state, painter)
 	}
 }
 

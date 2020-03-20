@@ -1,5 +1,6 @@
 use crate::*;
 use crate::score::*;
+use crate::drawing::PainterRef;
 
 pub type Track = u16;
 pub type Voice = u16;
@@ -204,6 +205,14 @@ pub trait Element: ScoreElement {
 				self.score().spatium()
 			}
 		}
+	}
+
+	fn layout(e: El<Self>) where Self: Sized {
+		unimplemented!() // TODO: dont default here. Require implementaton
+	}
+
+	fn render(e: El<Self>, state: &mut RendererState, painter: PainterRef) where Self: Sized {
+		unimplemented!() // TODO: dont default here. Require implementaton
 	}
 }
 

@@ -1,5 +1,7 @@
 use super::*;
 use super::super::*;
+use crate::drawing::PainterRef;
+use crate::score::RendererState;
 use std::convert::{TryInto, TryFrom};
 use std::any::Any;
 
@@ -126,6 +128,18 @@ macro_rules! decl_elem_ref {{
 		pub fn as_trait_mut(&self) -> RefMut<dyn $Trait> {
 			match self {$(
 				Self::$Variant(r) => r.borrow_mut_el(),
+			)*}
+		}
+
+		pub fn layout(self) {
+			match self {$(
+				Self::$Variant(r) => <$Type as Element>::layout(r),
+			)*}
+		}
+
+		pub fn render(self, state: &mut RendererState, painter: PainterRef) {
+			match self {$(
+				Self::$Variant(r) => <$Type as Element>::render(r, state, painter),
 			)*}
 		}
 	}

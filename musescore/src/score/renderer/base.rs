@@ -1,5 +1,5 @@
 use crate::score::{Element, El};
-use crate::drawing::PainterRef;
+use crate::drawing::{PainterRef};
 
 pub trait Renderer<T: Element> {
 	fn layout(e: El<T>);

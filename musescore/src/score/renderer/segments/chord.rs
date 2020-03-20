@@ -76,9 +76,6 @@ impl Renderer<Chord> for ChordRenderer {
 	}
 
 	fn render(e: El<Chord>, state: &mut RendererState, painter: PainterRef) {
-		// unimplemented!()
-		// Draw children or what?
-
 		e.with(|e| {
 			painter.translate(e.pos().to_vector());
 
