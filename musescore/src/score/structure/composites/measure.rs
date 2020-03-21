@@ -30,19 +30,21 @@ pub struct Measure {
 }
 
 impl Measure {
-	pub fn new(score: Score) -> El<Self> { new_element(Self {
-		element: ElementData::new(score),
-		mstaves: vec![],
-		measure_data: Default::default(),
-		segments: SegmentMap::new(),
-		mm_rest_count: 0,
-		mm_rest: None,
-		timesig: Fraction::new(4, 4),
-		repeat_count: 0,
-		user_stretch: 0.0,
-		no_mode: MeasureNumberMode::Auto,
-		break_mm_rest: false
-	})}
+	pub fn new(score: Score) -> El<Self> {
+		new_element(Self {
+			element: ElementData::new(score),
+			mstaves: vec![],
+			measure_data: Default::default(),
+			segments: SegmentMap::new(),
+			mm_rest_count: 0,
+			mm_rest: None,
+			timesig: Fraction::new(4, 4),
+			repeat_count: 0,
+			user_stretch: 0.0,
+			no_mode: MeasureNumberMode::Auto,
+			break_mm_rest: false
+		})
+	}
 
 	pub fn segments(&self) -> &SegmentMap { &self.segments }
 
@@ -109,7 +111,7 @@ impl Measure {
 			PropertyId::TimesigNominal => v.with_value(|v| self.timesig = Fraction::from_ticks(v)),
 			PropertyId::TimesigActual => v.with_value(|v| self.set_duration(Fraction::from_ticks(v))),
 			PropertyId::MeasureNumberMode => v.with_enum(|v| self.set_no_mode(v)),
-			PropertyId::BreakMmr => v.with_value(|v | self.break_mm_rest = v),
+			PropertyId::BreakMmr => v.with_value(|v| self.break_mm_rest = v),
 			PropertyId::RepeatCount => v.with_value(|v| self.repeat_count = v),
 			PropertyId::UserStretch => v.with_value(|v| self.user_stretch = v),
 			_ => false,
@@ -155,8 +157,7 @@ impl Measure {
 	/// Get a segment of type st at relative tick position t.
 	/// If the segment does not exist, it is created.
 	pub fn get_segment_r(&mut self, t: Fraction, st: SegmentType) -> El<Segment> {
-		if let Some(s) = self.find_segment_r(t, st) { s }
-		else {
+		if let Some(s) = self.find_segment_r(t, st) { s } else {
 			let s = Segment::new(self.score().clone());
 			{
 				let mut r = s.borrow_mut_el();
@@ -164,7 +165,8 @@ impl Measure {
 				r.set_segment_type(st);
 				r.set_rel_time(t);
 			}
-			self.add(s.clone().into());
+
+			self.add_segment(s.clone().into());
 			return s;
 		}
 	}
@@ -188,37 +190,26 @@ impl Measure {
 
 impl MeasureTrait for Measure {
 	fn measure_data(&self) -> &MeasureData { &self.measure_data }
-	fn measure_data_mut(&mut self) -> &mut MeasureData {&mut self.measure_data }
+	fn measure_data_mut(&mut self) -> &mut MeasureData { &mut self.measure_data }
 
-	fn add(&mut self, e: ElementRef) {
-		match e {
-			ElementRef::Segment(e) => {
-				let t = e.borrow_el().rel_time();
-				let st = e.borrow_el().segment_type();
-				for other in self.segment_next_iter(t) {
-					if other.borrow_el().rel_time() != t { break; }
-					if other.borrow_el().segment_type() == st {
-						debug!("Segment with type {} already exists in this measure!", st.bits());
-						return;
+	fn add(e: El<Self>, c: ElementRef) where Self: Sized {
+		let track = e.borrow_el().track();
+		c.as_trait_mut().attach(e.borrow_el().get_ref(), track);
+
+		match c {
+			ElementRef::Segment(c) => e.borrow_mut_el().add_segment(c),
+			ElementRef::HBox(c) => e.borrow_mut_el().add_element(c.into()),
+			ElementRef::Measure(c) => e.borrow_mut_el().set_mm_rest(Some(MeasureRef::Measure(c).downgrade())),
+			ElementRef::Spacer(c) => {
+				let (staff_id, st) = c.with(|c| (c.staff_id() as usize, c.spacer_type()));
+				e.with_mut(|mut e| {
+					match st { // Spacer relayout trigger
+						SpacerType::Up => e.mstaves[staff_id].set_vspacer_up(Some(c.clone())),
+						SpacerType::Down | SpacerType::Fixed => e.mstaves[staff_id].set_vspacer_down(Some(c.clone())),
 					}
-				}
-				self.segments.insert(e.clone());
-
-				if e.borrow_el().header() { self.set_header(true); }
-				if e.borrow_el().trailer() { self.set_trailer(true); }
+				});
 			}
-			//ElementRef::MeasureNumber(e) => {}
-			ElementRef::Spacer(e) => {
-				let staff_id = e.borrow_el().staff_id() as usize;
-				let st = e.borrow_el().spacer_type();
-				match st { // Spacer relayout trigger
-					SpacerType::Up => self.mstaves[staff_id].set_vspacer_up(Some(e)),
-					SpacerType::Down | SpacerType::Fixed => self.mstaves[staff_id].set_vspacer_down(Some(e)),
-				}
-			}
-			ElementRef::HBox(e) => self.add_element(e.into()),
-			ElementRef::Measure(e) => self.mm_rest = Some(MeasureRef::Measure(e).downgrade()),
-			_ => self.base_add(e)
+			_ => unimplemented!()
 		}
 	}
 
@@ -254,6 +245,26 @@ impl MeasureTrait for Measure {
 			ElementRef::Measure(_) => self.mm_rest = None,
 			_ => self.base_remove(e)
 		}
+	}
+}
+
+impl Measure {
+	fn add_segment(&mut self, c: El<Segment>) {
+		c.with(|segment| {
+			let t = segment.rel_time();
+			let st = segment.segment_type();
+			for other in self.segment_next_iter(t) {
+				if other.borrow_el().rel_time() != t { break; }
+				if other.borrow_el().segment_type() == st {
+					debug!("Segment with type {} already exists in this measure!", st.bits());
+					return;
+				}
+			}
+
+			self.segments.insert(c.clone());
+			if segment.header() { self.set_header(true); }
+			if segment.trailer() { self.set_trailer(true); }
+		})
 	}
 }
 
@@ -302,15 +313,17 @@ pub struct MStaff {
 }
 
 impl Default for MStaff {
-	fn default() -> Self {Self{
-		lines: None,
-		vspacer_up: None,
-		vspacer_down: None,
-		/// indicates that MStaff contains more than one voice, this changes some layout rules
-		has_voices: false,
-		visible: true,
-		stemless: false
-	}}
+	fn default() -> Self {
+		Self {
+			lines: None,
+			vspacer_up: None,
+			vspacer_down: None,
+			/// indicates that MStaff contains more than one voice, this changes some layout rules
+			has_voices: false,
+			visible: true,
+			stemless: false
+		}
+	}
 }
 
 impl MStaff {
@@ -329,4 +342,29 @@ impl MStaff {
 	pub fn set_visible(&mut self, v: bool) { self.visible = v }
 	pub fn stemless(&self) -> bool { self.stemless }
 	pub fn set_stemless(&mut self, v: bool) { self.stemless = v }
+}
+
+#[cfg(test)]
+mod tests {
+	use crate::testing;
+	use crate::score::*;
+
+	#[test]
+	fn test_add_segment() {
+		let score = testing::setup_score();
+		let measure = Measure::new(score.clone());
+		for i in [1, 3, 4, 2].iter().cloned() {
+			let segment = Segment::new(score.clone()).with_mut_i(|mut segment| {
+				segment.set_rel_time(Fraction::new(i - 1, 4));
+				segment.set_duration(Fraction::new(1, 4));
+				segment.set_scale(i as f32)
+			});
+			Measure::add(measure.clone(), segment.into());
+		}
+
+		for (i, (k, segment)) in measure.borrow_el().segments().iter_valsz().enumerate() {
+			let a = segment.borrow_el().scale();
+			assert_eq!(segment.borrow_el().scale(), (i + 1) as f32)
+		}
+	}
 }

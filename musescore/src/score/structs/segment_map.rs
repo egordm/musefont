@@ -40,7 +40,7 @@ impl SegmentMap {
 	pub fn insert(&mut self, e: Value) {
 		let (t, ty) = {
 			let r = e.borrow_el();
-			(r.time(), r.segment_type())
+			(r.rel_time(), r.segment_type())
 		};
 		self.data.insert(Self::key_from(&t, ty), e);
 	}
@@ -64,12 +64,15 @@ impl SegmentMap {
 	pub fn iter_vals(&self) -> impl DoubleEndedIterator<Item=&Value> {
 		self.data.iter().map(|(_, v)| v)
 	}
+	pub fn iter_valsz(&self) -> impl DoubleEndedIterator<Item=(&usize, &Value)> {
+		self.data.iter()
+	}
 
 	//pub fn get_ty(&self, t: &Fraction, ty: SegmentTypeMask) -> Option<&El<Segment>>
 	/// Gets the real key combining fraction and segment type
 	pub fn key_from(t: &Fraction, ty: SegmentTypeMask) -> Key {
 		let (ticks, ty_id) = (t.ticks().max(0) as Key, ty.bits() as Key);
-		(ticks << 16) & ty_id
+		(ticks << 16) | ty_id
 	}
 	pub fn key_to(k: usize) -> (Fraction, SegmentTypeMask) { (Self::key_tick(k), Self::key_type(k)) }
 

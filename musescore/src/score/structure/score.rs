@@ -33,6 +33,7 @@ impl Score {
 	pub fn note_head_width(&self) -> f32 { self.inner().note_head_width }
 
 	pub fn staves(&self) -> Ref<StaffList> { Ref::map(self.inner(), |r| &r.staves) }
+	pub fn stave_count(&self) -> usize { self.inner().staves.len() }
 	pub fn staff(&self, i: StaffId) -> Option<El<Staff>> { self.inner().staves.get(i as usize).cloned() }
 
 	pub fn add(&mut self, _e: ElementRef) {

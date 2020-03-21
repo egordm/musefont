@@ -25,6 +25,14 @@ macro_rules! conv_elem_ref {
 			}
 		}
 	}
+
+	impl Into<ElementRef> for $RefName {
+		fn into(self) -> ElementRef {
+			match self {
+				$($RefName::$Variant(r) => ElementRef::$Variant(r),)*
+			}
+		}
+	}
 }
 }
 

@@ -9,6 +9,7 @@ pub mod font;
 pub mod score;
 pub mod structs;
 pub mod constants;
+mod testing;
 
 //pub use score::*;
 //pub use font::*;

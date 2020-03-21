@@ -95,11 +95,7 @@ pub trait MeasureTrait: Element {
 		}
 	}
 
-	fn add(&mut self, e: ElementRef) { self.base_add(e) }
-
-	fn base_add(&mut self, _e: ElementRef) {
-		// TODO: implement layout break add
-	}
+	fn add(e: El<Self>, c: ElementRef) where Self: Sized {}
 
 	fn remove(&mut self, e: &ElementRef) { self.base_remove(e) }
 

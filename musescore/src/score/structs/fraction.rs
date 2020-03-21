@@ -46,23 +46,24 @@ impl Eq for Fraction {}
 
 impl PartialEq for Fraction {
 	fn eq(&self, other: &Self) -> bool {
-		self.numerator * other.denominator == self.numerator * other.denominator
+		self.numerator * other.denominator == other.numerator * self.denominator
 	}
 }
 
 impl PartialOrd for Fraction {
 	fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-		Some((self.numerator * other.denominator).cmp(&(self.numerator * other.denominator)))
+		Some((self.numerator * other.denominator).cmp(&(other.numerator * self.denominator)))
 	}
 }
 
 impl Ord for Fraction {
 	fn cmp(&self, other: &Self) -> Ordering {
-		(self.numerator * other.denominator).cmp(&(self.numerator * other.denominator))
+		(self.numerator * other.denominator).cmp(&(other.numerator * self.denominator))
 	}
 }
 
 impl Fraction {
+	pub fn zero() -> Self { Self::new(0, 0) }
 	pub fn new(numerator: i32, denominator: i32) -> Self { Self { numerator, denominator } }
 	pub fn num(&self) -> i32 { self.numerator }
 	pub fn den(&self) -> i32 { self.denominator }
@@ -170,4 +171,15 @@ fn gcd(mut a: i32, mut b: i32) -> i32 {
 		b = tmp;
 	}
 	b
+}
+
+#[cfg(test)]
+mod tests {
+	use crate::score::Fraction;
+	use crate::constants;
+
+	#[test]
+	fn test_ticks() {
+		assert_eq!(Fraction::new(1, 4).ticks(), constants::DIVISION)
+	}
 }

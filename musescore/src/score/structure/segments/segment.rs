@@ -41,7 +41,7 @@ impl Segment {
 		extra_leading_space: Spatium(0.0),
 		stretch: false,
 		annotations: vec![],
-		elist: vec![],
+		elist: vec![None], // Default to one staff
 		dot_pos_x: vec![]
 	})}
 
@@ -120,53 +120,59 @@ impl Segment {
 	pub fn is_keysig_announce(&self) -> bool { self.is_type(SegmentTypeMask::KEYSIG_ANNOUNCE) }
 	pub fn is_timesig_announce(&self) -> bool { self.is_type(SegmentTypeMask::TIMESIG_ANNOUNCE) }
 
-	#[allow(unused_assignments)]
-	pub fn add_chordrest(&mut self, e: ChordRef) {
-		let track = self.track();
-		if track % constants::VOICES as Track > 0 {
-			let mut _visible = false;
-			if let ChordRef::Chord(_e) = e{
-				// TODO: needed?
-			} else {
-				_visible = e.as_trait().visible();
-			}
-		}
-	}
+	pub fn add(e: El<Self>, c: ElementRef) {
+		let track = e.borrow_el().track();
+		c.as_trait_mut().attach(e.borrow_el().get_ref(), track);
 
-	pub fn add(&mut self, e: ElementRef) { // TODO: move insert logic to actual setters
-		e.as_trait_mut().attach(self.get_ref(), self.track());
-		let track = self.track();
-
-		match e {
-			ElementRef::Clef(e) => {
-				self.elist[track as usize] = Some(e.clone().into());
-				if !e.borrow_el().generated() {
-					if let Some(staff) = e.borrow_el().staff() {
-						staff.borrow_mut_el().set_clef(e.clone()) // TODO: rip invariant?
+		match c {
+			ElementRef::Clef(_) | ElementRef::TimeSig(_) | ElementRef::KeySig(_) => {
+				Self::add_element(e.clone(), c.clone());
+				e.with(|er| {
+					if !er.generated() {
+						er.staff().with_mut(|mut staff| {
+							match &c {
+								ElementRef::Clef(c) => staff.set_clef(c.clone()),
+								ElementRef::TimeSig(c) => staff.add_timesig(c.clone()),
+								ElementRef::KeySig(c) => staff.set_keysig(&er.time(), c.borrow_el().sig().clone()),
+								_ => unreachable!()
+							}
+						});
 					}
-				}
+				});
 			},
-			ElementRef::TimeSig(e) => {
-				self.elist[track as usize] = Some(e.clone().into());
-				if !e.borrow_el().generated() {
-					if let Some(staff) = e.borrow_el().staff() {
-						staff.borrow_mut_el().add_timesig(e.clone()) // TODO: rip invariant?
-					}
-				}
-			},
-			ElementRef::KeySig(e) => {
-				self.elist[track as usize] = Some(e.clone().into());
-				if !e.borrow_el().generated() {
-					if let Some(staff) = e.borrow_el().staff() {
-						staff.borrow_mut_el().set_keysig(&self.time(), e.borrow_el().sig().clone()) // TODO: rip invariant?
-					}
-				}
-			}
-			ElementRef::Chord(e) => self.add_chordrest(e.into()),
-			ElementRef::Rest(e) => self.add_chordrest(e.into()),
+			ElementRef::Chord(_) | ElementRef::Rest(_) => Self::add_chordrest(e, c.try_into().unwrap()),
+			ElementRef::Barline(_) => Self::add_element(e, c.into()),
 			_ => {}
 		}
+
 	}
+
+	fn add_chordrest(e: El<Self>, c: ChordRef) {
+		let track = e.borrow_el().track();
+		if track % constants::VOICES as Track > 0 {
+			let visible = match &c {
+				ChordRef::Chord(c) => {
+					c.borrow_el().notes().iter().any(|n| n.borrow_el().visible())
+				}
+				ChordRef::Rest(e) => {
+					c.as_trait().visible()
+				}
+			};
+			e.borrow_mut_el().set_visible(visible);
+		}
+
+		Self::add_element(e, c.into())
+	}
+
+	fn add_element(e: El<Self>, c: ElementRef) {
+		let track = e.borrow_el().track();
+		if (track as usize) < e.borrow_el().score().stave_count() * constants::VOICES {
+			// TODO: check if we replace something nongenerated. If yes, warn or smt
+			assert!(e.borrow_el().elist.len() < track as usize, "Track lies outside configured amount of staves.");
+			e.borrow_mut_el().elist[track as usize] = Some(c);
+		}
+	}
+
 	pub fn remove(&mut self, e: &ElementRef) {
 		match e {
 			_ => {}
@@ -191,7 +197,7 @@ impl Element for Segment {
 	fn element_type(&self) -> ElementType { ElementType::Segment }
 
 	fn time(&self) -> Fraction {
-		self.rel_time() + self.measure().map(|e| e.borrow_el().time()).unwrap_or(Fraction::new(0, 0))
+		self.rel_time() + self.measure().with_d(|e| e.time(), Fraction::zero())
 	}
 }
 
@@ -238,5 +244,31 @@ impl From<SegmentType> for SegmentTypeMask {
 			SegmentType::Segment => SegmentTypeMask::INVALID,
 			SegmentType::TimeSig => SegmentTypeMask::TIMESIG,
 		}
+	}
+}
+
+#[cfg(test)]
+mod tests {
+	use crate::testing;
+	use crate::score::*;
+
+	#[test]
+	fn test_add_chord() {
+		let score = testing::setup_score();
+		let chord = Chord::new(score.clone()).with_mut_i(|mut chord| {
+			chord.set_visible(true);
+		});
+		let segment = Segment::new(score.clone());
+		Segment::add(segment.clone(), chord.into());
+
+		segment.with(|segment| {
+			assert_eq!(segment.visible(), true)
+		});
+	}
+
+	#[test]
+	fn test_add_timeelem() {
+		let score = testing::setup_score();
+		// TODO: test add time / key sig
 	}
 }

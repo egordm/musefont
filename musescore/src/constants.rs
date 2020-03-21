@@ -5,6 +5,7 @@ pub const DPI: f32 = 72.0 * DPI_F;
 pub const SPATIUM20: f32 = 5.0 * (DPI / 72.0);
 pub const DPMM: f32 = DPI / INCH;
 
+/// Quarter Note duration
 pub const DIVISION: i32 = 480;
 
 pub const VOICES: usize = 4;

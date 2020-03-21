@@ -53,6 +53,10 @@ impl<T> El<T> {
 	pub fn with_mut<F: FnMut(RefMut<T>) -> R, R>(&self, mut f: F) -> R {
 		f(self.borrow_mut_el())
 	}
+	pub fn with_mut_i<F: FnMut(RefMut<T>)>(self, mut f: F) -> Self {
+		f(self.borrow_mut_el());
+		self
+	}
 }
 
 impl<T> Into<ElWeak<T>> for El<T> {
