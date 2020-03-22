@@ -5,6 +5,7 @@ use crate::drawing::PainterRef;
 pub type Track = u16;
 pub type Voice = u16;
 pub type StaffId = u16;
+pub const MAX_STAFF_ID: StaffId = std::u16::MAX;
 pub type ElementStyle = (PropertyId, StyleName);
 
 pub fn new_element<T: Element + Clone>(e: T) -> El<T>

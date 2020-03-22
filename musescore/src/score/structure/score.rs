@@ -1,3 +1,4 @@
+use log::{warn};
 use crate::font::*;
 use crate::score::*;
 
@@ -33,11 +34,70 @@ impl Score {
 	pub fn note_head_width(&self) -> f32 { self.inner().note_head_width }
 
 	pub fn staves(&self) -> Ref<StaffList> { Ref::map(self.inner(), |r| &r.staves) }
-	pub fn stave_count(&self) -> usize { self.inner().staves.len() }
+	pub fn staff_count(&self) -> usize { self.inner().staves.len() }
 	pub fn staff(&self, i: StaffId) -> Option<El<Staff>> { self.inner().staves.get(i as usize).cloned() }
 
 	pub fn add(&mut self, _e: ElementRef) {
 		unimplemented!()
+	}
+}
+
+impl Score {
+	/// Adds a part to the score
+	/// TODO: Warning: Staves in the part are not added.
+	pub fn insert_part(&self, part: El<Part>, idx: StaffId) {
+		let mut inserted = false;
+		let mut staff = 0;
+		{
+			let parts = &mut self.inner_mut().parts;
+			for i in 0..parts.len() {
+				if staff >= idx as usize {
+					parts.insert(i, part.clone());
+					inserted = true;
+					break;
+				}
+				staff += parts[i].borrow_el().staff_count();
+			}
+			if !inserted { parts.push(part.clone()) }
+		}
+		// TODO: instrument changed?
+	}
+
+	/// Removes a part from the score
+	/// TODO: Warning: Staves attached to the part are not removed.
+	pub fn remove_part(&self, part: &El<Part>) {
+		remove_element(&mut self.inner_mut().parts, part);
+		// TODO: instrument changed?
+	}
+
+	/// Inserts a staff into the score and adds it to a corresponding part
+	pub fn insert_staff(&self, staff: El<Staff>, part: &El<Part>, rel_idx: StaffId) {
+		part.borrow_mut_el().insert_staff(staff.clone(), rel_idx);
+		let idx = self.staff_idx(part.clone()) + rel_idx;
+		self.inner_mut().staves.insert(idx as usize, staff);
+		// TODO: update spenners their tracks
+	}
+
+	/// Removes a staff from the score and the corresponding part
+	pub fn remove_staff(&self, staff: &El<Staff>) {
+		if let Some(part) = staff.borrow_el().part().upgrade().clone() {
+			let idx = staff.borrow_el().staff_id();
+			remove_element(&mut self.inner_mut().staves, &staff);
+			part.borrow_mut_el().remove_staff(staff);
+			// TODO: update spenners their tracks
+		} else {
+			warn!("Tried to remove a staff which has no part assigned.");
+			// TODO: mayby return a result instead?
+		}
+	}
+
+	pub fn staff_idx(&self, part: El<Part>) -> StaffId {
+		let mut idx = 0;
+		for p in self.inner().parts.iter() {
+			if part == *p { break }
+			else { idx += p.borrow_el().staff_count() }
+		}
+		return idx as StaffId;
 	}
 }
 
@@ -64,3 +124,44 @@ pub struct InnerScore {
 
 pub type StaffList = Vec<El<Staff>>;
 pub type PartList = Vec<El<Part>>;
+
+#[cfg(test)]
+mod tests {
+	use crate::testing;
+	use crate::score::*;
+
+	#[test]
+	fn test_add_remove_staves() {
+		let score = testing::setup_score();
+
+		let staves = [
+			Staff::new(score.clone()),
+			Staff::new(score.clone()),
+			Staff::new(score.clone())
+		];
+		let staff_extra = Staff::new(score.clone());
+
+		let part = Part::new(score.clone(), "Triangle".to_string());
+		score.insert_part(part.clone(), 0);
+
+		for (i, staff) in staves.iter().enumerate() {
+			score.insert_staff(staff.clone(), &part, i as StaffId);
+		}
+		score.insert_staff(staff_extra.clone(), &part, 0);
+
+		assert_eq!(score.staff_count(), 4);
+		part.with(|part| {
+			assert_eq!(part.staff_count(), 4);
+			assert_eq!(part.staves()[0], staff_extra)
+		});
+
+		for (i, staff) in staves.iter().enumerate() {
+			score.remove_staff(staff);
+		}
+		assert_eq!(score.staff_count(), 1);
+		part.with(|part| {
+			assert_eq!(part.staff_count(), 1);
+			assert_eq!(part.staves()[0], staff_extra)
+		});
+	}
+}

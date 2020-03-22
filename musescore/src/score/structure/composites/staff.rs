@@ -218,3 +218,15 @@ pub type ClefTypeList = OrderedCollecton<ClefTypeGroup>;
 pub type KeyList = OrderedCollecton<KeySigEvent>;
 pub type TimesigList = OrderedCollecton<El<TimeSig>>;
 pub type StaffTypeList = OrderedCollecton<StaffType>;
+
+#[cfg(test)]
+mod tests {
+	use crate::testing;
+	use crate::score::*;
+
+	#[test]
+	fn test_add_measure() {
+		let score = testing::setup_score();
+		// TODO: add measure tests
+	}
+}

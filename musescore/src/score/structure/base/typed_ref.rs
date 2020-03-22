@@ -48,6 +48,9 @@ impl<T> El<T> {
 	pub fn with<F: FnMut(Ref<T>) -> R, R>(&self, mut f: F) -> R {
 		f(self.borrow_el())
 	}
+	pub fn with_d<F: FnMut(Ref<T>) -> Option<R>, R>(&self, f: F, default: R) -> R {
+		self.with(f).unwrap_or(default)
+	}
 
 	pub fn borrow_mut_el(&self) -> RefMut<T> { RefCell::borrow_mut(&self.0) }
 	pub fn with_mut<F: FnMut(RefMut<T>) -> R, R>(&self, mut f: F) -> R {
@@ -101,5 +104,27 @@ impl<T> OptionalEl<T> for Option<&El<T>> {
 
 	fn with_mut<F: FnMut(RefMut<T>) -> R, R>(&self, mut f: F) -> Option<R> {
 		Some(f(self.as_ref()?.borrow_mut_el()))
+	}
+}
+
+pub trait OptionalWeakEl<T> {
+	fn upgrade(&self) -> Option<El<T>>;
+}
+
+impl<T> OptionalWeakEl<T> for Option<ElWeak<T>> {
+	fn upgrade(&self) -> Option<El<T>> {
+		if let Some(e) = self {
+			e.upgrade()
+		} else { None }
+	}
+}
+
+impl<T> OptionalEl<T> for Option<ElWeak<T>> {
+	fn with<F: FnMut(Ref<T>) -> R, R>(&self, f: F) -> Option<R> {
+		self.upgrade().with(f)
+	}
+
+	fn with_mut<F: FnMut(RefMut<T>) -> R, R>(&self, f: F) -> Option<R> {
+		self.upgrade().with_mut(f)
 	}
 }
