@@ -28,7 +28,11 @@ pub fn draw(painter: &mut PfPainter) {
 	painter.set_scale(6.);
 
 	let score = Score::new(font.clone());
-	//score.staves()
+
+	let part = Part::new(score.clone(), "Triangle".to_string());
+	let staff = Staff::new(score.clone());
+	score.insert_part(part.clone(), 0);
+	score.insert_staff(staff.clone(), &part, 0);
 
 	let segment = Segment::new(score.clone()).with_mut_i(|mut segment| {
 		segment.set_rel_time(Fraction::new(0, 4));
@@ -44,8 +48,6 @@ pub fn draw(painter: &mut PfPainter) {
 	let note = Note::new(score.clone());
 	chord.borrow_mut_el().add(note.clone().into());
 
-	//ChordRenderer::layout(chord.clone());
 	SegmentRenderer::layout(segment.clone());
-	ChordRenderer::render(chord.clone(), &mut state, painter);
-	// SegmentRenderer::render(segment.clone(), &mut state, painter);
+	SegmentRenderer::render(segment.clone(), &mut state, painter);
 }

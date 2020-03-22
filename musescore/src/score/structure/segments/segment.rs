@@ -168,7 +168,7 @@ impl Segment {
 		let track = e.borrow_el().track();
 		if (track as usize) < e.borrow_el().score().staff_count() * constants::VOICES {
 			// TODO: check if we replace something nongenerated. If yes, warn or smt
-			assert!(e.borrow_el().elist.len() < track as usize, "Track lies outside configured amount of staves.");
+			assert!(e.borrow_el().elist.len() > track as usize, "Track lies outside configured amount of staves.");
 			e.borrow_mut_el().elist[track as usize] = Some(c);
 		}
 	}

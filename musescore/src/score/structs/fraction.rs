@@ -63,7 +63,7 @@ impl Ord for Fraction {
 }
 
 impl Fraction {
-	pub fn zero() -> Self { Self::new(0, 0) }
+	pub fn zero() -> Self { Self::new(0, 1) }
 	pub fn new(numerator: i32, denominator: i32) -> Self { Self { numerator, denominator } }
 	pub fn num(&self) -> i32 { self.numerator }
 	pub fn den(&self) -> i32 { self.denominator }
