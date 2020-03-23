@@ -232,7 +232,6 @@ decl_elem_ref! { enum (SegmentRef, SegmentRefWeak, is_segment -> SegmentType) ->
 	Clef(Clef),
 	KeySig(KeySig),
 	Rest(Rest),
-	Segment(Segment),
 	TimeSig(TimeSig),
 }}
 

@@ -143,7 +143,6 @@ impl Segment {
 			},
 			SegmentRef::Chord(_) | SegmentRef::Rest(_) => Self::add_chordrest(e, c.try_into().unwrap()),
 			SegmentRef::Barline(_) => Self::add_element(e, c.into()),
-			SegmentRef::Segment(_) => unreachable!("WTF! You cant add a segment to a segment.")
 		}
 
 	}
@@ -242,7 +241,6 @@ impl From<SegmentType> for SegmentTypeMask {
 			SegmentType::Clef => SegmentTypeMask::CLEF,
 			SegmentType::KeySig => SegmentTypeMask::KEYSIG,
 			SegmentType::Rest => SegmentTypeMask::CHORDREST,
-			SegmentType::Segment => SegmentTypeMask::INVALID,
 			SegmentType::TimeSig => SegmentTypeMask::TIMESIG,
 		}
 	}
