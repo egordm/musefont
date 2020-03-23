@@ -81,7 +81,7 @@ impl Score {
 	/// Removes a staff from the score and the corresponding part
 	pub fn remove_staff(&self, staff: &El<Staff>) {
 		if let Some(part) = staff.borrow_el().part().upgrade().clone() {
-			let idx = staff.borrow_el().staff_id();
+			let _idx = staff.borrow_el().staff_id();
 			remove_element(&mut self.inner_mut().staves, &staff);
 			part.borrow_mut_el().remove_staff(staff);
 			// TODO: update spenners their tracks
@@ -155,7 +155,7 @@ mod tests {
 			assert_eq!(part.staves()[0], staff_extra)
 		});
 
-		for (i, staff) in staves.iter().enumerate() {
+		for staff in staves.iter() {
 			score.remove_staff(staff);
 		}
 		assert_eq!(score.staff_count(), 1);

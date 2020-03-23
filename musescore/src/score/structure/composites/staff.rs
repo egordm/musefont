@@ -144,7 +144,7 @@ impl Staff {
 					let s = s.borrow_el();
 					if s.time() != time { break; }
 					if s.is_clef() || s.is_header_clef() {
-						if let Some(ElementRef::Clef(other)) = s.element(track) {
+						if let Some(SegmentRef::Clef(other)) = s.element(track) {
 							// a previous clef at the same tick position gets valid
 							if other.borrow_el().generated() {
 								self.clefs.set(time.ticks(), other.borrow_el().clef_type_group().clone())
@@ -222,11 +222,11 @@ pub type StaffTypeList = OrderedCollecton<StaffType>;
 #[cfg(test)]
 mod tests {
 	use crate::testing;
-	use crate::score::*;
+	//use crate::score::*;
 
 	#[test]
 	fn test_add_measure() {
-		let score = testing::setup_score();
+		let _score = testing::setup_score();
 		// TODO: add measure tests
 	}
 }

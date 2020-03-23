@@ -208,11 +208,11 @@ pub trait Element: ScoreElement {
 		}
 	}
 
-	fn layout(e: El<Self>) where Self: Sized {
+	fn layout(_e: El<Self>) where Self: Sized {
 		unimplemented!() // TODO: dont default here. Require implementaton
 	}
 
-	fn render(e: El<Self>, state: &mut RendererState, painter: PainterRef) where Self: Sized {
+	fn render(_e: El<Self>, _state: &mut RendererState, _painter: PainterRef) where Self: Sized {
 		unimplemented!() // TODO: dont default here. Require implementaton
 	}
 }

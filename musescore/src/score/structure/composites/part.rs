@@ -1,5 +1,4 @@
 use crate::score::*;
-use std::convert::TryInto;
 use crate::remove_element;
 
 #[derive(Debug, Clone)]

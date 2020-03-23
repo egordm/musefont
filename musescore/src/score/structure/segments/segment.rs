@@ -25,7 +25,7 @@ pub struct Segment {
 	/// The list of annotations (read only)
 	annotations: Vec<ElementRef>,
 	/// Element storage, size = [staves * VOICES]
-	elist: Vec<Option<ElementRef>>,
+	elist: Vec<Option<SegmentRef>>,
 	// size = staves
 	//shapes: Vec<Shape>,
 	/// size = staves
@@ -64,9 +64,9 @@ impl Segment {
 	pub fn dot_pos_x(&self, staff_id: StaffId) -> f32 { self.dot_pos_x[staff_id as usize] }
 	pub fn set_dot_pos_x(&mut self, staff_id: StaffId, v: f32) { self.dot_pos_x[staff_id as usize] = v }
 
-	pub fn elements(&self) -> &Vec<Option<ElementRef>> { &self.elist }
-	pub fn element(&self, track: Track) -> Option<&ElementRef> { self.elist.get(track as usize)?.as_ref() }
-	pub fn set_element(&mut self, track: Track, e: Option<ElementRef>) { self.elist[track as usize] = e }
+	pub fn elements(&self) -> &Vec<Option<SegmentRef>> { &self.elist }
+	pub fn element(&self, track: Track) -> Option<&SegmentRef> { self.elist.get(track as usize)?.as_ref() }
+	pub fn set_element(&mut self, track: Track, e: Option<SegmentRef>) { self.elist[track as usize] = e }
 
 	pub fn next(&self) -> Option<El<Segment>> {
 		self.measure()?.borrow_el().segment_next_iter(self.time()).skip(1).next().cloned()
@@ -84,22 +84,22 @@ impl Segment {
 	}
 
 	pub fn next_chordrest(&self, track: Track, backwards: bool) -> Option<ChordRef> {
-		let f = |segment: &El<Segment>| {
+		let f = |segment: &El<Segment>| -> Result<ChordRef, ()> {
 			if let Some(e) = segment.borrow_el().element(track) {
-				if e.get_type() != ElementType::Chord && e.get_type() != ElementType::Rest {
-					if let Ok(res) = ChordRef::try_from(e.clone()) { return Some(res); }
+				if e.get_type() != SegmentType::Chord && e.get_type() != SegmentType::Rest {
+					return ChordRef::try_from(e.clone())
 				}
 			}
-			return None;
+			return Err(());
 		};
 
 		if backwards {
 			for segment in self.measure()?.borrow_el().segment_prev_iter(self.time()) {
-				if let Some(res) = f(segment) { return Some(res)}
+				if let Ok(res) = f(segment) { return ChordRef::try_from(res).ok() }
 			}
 		} else {
 			for segment in self.measure()?.borrow_el().segment_next_iter(self.time()) {
-				if let Some(res) = f(segment) { return Some(res)}
+				if let Ok(res) = f(segment) { return ChordRef::try_from(res).ok() }
 			}
 		}
 		return None;
@@ -120,29 +120,30 @@ impl Segment {
 	pub fn is_keysig_announce(&self) -> bool { self.is_type(SegmentTypeMask::KEYSIG_ANNOUNCE) }
 	pub fn is_timesig_announce(&self) -> bool { self.is_type(SegmentTypeMask::TIMESIG_ANNOUNCE) }
 
-	pub fn add(e: El<Self>, c: ElementRef) {
+	/// Adds the given element to the chord
+	pub fn add(e: El<Self>, c: SegmentRef) {
 		let track = e.borrow_el().track();
 		c.as_trait_mut().attach(e.borrow_el().get_ref(), track);
 
 		match c {
-			ElementRef::Clef(_) | ElementRef::TimeSig(_) | ElementRef::KeySig(_) => {
+			SegmentRef::Clef(_) | SegmentRef::TimeSig(_) | SegmentRef::KeySig(_) => {
 				Self::add_element(e.clone(), c.clone());
 				e.with(|er| {
 					if !er.generated() {
 						er.staff().with_mut(|mut staff| {
 							match &c {
-								ElementRef::Clef(c) => staff.set_clef(c.clone()),
-								ElementRef::TimeSig(c) => staff.add_timesig(c.clone()),
-								ElementRef::KeySig(c) => staff.set_keysig(&er.time(), c.borrow_el().sig().clone()),
+								SegmentRef::Clef(c) => staff.set_clef(c.clone()),
+								SegmentRef::TimeSig(c) => staff.add_timesig(c.clone()),
+								SegmentRef::KeySig(c) => staff.set_keysig(&er.time(), c.borrow_el().sig().clone()),
 								_ => unreachable!()
 							}
 						});
 					}
 				});
 			},
-			ElementRef::Chord(_) | ElementRef::Rest(_) => Self::add_chordrest(e, c.try_into().unwrap()),
-			ElementRef::Barline(_) => Self::add_element(e, c.into()),
-			_ => {}
+			SegmentRef::Chord(_) | SegmentRef::Rest(_) => Self::add_chordrest(e, c.try_into().unwrap()),
+			SegmentRef::Barline(_) => Self::add_element(e, c.into()),
+			SegmentRef::Segment(_) => unreachable!("WTF! You cant add a segment to a segment.")
 		}
 
 	}
@@ -154,8 +155,8 @@ impl Segment {
 				ChordRef::Chord(c) => {
 					c.borrow_el().notes().iter().any(|n| n.borrow_el().visible())
 				}
-				ChordRef::Rest(e) => {
-					c.as_trait().visible()
+				ChordRef::Rest(c) => {
+					c.borrow_el().visible()
 				}
 			};
 			e.borrow_mut_el().set_visible(visible);
@@ -164,7 +165,7 @@ impl Segment {
 		Self::add_element(e, c.into())
 	}
 
-	fn add_element(e: El<Self>, c: ElementRef) {
+	fn add_element(e: El<Self>, c: SegmentRef) {
 		let track = e.borrow_el().track();
 		if (track as usize) < e.borrow_el().score().staff_count() * constants::VOICES {
 			// TODO: check if we replace something nongenerated. If yes, warn or smt
@@ -268,7 +269,7 @@ mod tests {
 
 	#[test]
 	fn test_add_timeelem() {
-		let score = testing::setup_score();
+		let _score = testing::setup_score();
 		// TODO: test add time / key sig
 	}
 }

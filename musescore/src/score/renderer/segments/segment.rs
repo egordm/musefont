@@ -8,7 +8,7 @@ impl Renderer<Segment> for SegmentRenderer {
 		e.with(|e| {
 			for element in e.elements() {
 				if let Some(element) = element {
-					ElementRef::layout(element.clone())
+					SegmentRef::layout(element.clone())
 				}
 			}
 		});
@@ -18,7 +18,7 @@ impl Renderer<Segment> for SegmentRenderer {
 		e.with(|e| {
 			for element in e.elements() {
 				if let Some(element) = element {
-					ElementRef::render(element.clone(), state, painter)
+					SegmentRef::render(element.clone(), state, painter)
 				}
 			}
 		});

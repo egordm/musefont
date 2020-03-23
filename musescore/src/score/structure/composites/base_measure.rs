@@ -95,7 +95,7 @@ pub trait MeasureTrait: Element {
 		}
 	}
 
-	fn add(e: El<Self>, c: ElementRef) where Self: Sized {}
+	fn add(_e: El<Self>, _c: ElementRef) where Self: Sized {}
 
 	fn remove(&mut self, e: &ElementRef) { self.base_remove(e) }
 

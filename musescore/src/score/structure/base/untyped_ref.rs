@@ -261,3 +261,24 @@ decl_elem_ref! { enum (DurationElementRef, DurationElementWeak, is_duration_elem
 	Rest(Rest),
 	Tuplet(Tuplet),
 }}
+
+impl TryFrom<SegmentRef> for ChordRef {
+	type Error = ();
+
+	fn try_from(value: SegmentRef) -> Result<Self, Self::Error> {
+		match value {
+			SegmentRef::Chord(c) => Ok(ChordRef::Chord(c)),
+			SegmentRef::Rest(c) => Ok(ChordRef::Rest(c)),
+			_ => Err(()),
+		}
+	}
+}
+
+impl From<ChordRef> for SegmentRef {
+	fn from(e: ChordRef) -> Self {
+		match e {
+			ChordRef::Chord(e) => SegmentRef::Chord(e),
+			ChordRef::Rest(e) => SegmentRef::Rest(e),
+		}
+	}
+}

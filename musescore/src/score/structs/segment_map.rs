@@ -64,9 +64,6 @@ impl SegmentMap {
 	pub fn iter_vals(&self) -> impl DoubleEndedIterator<Item=&Value> {
 		self.data.iter().map(|(_, v)| v)
 	}
-	pub fn iter_valsz(&self) -> impl DoubleEndedIterator<Item=(&usize, &Value)> {
-		self.data.iter()
-	}
 
 	//pub fn get_ty(&self, t: &Fraction, ty: SegmentTypeMask) -> Option<&El<Segment>>
 	/// Gets the real key combining fraction and segment type

@@ -1,7 +1,7 @@
 use log::{debug};
 use crate::*;
 use crate::score::*;
-use std::convert::TryInto;
+use std::convert::{TryInto, TryFrom};
 use bitflags::_core::ops::RangeBounds;
 
 /// One measure in a system
@@ -31,8 +31,8 @@ pub struct Measure {
 
 impl Measure {
 	pub fn new(score: Score) -> El<Self> {
-		new_element(Self {
-			element: ElementData::new(score),
+		let ret = new_element(Self {
+			element: ElementData::new(score.clone()),
 			mstaves: vec![],
 			measure_data: Default::default(),
 			segments: SegmentMap::new(),
@@ -40,10 +40,15 @@ impl Measure {
 			mm_rest: None,
 			timesig: Fraction::new(4, 4),
 			repeat_count: 0,
-			user_stretch: 0.0,
+			user_stretch: 1.0,
 			no_mode: MeasureNumberMode::Auto,
 			break_mm_rest: false
-		})
+		}).with_mut_i(|mut measure| {
+			measure.create_staves(score.staff_count() as StaffId);
+			measure.set_duration(Fraction::new(4, 4));
+			measure.set_flag(ElementFlags::MOVABLE, true);
+		});
+		ret
 	}
 
 	pub fn segments(&self) -> &SegmentMap { &self.segments }
@@ -77,14 +82,16 @@ impl Measure {
 		self.duration() * staff.borrow_el().timestretch(&self.time())
 	}
 
-	pub fn create_staves(&mut self, staff_id: StaffId) {
-		for n in self.mstaves.len()..staff_id as usize + 1 {
-			if let Some(staff) = self.score().staff(n as StaffId) {
+	pub fn create_staves(&mut self, staff_count: StaffId) {
+		for staff_idx in self.mstaves.len()..staff_count as usize + 1 {
+			if let Some(staff) = self.score().staff(staff_idx as StaffId) {
 				let mut s = MStaff::default();
-				let lines = StaffLines::new(self.score().clone());
+				let lines = StaffLines::new(self.score().clone()).with_mut_i(|mut lines| {
+					lines.attach(self.get_ref(), self.track());
+					lines.set_track((staff_idx * constants::VOICES) as StaffId);
+					lines.set_visible(!staff.borrow_el().invisible());
+				});
 				s.set_lines(Some(lines.clone()));
-				lines.borrow_mut_el().attach(self.get_ref(), self.track());
-				lines.borrow_mut_el().set_visible(!staff.borrow_el().invisible());
 				self.mstaves.push(s);
 			}
 		}
@@ -132,7 +139,7 @@ impl Measure {
 	/// Search for chord at position \a tick in \a track
 	pub fn find_chord(&self, t: Fraction, track: Track) -> Option<El<Chord>> {
 		for seg in self.segments.iter_ty(t - self.time(), SegmentType::Chord).map(|(_, v)| v) {
-			if let Some(ElementRef::Chord(chord)) = seg.borrow_el().element(track) {
+			if let Some(SegmentRef::Chord(chord)) = seg.borrow_el().element(track) {
 				return Some(chord.clone());
 			}
 		}
@@ -235,8 +242,10 @@ impl MeasureTrait for Measure {
 			ElementRef::HBox(_) => self.remove_element(&e),
 			ElementRef::Clef(_) | ElementRef::Chord(_) | ElementRef::Rest(_) | ElementRef::TimeSig(_) => {
 				let track = e.as_trait().track();
+				let segment_e = SegmentRef::try_from(e.clone())
+					.expect("Given elements should map to segment element");
 				for s in self.segments.iter_vals() {
-					if s.borrow_el().element(track) == Some(e) {
+					if s.borrow_el().element(track) == Some(&segment_e) {
 						s.borrow_mut_el().set_element(track, None);
 						return;
 					}
@@ -265,6 +274,11 @@ impl Measure {
 			if segment.header() { self.set_header(true); }
 			if segment.trailer() { self.set_trailer(true); }
 		})
+	}
+
+	pub fn add_at(e: El<Self>, c: SegmentRef, t: Fraction) {
+		let segment = e.borrow_mut_el().get_segment_r(t, SegmentType::Chord);
+		Segment::add(segment, c.into())
 	}
 }
 
@@ -352,7 +366,9 @@ mod tests {
 	#[test]
 	fn test_add_segment() {
 		let score = testing::setup_score();
-		let measure = Measure::new(score.clone());
+		let measure = Measure::new(score.clone()).with_mut_i(|mut measure| {
+			measure.set_time(Fraction::new(8, 4))
+		});
 		for i in [1, 3, 4, 2].iter().cloned() {
 			let segment = Segment::new(score.clone()).with_mut_i(|mut segment| {
 				segment.set_rel_time(Fraction::new(i - 1, 4));
@@ -362,9 +378,27 @@ mod tests {
 			Measure::add(measure.clone(), segment.into());
 		}
 
-		for (i, (k, segment)) in measure.borrow_el().segments().iter_valsz().enumerate() {
-			let a = segment.borrow_el().scale();
-			assert_eq!(segment.borrow_el().scale(), (i + 1) as f32)
+		for (i, segment) in measure.borrow_el().segments().iter_vals().enumerate() {
+			let segment: &El<Segment> = segment;
+			assert_eq!(segment.borrow_el().scale(), (i + 1) as f32);
+			assert_eq!(segment.borrow_el().time(), Fraction::new(8 + i as i32, 4));
 		}
+	}
+
+	#[test]
+	fn test_add_staves() {
+		let score = testing::setup_score();
+		let part = Part::new(score.clone(), "Triangle".to_string());
+		let staff1 = Staff::new(score.clone());
+		let staff2 = Staff::new(score.clone());
+		score.insert_part(part.clone(), 0);
+		score.insert_staff(staff1.clone(), &part, 0);
+		score.insert_staff(staff2.clone(), &part, 1);
+
+		let measure = Measure::new(score.clone());
+		measure.with(|measure| {
+			assert_eq!(measure.staff_visible(0), true);
+			assert_eq!(measure.staff_visible(1), true);
+		})
 	}
 }
