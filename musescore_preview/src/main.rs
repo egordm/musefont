@@ -40,17 +40,11 @@ pub fn draw(painter: &mut PfPainter) {
 
 	let measure = Measure::new(score.clone());
 
-	let segment = Segment::new(score.clone()).with_mut_i(|mut segment| {
-		segment.set_rel_time(Fraction::new(0, 4));
-		segment.set_duration(Fraction::new(1, 4));
-	});
-	Measure::add(measure.clone(), segment.clone().into());
-
 	let chord = Chord::new(score.clone()).with_mut_i(|mut chord| {
 		chord.set_pos(Point2F::new(100., 100.));
 		chord.set_duration_type(Duration::new(DurationType::Eighth, 0))
 	});
-	Segment::add(segment.clone(), chord.clone().into());
+	Measure::add_at(measure.clone(), chord.clone().into(), Fraction::new(0, 4));
 
 	let note = Note::new(score.clone());
 	chord.borrow_mut_el().add(note.clone().into());

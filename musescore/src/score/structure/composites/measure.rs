@@ -401,4 +401,27 @@ mod tests {
 			assert_eq!(measure.staff_visible(1), true);
 		})
 	}
+
+	#[test]
+	fn test_add_chord() {
+		let score = testing::setup_score();
+		let part = Part::new(score.clone(), "Triangle".to_string());
+		let staff = Staff::new(score.clone());
+		score.insert_part(part.clone(), 0);
+		score.insert_staff(staff.clone(), &part, 0);
+
+		let measure = Measure::new(score.clone());
+		for i in 0..4 {
+			let chord = Chord::new(score.clone()).with_mut_i(|mut chord| {
+				chord.set_visible(true);
+				chord.set_duration_type(Duration::new(DurationType::Quarter, 0));
+			});
+			let rtime = Fraction::new(i, 4);
+			Measure::add_at(measure.clone(), chord.into(), rtime);
+		}
+
+		measure.with(|measure| {
+			assert_eq!(measure.segments().len(), 4)
+		})
+	}
 }

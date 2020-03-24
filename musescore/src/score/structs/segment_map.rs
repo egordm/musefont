@@ -18,6 +18,8 @@ pub struct SegmentMap {
 impl SegmentMap {
 	pub fn new() -> Self { Self { data: BTreeMap::new() }}
 
+	pub fn len(&self) -> usize { self.data.len() }
+
 	pub fn get(&self, t: Fraction) -> Option<&Value> { self.iter_time(t).map(|(_, v)| v).next() }
 	pub fn get_ty(&self, t: Fraction, ty: impl Into<SegmentTypeMask>) -> Option<&Value> { self.iter_ty(t, ty).map(|(_, v)| v).next() }
 

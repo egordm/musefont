@@ -160,6 +160,8 @@ impl Segment {
 			};
 			e.borrow_mut_el().set_visible(visible);
 		}
+		// TODO: the segment duration should probably be computed according to measure
+		e.borrow_mut_el().set_duration(*c.as_trait().ticks());
 
 		Self::add_element(e, c.into())
 	}
