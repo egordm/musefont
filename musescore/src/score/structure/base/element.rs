@@ -8,6 +8,11 @@ pub type StaffId = u16;
 pub const MAX_STAFF_ID: StaffId = std::u16::MAX;
 pub type ElementStyle = (PropertyId, StyleName);
 
+pub fn track2staff(t: Track) -> StaffId { t >> 2 }
+pub fn staff2track(t: StaffId) -> Track { t << 2 }
+pub fn track2voice(t: Track) -> Voice { t & 3 }
+pub fn trackzerovoice(t: Track) -> Voice { t & (3) } // TODO
+
 pub fn new_element<T: Element + Clone>(e: T) -> El<T>
 	where ElementRef: From<El<T>>
 {

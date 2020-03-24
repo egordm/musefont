@@ -83,6 +83,12 @@ impl Segment {
 			.filter(|e| e.borrow_el().is_type(t)).next().cloned()
 	}
 
+	pub fn chordrest(&self, track: Track) -> Option<ChordRef> {
+		self.element(track).and_then(|e| ChordRef::try_from(e.clone()).ok())
+	}
+
+	/// Gets chordrest in the next segment
+	/// TODO: this mayby doenst belong here
 	pub fn next_chordrest(&self, track: Track, backwards: bool) -> Option<ChordRef> {
 		let f = |segment: &El<Segment>| -> Result<ChordRef, ()> {
 			if let Some(e) = segment.borrow_el().element(track) {

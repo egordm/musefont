@@ -9,7 +9,7 @@ pub struct TimeSig {
 
 	/// calculated from actualSig() if !customText
 	numerator_string: String,
-	denumerator_string: String,
+	denominator_string: String,
 
 	ns: Vec<SymName>,
 	ds: Vec<SymName>,
@@ -35,7 +35,7 @@ impl TimeSig {
 	pub fn new(score: Score) -> El<Self> { new_element(Self {
 		element: ElementData::new(score),
 		numerator_string: String::new(),
-		denumerator_string: String::new(),
+		denominator_string: String::new(),
 		ns: vec![],
 		ds: vec![],
 		pz: Default::default(),
@@ -56,7 +56,7 @@ impl TimeSig {
 		self.time_sig_type = st;
 		self.large_parentheses = false;
 		self.numerator_string.clear();
-		self.denumerator_string.clear();
+		self.denominator_string.clear();
 	}
 
 	pub fn stretch(&self) -> &Fraction { &self.stretch }
@@ -65,10 +65,12 @@ impl TimeSig {
 	pub fn scale(&self) -> &Size2F { &self.scale }
 	pub fn set_scale(&mut self, v: Size2F) { self.scale = v }
 
+	pub fn numerator(&self) -> i32 { self.sig.numerator }
+	pub fn denominator(&self) -> i32 { self.sig.denominator }
 	pub fn numerator_string(&self) -> &String { &self.numerator_string }
 	pub fn set_numerator_string(&mut self, v: String) { self.numerator_string = v }
-	pub fn denumerator_string(&self) -> &String { &self.denumerator_string }
-	pub fn set_denumerator_string(&mut self, v: String) { self.denumerator_string = v }
+	pub fn denominator_string(&self) -> &String { &self.denominator_string }
+	pub fn set_denominator_string(&mut self, v: String) { self.denominator_string = v }
 
 	pub fn large_parentheses(&self) -> bool { self.large_parentheses }
 	pub fn set_large_parentheses(&mut self, v: bool) { self.large_parentheses = v }
@@ -83,7 +85,7 @@ impl TimeSig {
 		match p {
 			PropertyId::ShowCourtesy => self.show_courtesy_sig().into(),
 			PropertyId::NumeratorString => self.numerator_string().clone().into(),
-			PropertyId::DenominatorString => self.denumerator_string().clone().into(),
+			PropertyId::DenominatorString => self.denominator_string().clone().into(),
 			PropertyId::Timesig => self.sig().ticks().into(),
 			PropertyId::TimesigGlobal => self.global_sig().ticks().into(),
 			PropertyId::TimesigStretch => self.stretch().ticks().into(),
@@ -96,7 +98,7 @@ impl TimeSig {
 		match p {
 			PropertyId::ShowCourtesy => v.with_value(|v| self.set_show_courtesy_sig(v)),
 			PropertyId::NumeratorString => v.with_value(|v| self.set_numerator_string(v)),
-			PropertyId::DenominatorString => v.with_value(|v| self.set_denumerator_string(v)),
+			PropertyId::DenominatorString => v.with_value(|v| self.set_denominator_string(v)),
 			PropertyId::Timesig => v.with_value(|v| self.set_sig(Fraction::from_ticks(v), self.time_sig_type)),
 			PropertyId::TimesigGlobal => v.with_value(|v| self.set_global_sig(Fraction::from_ticks(v))),
 			PropertyId::TimesigStretch => v.with_value(|v| self.set_stretch(Fraction::from_ticks(v))),

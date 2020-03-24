@@ -10,16 +10,18 @@ impl Score {
 		let note_head_width = font.width(SymName::NoteheadBlack, 1.); // TODO: spatium / spatium20
 		let mut style = Style::new();
 		style.precompute_values();
-		Self(El::from(InnerScore {
+		let res = Self(El::from(InnerScore {
 			font,
-			systems: vec![],
+			system: None,
 			measures: OrderedCollecton::new(),
 			parts: vec![],
 			staves: vec![],
 			spanners: OrderedCollecton::new(),
 			style,
 			note_head_width
-		}))
+		}));
+		res.set_system(System::new(res.clone()));
+		return res;
 	}
 
 	fn inner(&self) -> Ref<InnerScore> { self.0.borrow_el() }
@@ -34,8 +36,12 @@ impl Score {
 	pub fn note_head_width(&self) -> f32 { self.inner().note_head_width }
 
 	pub fn staves(&self) -> Ref<StaffList> { Ref::map(self.inner(), |r| &r.staves) }
-	pub fn staff_count(&self) -> usize { self.inner().staves.len() }
 	pub fn staff(&self, i: StaffId) -> Option<El<Staff>> { self.inner().staves.get(i as usize).cloned() }
+	pub fn staff_count(&self) -> usize { self.inner().staves.len() }
+	pub fn track_count(&self) -> usize { self.staff_count() * constants::VOICES }
+
+	pub fn system(&self) -> El<System> { self.inner().system.clone().unwrap() }
+	pub fn set_system(&self, system: El<System>) { self.inner_mut().system = Some(system); }
 
 	pub fn add(&mut self, _e: ElementRef) {
 		unimplemented!()
@@ -99,6 +105,18 @@ impl Score {
 		}
 		return idx as StaffId;
 	}
+
+	pub fn find_chordrest(&self, time: Fraction, track: Track) -> Option<ChordRef> {
+		self.system().borrow_el().find_chordrest(time, track)
+	}
+
+	pub fn find_measure(&self, time: Fraction) -> Option<MeasureRef> {
+		self.system().borrow_el().find_measure(time)
+	}
+
+	pub fn find_measure_mm(&self, time: Fraction) -> Option<MeasureRef> {
+		self.system().borrow_el().find_measure_mm(time)
+	}
 }
 
 impl std::fmt::Debug for Score {
@@ -111,7 +129,7 @@ impl std::fmt::Debug for Score {
 pub struct InnerScore {
 	font: ScoreFont,
 
-	systems: Vec<El<System>>,
+	system: Option<El<System>>,
 	// Contains a list of all the measures which hold notes and segments
 	measures: OrderedCollecton<MeasureRef>,
 	parts: PartList,

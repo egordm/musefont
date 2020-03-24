@@ -42,7 +42,7 @@ pub fn draw(painter: &mut PfPainter) {
 
 	let chord = Chord::new(score.clone()).with_mut_i(|mut chord| {
 		chord.set_pos(Point2F::new(100., 100.));
-		chord.set_duration_type(Duration::new(DurationType::Eighth, 0))
+		chord.set_duration_type(Duration::new(DurationType::Eighth, 0));
 	});
 	Measure::add_at(measure.clone(), chord.clone().into(), Fraction::new(0, 4));
 

@@ -72,6 +72,9 @@ impl Staff {
 	pub fn timesigs(&self) -> &TimesigList { &self.timesigs }
 	//pub fn set_timesigs(&mut self, v: TimesigList) { self.timesigs = v }
 
+	/// TODO: ask part instead
+	pub fn show(&self) -> bool { true }
+
 	pub fn bar_line_span(&self) -> i32 { self.bar_line_span }
 	pub fn set_bar_line_span(&mut self, v: i32) { self.bar_line_span = v }
 	pub fn bar_line_from(&self) -> i32 { self.bar_line_from }

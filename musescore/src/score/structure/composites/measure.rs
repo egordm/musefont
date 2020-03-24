@@ -53,6 +53,7 @@ impl Measure {
 
 	pub fn segments(&self) -> &SegmentMap { &self.segments }
 
+	pub fn is_mm_rest(&self) -> bool { self.mm_rest.is_some() }
 	pub fn mm_rest(&self) -> Option<MeasureRef> { self.mm_rest.as_ref()?.upgrade() }
 	pub fn set_mm_rest(&mut self, v: Option<MeasureRefWeak>) { self.mm_rest = v }
 

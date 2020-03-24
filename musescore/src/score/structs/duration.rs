@@ -1,7 +1,8 @@
 use super::*;
 use crate::score::*;
+use bitflags::_core::cmp::Ordering;
 
-#[derive(Clone, Copy, Debug, Primitive, PartialEq, Eq, Hash)]
+#[derive(Clone, Copy, Debug, Primitive, PartialEq, Eq, Hash, Ord, PartialOrd)]
 pub enum DurationType {
 	Long = 1,
 	Breve = 2,
@@ -78,6 +79,22 @@ impl DurationType {
 pub struct Duration {
 	duration_type: DurationType,
 	dots: u8,
+}
+
+impl Ord for Duration {
+	fn cmp(&self, other: &Self) -> Ordering {
+		self.partial_cmp(other).unwrap()
+	}
+}
+
+impl PartialOrd for Duration {
+	fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+		Some(match self.duration_type.cmp(&other.duration_type) {
+			Ordering::Less => Ordering::Less,
+			Ordering::Equal => self.dots.cmp(&other.dots),
+			Ordering::Greater => Ordering::Greater,
+		})
+	}
 }
 
 impl Duration {

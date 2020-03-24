@@ -67,6 +67,10 @@ impl SegmentMap {
 		self.data.iter().map(|(_, v)| v)
 	}
 
+	pub fn first(&self) -> Option<&Value> {
+		self.data.iter().next().map(|(k, v)| v)
+	}
+
 	//pub fn get_ty(&self, t: &Fraction, ty: SegmentTypeMask) -> Option<&El<Segment>>
 	/// Gets the real key combining fraction and segment type
 	pub fn key_from(t: &Fraction, ty: SegmentTypeMask) -> Key {
