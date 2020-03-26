@@ -14,6 +14,20 @@ pub trait DurationElement: Element {
 	fn duration_data(&self) -> &DurationElementData;
 	fn duration_data_mut(&mut self) -> &mut DurationElementData;
 
+	fn global_duration(&self) -> Fraction {
+		let mut f = self.duration_data().duration;
+		let mut t = self.tuplet();
+		while let Some(tuplet) = t {
+			f /= *tuplet.borrow_el().ratio();
+			t = tuplet.borrow_el().tuplet();
+		}
+		return f;
+	}
+	fn actual_duration(&self) -> Fraction {
+		let stretch_default = Fraction::new(1, 1);
+		self.global_duration() / self.staff().with_d(|d| d.timestretch(&self.time()), stretch_default)
+	}
+
 	fn ticks(&self) -> &Fraction { &self.duration_data().duration }
 	fn set_ticks(&mut self, v: Fraction) { self.duration_data_mut().duration = v }
 

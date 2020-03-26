@@ -215,6 +215,9 @@ impl SegmentTrait for Segment {
 }
 
 pub trait SegmentTrait: Element {
+	fn segment_type(&self) -> SegmentTypeMask {
+		self.segment().with_d(|s| s.segment_type(), SegmentTypeMask::INVALID)
+	}
 	fn segment(&self) -> Option<El<Segment>> {
 		self.parent().and_then(|e| e.try_into().ok())
 	}

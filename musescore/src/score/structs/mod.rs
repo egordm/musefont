@@ -3,6 +3,7 @@ pub mod clef_type;
 pub mod direction;
 pub mod duration;
 pub mod fraction;
+pub mod groups;
 pub mod instrument;
 pub mod interval;
 pub mod key;
@@ -23,6 +24,8 @@ pub use direction::*;
 pub use duration::{Duration, DurationType};
 #[doc(inline)]
 pub use fraction::Fraction;
+#[doc(inline)]
+pub use groups::Groups;
 #[doc(inline)]
 pub use instrument::Instrument;
 #[doc(inline)]

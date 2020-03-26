@@ -56,6 +56,7 @@ impl Beam {
 		slope: 0.0
 	})}
 
+	pub fn element_count(&self) -> usize { self.chords.len() }
 	pub fn elements(&self) -> impl DoubleEndedIterator<Item=&ChordRef> { self.chords.iter_vals() }
 
 	pub fn chords(&self) -> &OrderedCollecton<ChordRef> { &self.chords }
@@ -178,6 +179,22 @@ pub enum BeamMode {
 	Begin32 = 5,
 	Begin64 = 6,
 	Invalid = 7,
+}
+
+impl BeamMode {
+	pub fn no_continue(&self) -> bool {
+		match self {
+			BeamMode::End | BeamMode::None | BeamMode::Invalid => true,
+			_ => false
+		}
+	}
+
+	pub fn is_mid(&self) -> bool {
+		match self {
+			BeamMode::Mid | BeamMode::Begin32 | BeamMode::Begin32 => true,
+			_ => false
+		}
+	}
 }
 
 #[derive(Clone, Debug, Default)]

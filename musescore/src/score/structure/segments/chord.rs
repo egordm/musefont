@@ -131,7 +131,6 @@ impl Chord {
 }
 
 impl Chord {
-	pub fn is_grace(&self) -> bool { self.note_type != NoteType::Normal }
 	pub fn is_grace_before(&self) -> bool {
 		match self.note_type() {
 			NoteType::Acciaccatura | NoteType::Appoggiatura | NoteType::Grace4 | NoteType::Grace16 | NoteType::Grace32 => true,
@@ -327,6 +326,10 @@ impl DurationElement for Chord {
 impl ChordRestTrait for Chord {
 	fn rest_data(&self) -> &ChordRestData { &self.rest_data }
 	fn rest_data_mut(&mut self) -> &mut ChordRestData { &mut self.rest_data }
+
+	fn is_grace(&self) -> bool {
+		self.note_type != NoteType::Normal
+	}
 }
 
 impl SegmentTrait for Chord {

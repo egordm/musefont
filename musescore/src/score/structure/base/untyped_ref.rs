@@ -127,10 +127,22 @@ macro_rules! decl_elem_ref {{
 
 	// Trait retrieval
 	impl $RefName {
+		pub fn with<F: FnMut(Ref<dyn $Trait>) -> R, R>(&self, mut f: F) -> R {
+			f(self.as_trait())
+		}
+
+		pub fn with_d<F: FnMut(Ref<dyn $Trait>) -> Option<R>, R>(&self, f: F, default: R) -> R {
+			self.with(f).unwrap_or(default)
+		}
+
 		pub fn as_trait(&self) -> Ref<dyn $Trait> {
 			match self {$(
 				Self::$Variant(r) => r.borrow_el(),
 			)*}
+		}
+
+		pub fn with_mut<F: FnMut(RefMut<dyn $Trait>) -> R, R>(&self, mut f: F) -> R {
+			f(self.as_trait_mut())
 		}
 
 		pub fn as_trait_mut(&self) -> RefMut<dyn $Trait> {

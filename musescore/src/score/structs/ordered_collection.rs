@@ -9,6 +9,8 @@ impl<V> OrderedCollecton<V> {
 	pub fn new() -> Self { Self(BTreeMap::new(), None) }
 	pub fn from_default(default: V) -> Self { Self(BTreeMap::new(), Some(default)) }
 
+	pub fn len(&self) -> usize { self.0.len() }
+
 	pub fn get_or_default(&self, pos: i32) -> &V {
 		self.get(pos).unwrap_or(self.1.as_ref().expect("Default value should be defined first"))
 	}

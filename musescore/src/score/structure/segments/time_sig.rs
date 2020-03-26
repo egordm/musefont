@@ -23,7 +23,7 @@ pub struct TimeSig {
 	sig: Fraction,
 	/// localSig / globalSig
 	stretch: Fraction,
-	//groups: Groups,
+	groups: Groups,
 
 	scale: Size2F,
 	time_sig_type: TimeSigType,
@@ -44,6 +44,7 @@ impl TimeSig {
 		point_large_right_paren: Default::default(),
 		sig: Fraction::new(1, 1),
 		stretch: Fraction::new(1, 1),
+		groups: Groups::new(),
 		scale: Default::default(),
 		time_sig_type: TimeSigType::Normal,
 		show_courtesy_sig: true,
@@ -64,6 +65,9 @@ impl TimeSig {
 
 	pub fn scale(&self) -> &Size2F { &self.scale }
 	pub fn set_scale(&mut self, v: Size2F) { self.scale = v }
+
+	pub fn groups(&self) -> &Groups { &self.groups }
+	pub fn set_groups(&mut self, g: Groups) { self.groups = g }
 
 	pub fn numerator(&self) -> i32 { self.sig.numerator }
 	pub fn denominator(&self) -> i32 { self.sig.denominator }

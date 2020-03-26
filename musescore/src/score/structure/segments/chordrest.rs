@@ -51,9 +51,13 @@ pub trait ChordRestTrait: DurationElement + SegmentTrait {
 	fn set_duration_type(&mut self, v: Duration) { self.rest_data_mut().duration_type = v }
 	fn set_dots(&mut self, n: u8) { self.rest_data_mut().duration_type.set_dots(n)}
 	fn dots(&self) -> u8 {
-		if self.cross_measure() == CrossMeasure::First { self.cross_measure_tdur().dots() }
+		if self.cross_measure() == CrossMeasure::First { self.cm_duration_type().dots() }
 		else if self.cross_measure() == CrossMeasure::Second { 0 }
 		else { self.duration_type().dots() }
+	}
+
+	fn rel_time(&self) -> Fraction {
+		self.segment().with_d(|s| s.rel_time(), Fraction::zero())
 	}
 
 	fn staff_move(&self) -> i32 { self.rest_data().staff_move }
@@ -71,8 +75,10 @@ pub trait ChordRestTrait: DurationElement + SegmentTrait {
 
 	fn cross_measure(&self) -> CrossMeasure { self.rest_data().cross_measure }
 	fn set_cross_measure(&mut self, v: CrossMeasure) { self.rest_data_mut().cross_measure = v }
-	fn cross_measure_tdur(&self) -> &Duration { &self.rest_data().cross_measure_tdur }
-	fn set_cross_measure_tdur(&mut self, v: Duration) { self.rest_data_mut().cross_measure_tdur = v }
+	fn cm_duration_type(&self) -> &Duration { &self.rest_data().cross_measure_tdur }
+	fn set_cm_duration_type(&mut self, v: Duration) { self.rest_data_mut().cross_measure_tdur = v }
+
+	fn is_grace(&self) -> bool { false }
 
 	fn get_chordrest_property(&self, p: PropertyId) -> ValueVariant {
 		match p {
@@ -91,5 +97,14 @@ pub trait ChordRestTrait: DurationElement + SegmentTrait {
 			//PropertyId::DurationType => v.with_enum(|v| self.set_duration_type(v)),
 			_ => false,
 		}
+	}
+
+	fn replace_beam(&mut self, v: El<Beam>) {
+		self.remove_beam(true);
+		self.set_beam(Some(v));
+		// TODO: delete current
+	}
+	fn remove_beam(&mut self, beamed: bool) {
+		self.set_beam(None);
 	}
 }
