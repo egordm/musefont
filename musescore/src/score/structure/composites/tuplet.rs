@@ -95,6 +95,14 @@ impl Tuplet {
 
 	pub fn measure(&self) -> Option<MeasureRef> { self.parent().and_then(|e| e.try_into().ok()) }
 
+	pub fn first_element(&self) -> Option<DurationElementRef> {
+		self.elements.first().cloned()
+	}
+
+	pub fn last_element(&self) -> Option<DurationElementRef> {
+		self.elements.last().cloned()
+	}
+
 	fn get_custom_property(&self, p: PropertyId) -> ValueVariant {
 		match p {
 			PropertyId::Direction => ValueVariant::from_enum(self.direction()),

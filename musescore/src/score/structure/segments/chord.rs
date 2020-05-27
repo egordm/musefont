@@ -1,7 +1,8 @@
 use crate::score::*;
 use std::convert::{TryInto, TryFrom};
-use crate::remove_element;
+use crate::{remove_element, Point2F, Vec2F};
 use crate::drawing::PainterRef;
+use std::ops::Add;
 
 #[derive(Debug, Clone)]
 pub struct Chord {
@@ -39,27 +40,29 @@ pub struct Chord {
 }
 
 impl Chord {
-	pub fn new(score: Score) -> El<Self> { new_element(Self {
-		element: ElementData::new(score),
-		duration_data: DurationElementData::new(Fraction::default()),
-		rest_data: ChordRestData::default(),
-		notes: vec![],
-		ledger_lines: None,
-		stem: None,
-		stem_slash: None,
-		hook: None,
-		arpeggio: None,
-		tremolo: None,
-		ends_glissando: false,
-		grace_notes: vec![],
-		grace_index: 0,
-		stem_direction: DirectionV::Auto,
-		note_type: NoteType::Normal,
-		no_stem: false,
-		space_lw: 0.0,
-		space_rw: 0.0,
-		articulations: vec![]
-	})}
+	pub fn new(score: Score) -> El<Self> {
+		new_element(Self {
+			element: ElementData::new(score),
+			duration_data: DurationElementData::new(Fraction::default()),
+			rest_data: ChordRestData::default(),
+			notes: vec![],
+			ledger_lines: None,
+			stem: None,
+			stem_slash: None,
+			hook: None,
+			arpeggio: None,
+			tremolo: None,
+			ends_glissando: false,
+			grace_notes: vec![],
+			grace_index: 0,
+			stem_direction: DirectionV::Auto,
+			note_type: NoteType::Normal,
+			no_stem: false,
+			space_lw: 0.0,
+			space_rw: 0.0,
+			articulations: vec![]
+		})
+	}
 
 	pub fn notes(&self) -> &Vec<El<Note>> { &self.notes }
 	pub fn set_notes(&mut self, v: Vec<El<Note>>) { self.notes = v }
@@ -79,9 +82,6 @@ impl Chord {
 	pub fn set_stem(&mut self, v: Option<El<Stem>>) { self.stem = v }
 	pub fn stem_slash(&self) -> Option<&El<StemSlash>> { self.stem_slash.as_ref() }
 	pub fn set_stem_slash(&mut self, v: Option<El<StemSlash>>) { self.stem_slash = v }
-	pub fn stem_pos_x(&self) -> f32 {
-		if self.up() { self.notehead_width() } else { 0.}
-	}
 
 	pub fn hook(&self) -> Option<&El<Hook>> { self.hook.as_ref() }
 	pub fn set_hook(&mut self, v: Option<El<Hook>>) { self.hook = v }
@@ -131,6 +131,8 @@ impl Chord {
 }
 
 impl Chord {
+	pub fn min_abs_stem_length(&self) -> f32 { 0.0 }
+
 	pub fn is_grace_before(&self) -> bool {
 		match self.note_type() {
 			NoteType::Acciaccatura | NoteType::Appoggiatura | NoteType::Grace4 | NoteType::Grace16 | NoteType::Grace32 => true,
@@ -147,7 +149,10 @@ impl Chord {
 	pub fn find_note(&self, pitch: i32, mut skip: i32) -> Option<&El<Note>> {
 		self.notes.iter().find(|e| {
 			if e.borrow_el().pitch() == pitch {
-				if skip == 0 { true } else { skip -= 1; false}
+				if skip == 0 { true } else {
+					skip -= 1;
+					false
+				}
 			} else { false }
 		})
 	}
@@ -157,9 +162,6 @@ impl Chord {
 	pub fn up_note(&self) -> Option<&El<Note>> {
 		self.notes.iter().max_by(|a, b| a.borrow_el().line().cmp(&b.borrow_el().line()))
 	}
-	/// Use upstring if tab
-	pub fn up_line(&self) -> Line {  self.up_note().with_d(|e| e.line(), Line::default()) }
-	pub fn down_line(&self) -> Line { self.down_note().with_d(|e| e.line(), Line::default()) }
 
 	pub fn parent_chord(&self) -> Option<ChordRef> {
 		self.parent().and_then(|e| ChordRef::try_from(e).ok())
@@ -176,7 +178,7 @@ impl Chord {
 				let beam = beam.borrow_el();
 				if !beam.up() { return false; }
 				if self.is_grace_before() {
-					if beam.elements().next().map(|e| e != &chord).unwrap_or(false)  { return true; }
+					if beam.elements().next().map(|e| e != &chord).unwrap_or(false) { return true; }
 				} else if self.is_grace_after() {
 					if beam.elements().next_back().map(|e| e != &chord).unwrap_or(false) { return true; }
 				}
@@ -226,7 +228,7 @@ impl Chord {
 				if e.borrow_el().layout_close_to_note() {
 					let mut i = 0;
 					for ai in &self.articulations {
-						if ai.borrow_el().layout_close_to_note() { i += 1; } else {break; }
+						if ai.borrow_el().layout_close_to_note() { i += 1; } else { break; }
 					}
 					self.articulations.insert(i, e);
 				} else { self.articulations.push(e); }
@@ -327,8 +329,33 @@ impl ChordRestTrait for Chord {
 	fn rest_data(&self) -> &ChordRestData { &self.rest_data }
 	fn rest_data_mut(&mut self) -> &mut ChordRestData { &mut self.rest_data }
 
+	fn up_line(&self) -> Line { self.up_note().with_d(|e| e.line(), Line::default()) }
+	fn down_line(&self) -> Line { self.down_note().with_d(|e| e.line(), Line::default()) }
+
 	fn is_grace(&self) -> bool {
 		self.note_type != NoteType::Normal
+	}
+
+	fn stem_pos_beam(&self) -> Point2F {
+		self.page_pos().add(if self.up() {
+			Vec2F::new(self.notehead_width(), self.up_note().with_d(|e|e.y(), 0.))
+		} else {
+			Vec2F::new(0., self.down_note().with_d(|e|e.y(), 0.))
+		})
+	}
+	fn stem_pos(&self) -> Point2F {
+		let mut p = self.page_pos();
+		if self.up() {
+			p.x += if self.notes.len() == 1 { self.down_note().with(|e| e.bbox_right_pos()).unwrap() } else { self.notehead_width() };
+			p.y += self.down_note().with_d(|e| e.y(), 0.)
+		} else {
+			p.y += self.up_note().with_d(|e| e.y(), 0.)
+		}
+		return p;
+	}
+
+	fn stem_pos_x(&self) -> f32 {
+		if self.up() { self.notehead_width() } else { 0. }
 	}
 }
 

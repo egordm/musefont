@@ -49,6 +49,12 @@ macro_rules! decl_elem_ref {{
 		$($Variant),*
 	}
 
+	impl $RefTypeName {
+		pub fn from_opt(v: Option<&$RefName>) -> Self {
+			v.map(|v| $RefName::get_type(v)).unwrap_or(Self::Invalid)
+		}
+	}
+
 	impl TryFrom<usize> for $RefTypeName {
 		type Error = ();
 

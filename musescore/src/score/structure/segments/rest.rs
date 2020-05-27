@@ -1,6 +1,7 @@
 use crate::*;
 use crate::score::*;
 use crate::font::SymName;
+use euclid::UnknownUnit;
 
 #[derive(Debug, Clone)]
 pub struct Rest {
@@ -46,13 +47,7 @@ impl Rest {
 		let spatium = self.spatium();
 		((self.pos().y + self.bbox().top() + spatium) * 2.0 / spatium).round() as i32
 	}
-	/// point to connect stem
-	pub fn stem_pos(&self) -> Point2F {
-		Point2F::default() // TODO: stem pos
-	}
-	pub fn stem_posx(&self) -> f32 {
-		if self.up() { self.bbox().right() } else { self.bbox().left() }
-	}
+
 	/// return stem position of note on beam side
 	/// return canvas coordinates
 	pub fn stem_pos_beam(&self) -> Point2F {
@@ -102,6 +97,23 @@ impl DurationElement for Rest {
 impl ChordRestTrait for Rest {
 	fn rest_data(&self) -> &ChordRestData { &self.rest_data }
 	fn rest_data_mut(&mut self) -> &mut ChordRestData { &mut self.rest_data }
+
+	fn up_line(&self) -> Line {
+		let spatium = self.spatium();
+		Line::from((self.pos().y + self.bbox().top() + spatium) * 2. / spatium)
+	}
+	fn down_line(&self) -> Line {
+		unimplemented!()
+	}
+
+	fn stem_pos_beam(&self) -> Point2F {
+		let mut p = self.page_pos();
+		if self.up() { p.y += self.bbox().top() + self.spatium() * 1.5 }
+		else { p.y += self.bbox().bottom() - self.spatium() * 1.5 }
+		p
+	}
+	fn stem_pos(&self) -> Point2F { Point2F::new(self.stem_pos_x(), self.bbox().origin.y) }
+	fn stem_pos_x(&self) -> f32 { if self.up() { self.bbox().left() } else { self.bbox().right() } }
 }
 
 impl SegmentTrait for Rest {

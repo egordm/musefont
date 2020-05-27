@@ -1,3 +1,4 @@
+pub mod beam_metric;
 pub mod accidental_type;
 pub mod clef_type;
 pub mod direction;
@@ -14,6 +15,8 @@ pub mod segment_map;
 pub mod spatium;
 pub mod staff_type;
 
+#[doc(inline)]
+pub use beam_metric::*;
 #[doc(inline)]
 pub use accidental_type::*;
 #[doc(inline)]

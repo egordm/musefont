@@ -1,6 +1,7 @@
 use crate::*;
 use crate::score::*;
 use crate::drawing::PainterRef;
+use bitflags::_core::option::Option::Some;
 
 pub type Track = u16;
 pub type Voice = u16;
@@ -213,8 +214,27 @@ pub trait Element: ScoreElement {
 		}
 	}
 
+	/// X position on the whole page
+	fn page_pos_x(&self) -> f32 {
+		let mut x = self.x();
+		let mut parent_ref = self.parent();
+		while let Some(parent) = parent_ref {
+			x += parent.as_trait().x();
+			parent_ref = parent.as_trait().parent();
+		}
+		return x;
+	}
+
+	/// positon on the whole page
+	/// TODO: move into positionable trait? or introduce transform point?
+	fn page_pos(&self) -> Point2F {
+		let mut pos = self.pos();
+		// TODO: implement get parent pos
+		return pos;
+	}
+
 	fn layout(_e: El<Self>) where Self: Sized {
-		unimplemented!() // TODO: dont default here. Require implementaton
+		unimplemented!() // TODO: dont default here. Require implementaton. move to differnet module / package
 	}
 
 	fn render(_e: El<Self>, _state: &mut RendererState, _painter: PainterRef) where Self: Sized {

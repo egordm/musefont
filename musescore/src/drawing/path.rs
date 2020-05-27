@@ -29,6 +29,7 @@ pub struct Path {
 	line_cap: LineCap,
 	line_join: LineJoin,
 	dash_style: Option<DashStyle>,
+	fill: bool,
 }
 
 impl Path {
@@ -38,7 +39,8 @@ impl Path {
 		line_width: 1.0,
 		line_cap: LineCap::Butt,
 		line_join: LineJoin::Miter(10.),
-		dash_style: None
+		dash_style: None,
+		fill: false,
 	}}
 
 	pub fn from_line(p1: Vec2F, p2: Vec2F) -> Self {
@@ -58,13 +60,16 @@ impl Path {
 	pub fn move_to(mut self, start: Vec2F) -> Self { self.start = start; self }
 
 	pub fn line_width(&self) -> f32 { self.line_width }
-	pub fn set_line_width(mut self, line_width: f32) -> Path { self.line_width = line_width; self }
+	pub fn set_line_width(mut self, line_width: f32) -> Self { self.line_width = line_width; self }
 
 	pub fn line_cap(&self) -> LineCap { self.line_cap }
-	pub fn set_line_cap(mut self, line_cap: LineCap) -> Path { self.line_cap = line_cap; self }
+	pub fn set_line_cap(mut self, line_cap: LineCap) -> Self { self.line_cap = line_cap; self }
 
 	pub fn line_join(&self) -> LineJoin { self.line_join }
-	pub fn set_line_join(mut self, line_join: LineJoin) -> Path { self.line_join = line_join; self }
+	pub fn set_line_join(mut self, line_join: LineJoin) -> Self { self.line_join = line_join; self }
+
+	pub fn fill(&self) -> bool { self.fill }
+	pub fn set_fill(mut self, fill: bool) -> Self { self.fill = fill; self }
 }
 
 impl Into<Instruction> for Path {

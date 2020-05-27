@@ -1,5 +1,5 @@
 use crate::score::*;
-use crate::remove_element;
+use crate::{remove_element, Point2F};
 
 #[derive(Debug, Clone)]
 pub struct ChordRestData {
@@ -43,7 +43,6 @@ pub trait ChordRestTrait: DurationElement + SegmentTrait {
 	fn rest_data_mut(&mut self) -> &mut ChordRestData;
 
 	fn elements(&self) -> &Vec<ElementRef> { &self.rest_data().elements }
-	//fn set_elements(&mut self, v: Vec<ElementRef>) { self.rest_data_mut().elements = v }
 	fn add_element(&mut self, e: ElementRef) { self.rest_data_mut().elements.push(e) }
 	fn remove_element(&mut self, e: &ElementRef) { remove_element(&mut self.rest_data_mut().elements, &e) }
 
@@ -59,6 +58,11 @@ pub trait ChordRestTrait: DurationElement + SegmentTrait {
 	fn rel_time(&self) -> Fraction {
 		self.segment().with_d(|s| s.rel_time(), Fraction::zero())
 	}
+
+	fn line(&self) -> Line { self.line_dir(self.up()) }
+	fn line_dir(&self, up: bool) -> Line { if up { self.up_line() } else { self.down_line() } }
+	fn up_line(&self) -> Line;
+	fn down_line(&self) -> Line;
 
 	fn staff_move(&self) -> i32 { self.rest_data().staff_move }
 	fn set_staff_move(&mut self, v: i32) { self.rest_data_mut().staff_move = v }
@@ -98,6 +102,10 @@ pub trait ChordRestTrait: DurationElement + SegmentTrait {
 			_ => false,
 		}
 	}
+
+	fn stem_pos_beam(&self) -> Point2F;
+	fn stem_pos(&self) -> Point2F;
+	fn stem_pos_x(&self) -> f32;
 
 	fn replace_beam(&mut self, v: El<Beam>) {
 		self.remove_beam(true);

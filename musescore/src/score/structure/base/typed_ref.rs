@@ -85,6 +85,8 @@ pub trait OptionalEl<T> {
 	}
 
 	fn with_mut<F: FnMut(RefMut<T>) -> R, R>(&self, f: F) -> Option<R>;
+
+	fn downgrade(self) -> Option<ElWeak<T>>;
 }
 
 impl<T> OptionalEl<T> for Option<El<T>> {
@@ -95,6 +97,8 @@ impl<T> OptionalEl<T> for Option<El<T>> {
 	fn with_mut<F: FnMut(RefMut<T>) -> R, R>(&self, mut f: F) -> Option<R> {
 		Some(f(self.as_ref()?.borrow_mut_el()))
 	}
+
+	fn downgrade(self) -> Option<ElWeak<T>> { self.as_ref().map(El::downgrade) }
 }
 
 impl<T> OptionalEl<T> for Option<&El<T>> {
@@ -105,6 +109,8 @@ impl<T> OptionalEl<T> for Option<&El<T>> {
 	fn with_mut<F: FnMut(RefMut<T>) -> R, R>(&self, mut f: F) -> Option<R> {
 		Some(f(self.as_ref()?.borrow_mut_el()))
 	}
+
+	fn downgrade(self) -> Option<ElWeak<T>> { self.map(El::downgrade) }
 }
 
 pub trait OptionalWeakEl<T> {
@@ -127,4 +133,6 @@ impl<T> OptionalEl<T> for Option<ElWeak<T>> {
 	fn with_mut<F: FnMut(RefMut<T>) -> R, R>(&self, f: F) -> Option<R> {
 		self.upgrade().with_mut(f)
 	}
+
+	fn downgrade(self) -> Option<ElWeak<T>> { self }
 }

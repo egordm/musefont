@@ -43,7 +43,8 @@ impl<'a> Painter for PfPainter<'a> {
 	fn draw(&mut self, i: Instruction) {
 		match i {
 			Instruction::Path(path) => {
-				self.canvas.set_stroke_style(canvas::FillStyle::Color(convert_color(self.color.clone())));
+				let style = canvas::FillStyle::Color(convert_color(self.color.clone()));
+				self.canvas.set_stroke_style(style);
 
 				let (line_width, line_cap, line_join, miter_limit) = convert_path_style(&path);
 				self.canvas.set_line_width(line_width * self.scale());

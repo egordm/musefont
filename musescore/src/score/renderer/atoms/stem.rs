@@ -139,7 +139,7 @@ impl StemRenderer {
 			if e.borrow_el().stem().is_none() {
 				let stem = Stem::new(e.borrow_el().score().clone());
 				stem.with_mut(|mut stem| {
-					stem.set_parent_el(e.clone());
+					stem.set_parent_el(Some(e.clone()));
 					stem.set_generated(true);
 
 					// TODO: Automate this shizzle. Init with props

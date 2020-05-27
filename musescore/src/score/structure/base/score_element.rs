@@ -30,7 +30,7 @@ pub trait ScoreElement {
 	/// Warning: Don't take mutable reference. Doing the will avoid a lot of panics
 	fn parent(&self) -> Option<ElementRef> { self.score_data().parent.as_ref().and_then(ElementRefWeak::upgrade) }
 	fn set_parent(&mut self, e: Option<ElementRefWeak>) { self.score_data_mut().parent = e; }
-	fn set_parent_el<T: Into<ElementRef>>(&mut self, e: T) where Self: Sized { self.score_data_mut().parent = Some(e.into().downgrade()); }
+	fn set_parent_el<T: Into<ElementRef>>(&mut self, e: Option<T>) where Self: Sized { self.score_data_mut().parent = e.map(|e| e.into().downgrade()); }
 	fn parent_ty<T>(&self) -> Option<El<T>> where Self: Sized, ElementRef: TryInto<El<T>> {
 		self.parent().and_then(|e| e.try_into().ok())
 	}

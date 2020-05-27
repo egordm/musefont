@@ -8,6 +8,8 @@ pub struct Line(i32);
 
 impl Line {
 	pub fn value(&self) -> Spatium { Spatium(self.0 as f32 / 2.) }
+	pub fn value_i32(&self) -> i32 { self.0 }
+	pub fn value_i8(&self) -> i8 { self.0 as i8 }
 
 	pub fn is_half_step(&self) -> bool { (self.0 & 1) != 0 }
 	pub fn ceil(self) -> Line {

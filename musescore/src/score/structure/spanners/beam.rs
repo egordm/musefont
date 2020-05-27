@@ -59,12 +59,21 @@ impl Beam {
 	pub fn element_count(&self) -> usize { self.chords.len() }
 	pub fn elements(&self) -> impl DoubleEndedIterator<Item=&ChordRef> { self.chords.iter_vals() }
 
+	pub fn has_no_slope(&self) -> bool {
+		let idx = match self.direction {
+			DirectionV::Auto | DirectionV::Down => 0,
+			_ => 1
+		};
+		self.no_slope && !self.user_modified[idx]
+	}
+
 	pub fn chords(&self) -> &OrderedCollecton<ChordRef> { &self.chords }
 	pub fn set_chords(&mut self, v: OrderedCollecton<ChordRef>) { self.chords = v }
 
-	pub fn segments(&self) -> &Vec<LineF> { &self.segments }
+	pub fn beam_segments(&self) -> &Vec<LineF> { &self.segments }
 	pub fn set_segments(&mut self, v: Vec<LineF>) { self.segments = v }
 	pub fn fragments(&self) -> &Vec<BeamFragment> { &self.fragments }
+	pub fn fragments_mut(&mut self) -> &mut Vec<BeamFragment> { &mut self.fragments }
 	pub fn set_fragments(&mut self, v: Vec<BeamFragment>) { self.fragments = v }
 
 	pub fn beam_direction(&self) -> DirectionV { self.direction }
@@ -144,6 +153,10 @@ impl Beam {
 		}
 	}
 
+	pub fn add_chord(&mut self, c: ChordRef) {
+		let time = c.as_trait().rel_time().ticks();
+		self.chords.set(time, c)
+	}
 }
 
 impl Element for Beam {
@@ -162,11 +175,11 @@ impl Element for Beam {
 }
 
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
-pub enum SpannerSegmentType {
-	SINGLE,
-	BEGIN,
-	MIDDLE,
-	END
+pub enum SpannerSegmentVariant {
+	Single,
+	Begin,
+	Middle,
+	End
 }
 
 #[derive(Copy, Clone, Debug, PartialEq, Primitive, Eq)]
@@ -199,5 +212,5 @@ impl BeamMode {
 
 #[derive(Clone, Debug, Default)]
 pub struct BeamFragment {
-	py: [Point2F; 2],
+	pub py: [Point2F; 2],
 }
