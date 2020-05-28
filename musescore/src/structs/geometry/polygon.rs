@@ -20,6 +20,6 @@ impl PolygonF {
 			miny = miny.min(p.y);
 			maxy = maxy.max(p.y);
 		}
-		RectF::from_ps(Point2F::new(minx, miny), Point2F::new(miny, maxy))
+		RectF::from_ps(Point2F::new(minx, miny), Point2F::new(maxx, maxy))
 	}
 }

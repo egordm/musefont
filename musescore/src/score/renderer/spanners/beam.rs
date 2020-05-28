@@ -31,10 +31,10 @@ impl Renderer<Beam> for BeamRenderer {
 				let mut bbox = RectF::default();
 				for bs in e.beam_segments() {
 					let mut a = PolygonF::new();
-					a.push(Point2F::new(bs.x1(), bs.x1()));
+					a.push(Point2F::new(bs.x1(), bs.y1()));
 					a.push(Point2F::new(bs.x2(), bs.y2()));
 					a.push(Point2F::new(bs.x2(), bs.y2()));
-					a.push(Point2F::new(bs.x1(), bs.x1()));
+					a.push(Point2F::new(bs.x1(), bs.y1()));
 					let r = a.bbox().adjust(Point2F::new(0., -lw2), Point2F::new(0., lw2));
 					bbox = bbox.union(&r);
 				}
@@ -70,13 +70,13 @@ impl Renderer<Beam> for BeamRenderer {
 				painter.draw(Instruction::Path(path));
 			}
 
-			/*if state.debug() {
+			if state.debug() {
 				painter.set_color(crate::COLOR_GREEN);
 				painter.draw(drawing::Instruction::Rect(e.bbox().translate(e.pos().to_vector()), 1.));
 				painter.set_color(crate::COLOR_BLUE);
 				painter.draw(drawing::Instruction::Point(e.pos(), 2.));
 				painter.set_color(crate::COLOR_BLACK);
-			}*/
+			}
 		});
 	}
 }
@@ -346,6 +346,109 @@ impl BeamRenderer {
 				}
 				return bm;
 			},
+			2 => {
+				let mut bm = BeamMetric::default();
+
+				let mut min_s;
+				let mut max_s;
+				if zero_slant {
+					min_s = 0;
+					max_s = 0;
+				} else {
+					let interval = (l2 - l1).abs() / 2;
+					min_s = min_slant(interval);
+					max_s = max_slant(interval);
+					if er.borrow_el().element_count() == 2 {
+						min_s = min_s.min(2);
+						max_s = max_s.min(4);
+					}
+				}
+
+				let mut ll1;
+				if er.borrow_el().up() {
+					ll1 = l1 - 12;
+					let mut rll1 = ll1;
+					if l1 > 20 && l2 > 20 {
+						min_s = if zero_slant { 0 } else { 1 };
+						max_s = min_s;
+						rll1 = if zero_slant || l2 < l1 { 9 } else { 8 }
+					}
+					let mut n = 0;
+					loop {
+						let mut i = 0;
+						for j in min_s..max_s + 1 {
+							i = j;
+							let slant = if l2 > l1 { i } else { -i };
+							let lll1 = rll1.min(ll1 - Self::adjust(spatiumq, slant, cl));
+							let ll2 = lll1 + slant;
+							const ba: [[bool; 4]; 4] = [
+								[true,  true,  false, false],
+								[true,  true,  false, false],
+								[false, false, false, false],
+								[false, false, false, false]
+							];
+							if ba[(lll1 & 3) as usize][(ll2 & 3) as usize] {
+								ll1 = lll1;
+								break;
+							}
+						}
+						if i <= max_s {
+							bm.s = (if l2 > l1 { i } else { -i }) as i8;
+							break;
+						}
+
+						if n > 4 {
+							println!("beam note not found 1 {}-{}", min_s, max_s);
+							break;
+						}
+						n += 1;
+						ll1 -= 1;
+					}
+				} else {
+					ll1 = 12 - l1;
+					let mut rll1 = ll1;
+					let down = l2 > l1;
+					if l1 < -4 && l2 < -4 {
+						min_s = if zero_slant { 0 } else { 1 };
+						max_s = min_s;
+						rll1 = if zero_slant || down { 7 } else { 8 };
+					}
+					let mut n = 0;
+					loop {
+						let mut i = 0;
+						for j in min_s..max_s + 1 {
+							i = j;
+							let slant = if down { i } else { -i };
+							let lll1 = rll1.max(ll1 + Self::adjust(spatiumq, slant, cl));
+							let ll2 = lll1 + slant;
+							const ba: [[bool; 4]; 4] = [
+								[true,  false, false, true],
+								[false, false, false, false],
+								[false, false, false, false],
+								[true,  false, false, true]
+							];
+							if ba[(lll1 & 3) as usize][(ll2 & 3) as usize] {
+								ll1 = lll1;
+								bm.s = slant as i8;
+								break;
+							}
+
+						}
+						if i <= max_s {
+							break;
+						}
+						if n > 4 {
+							println!("beam not found 2");
+							break;
+						}
+						n += 1;
+						ll1 += 1;
+					}
+				}
+				bm.l = (ll1 - l1) as i8;
+
+				return bm;
+			}
 			_ => unimplemented!()
 		});
 
@@ -388,7 +491,7 @@ impl BeamRenderer {
 
 		let beam_levels: i32 = crl.iter().map(|c|
 			c.as_trait().duration_type().hook_count()
-		).max().unwrap_or(1).min(1);
+		).max().unwrap_or(1).max(1);
 
 		let d_idx = match er.borrow_el().beam_direction() {
 			DirectionV::Auto | DirectionV::Down => 0,
@@ -933,5 +1036,23 @@ impl BeamRenderer {
 				}
 			}
 		}
+	}
+}
+
+fn min_slant(interval: i32) -> i32 {
+	const MIN_SLANT_TABLE: [i32; 5] = [0, 1, 2, 4, 5];
+	if interval > 4 {
+		return 5;
+	} else {
+		return MIN_SLANT_TABLE[interval as usize];
+	}
+}
+
+fn max_slant(interval: i32) -> i32 {
+	const MIN_SLANT_TABLE: [i32; 8] = [0, 1, 4, 5, 5, 6, 7, 8];
+	if interval > 7 {
+		return 8;
+	} else {
+		return MIN_SLANT_TABLE[interval as usize];
 	}
 }
