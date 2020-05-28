@@ -58,23 +58,24 @@ impl Renderer<Beam> for BeamRenderer {
 			if e.beam_segments().len() > 1 && d > std::f32::consts::PI / 6. {
 				d = std::f32::consts::PI / 6.;
 			}
-			let ww = lw2 / (constants::PI2 - d.atan()).sin();
+			let ww = lw2 / (constants::PI_HALF - d.atan()).sin();
 			for bs in e.beam_segments() {
-				painter.draw(Instruction::Path(
-					Path::new().set_fill(true)
-						.move_to(Vec2F::new(bs.x1(), bs.y1() - ww))
-						.add_segment(Seg::Line(Vec2F::new(bs.x2(), bs.y2() - ww)))
-						.add_segment(Seg::Line(Vec2F::new(bs.x2(), bs.y2() + ww)))
-						.add_segment(Seg::Line(Vec2F::new(bs.x1(), bs.y1() - ww)))
-				));
+				painter.set_color(crate::COLOR_BLACK);
+				let path = Path::new().set_fill(true)
+					.move_to(Vec2F::new(bs.x1(), bs.y1() - ww))
+					.add_segment(Seg::Line(Vec2F::new(bs.x2(), bs.y2() - ww)))
+					.add_segment(Seg::Line(Vec2F::new(bs.x2(), bs.y2() + ww)))
+					.add_segment(Seg::Line(Vec2F::new(bs.x1(), bs.y1() + ww)));
+
+				painter.draw(Instruction::Path(path));
 			}
 
 			if state.debug() {
-				painter.set_color(crate::COLOR_GREEN);
+				/*painter.set_color(crate::COLOR_GREEN);
 				painter.draw(drawing::Instruction::Rect(e.bbox().translate(e.pos().to_vector()), 1.));
 				painter.set_color(crate::COLOR_BLUE);
 				painter.draw(drawing::Instruction::Point(e.pos(), 2.));
-				painter.set_color(crate::COLOR_BLACK);
+				painter.set_color(crate::COLOR_BLACK);*/
 			}
 		});
 	}
@@ -395,7 +396,7 @@ impl BeamRenderer {
 		};
 		let mut f = er.borrow_el().fragments()[fragment_idx].clone();
 		let mut py: &mut Point2F = &mut f.py[d_idx];
-		let n= crl.len();
+		let n = crl.len();
 
 		if er.borrow_el().cross() {} else {
 			py.x = c1.with(|c| c.stem_pos().y);
@@ -482,7 +483,7 @@ impl BeamRenderer {
 				let cr2 = crl[chord_rest_end_group_index - 1].clone();
 
 				// if group covers whole beam, we are still at base level
-				if current_cr_index == 0  && chord_rest_end_group_index == n {
+				if current_cr_index == 0 && chord_rest_end_group_index == n {
 					base_level = beam_level;
 				}
 
@@ -556,11 +557,9 @@ impl BeamRenderer {
 							// if first or last of group (including tuplet groups)
 							// unconditionally set beam at right or left side
 							let tuplet = cr1.borrow_el().tuplet();
-							if current_cr_index == 0 {
-							} else if current_cr_index == size_chord_rests - 1 {
+							if current_cr_index == 0 {} else if current_cr_index == size_chord_rests - 1 {
 								len = -len;
-							} else if tuplet.is_some() && Some(DurationElementRef::Chord(cr1.clone())) == tuplet.with_d(|tuplet| tuplet.first_element(), None) {
-							} else if tuplet.is_some() && Some(DurationElementRef::Chord(cr1.clone())) == tuplet.with_d(|tuplet| tuplet.last_element(), None) {
+							} else if tuplet.is_some() && Some(DurationElementRef::Chord(cr1.clone())) == tuplet.with_d(|tuplet| tuplet.first_element(), None) {} else if tuplet.is_some() && Some(DurationElementRef::Chord(cr1.clone())) == tuplet.with_d(|tuplet| tuplet.last_element(), None) {
 								len = -len;
 							} else if b32 || b64 {
 								len -= len;
@@ -639,7 +638,7 @@ impl BeamRenderer {
 									// without tuplet tolerance, could be simplified)
 									const BEAM_TUPLET_TOLERANCE: i32 = 6;
 									let mmod = tick_next.ticks() % tick_mod;
-									if  mmod <= BEAM_TUPLET_TOLERANCE || (tick_mod - mmod) <= BEAM_TUPLET_TOLERANCE {
+									if mmod <= BEAM_TUPLET_TOLERANCE || (tick_mod - mmod) <= BEAM_TUPLET_TOLERANCE {
 										len = -len;
 									}
 								}
@@ -651,7 +650,7 @@ impl BeamRenderer {
 							} else if !stem_up && len < 0. {
 								x2 += stem_width;
 							}
-							x3 =  x2 + len;
+							x3 = x2 + len;
 						},
 					}
 				}

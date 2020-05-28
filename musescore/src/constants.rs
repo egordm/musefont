@@ -13,3 +13,4 @@ pub const VOICES: usize = 4;
 pub const DEFAULT_DPI: f32 = 96.;
 
 pub const PI2: f32 = std::f32::consts::PI * 2.;
+pub const PI_HALF: f32 = std::f32::consts::PI / 2.;
