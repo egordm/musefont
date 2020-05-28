@@ -70,13 +70,13 @@ impl Renderer<Beam> for BeamRenderer {
 				painter.draw(Instruction::Path(path));
 			}
 
-			if state.debug() {
-				/*painter.set_color(crate::COLOR_GREEN);
+			/*if state.debug() {
+				painter.set_color(crate::COLOR_GREEN);
 				painter.draw(drawing::Instruction::Rect(e.bbox().translate(e.pos().to_vector()), 1.));
 				painter.set_color(crate::COLOR_BLUE);
 				painter.draw(drawing::Instruction::Point(e.pos(), 2.));
-				painter.set_color(crate::COLOR_BLACK);*/
-			}
+				painter.set_color(crate::COLOR_BLACK);
+			}*/
 		});
 	}
 }
@@ -442,7 +442,7 @@ impl BeamRenderer {
 			let mut i = 0;
 			while i < n {
 				// &ChordRef
-				let cr1 = crl[1].clone();
+				let cr1 = crl[i].clone();
 				let duration_type: DurationType = cr1.as_trait().duration_type().ty();
 				let l1 = duration_type.hook_type().count() - 1;
 
@@ -528,7 +528,12 @@ impl BeamRenderer {
 					}
 				}
 
-				let stem_width = 1.; // TODO: get that from cr1
+
+				let stem_width = if let ChordRef::Chord(cr1) = cr1.clone() {
+					cr1.borrow_el().stem().unwrap().borrow_el().line_width()
+				} else {
+					0.
+				};
 				let mut x2 = cr1.as_trait().stem_pos_x() + cr1.as_trait().page_pos_x() - page_pos.x;
 				let mut x3;
 
