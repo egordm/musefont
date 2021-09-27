@@ -36,6 +36,7 @@ pub fn start_window<D: FnMut(&mut PfPainter)>(size: Vector2I, name: &str, mut dr
 	let resource_loader = FilesystemResourceLoader {
 		directory: PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("resources")
 	};
+	let te = env!("CARGO_MANIFEST_DIR");
 
 	// Create a Pathfinder renderer.
 	let mut renderer = Renderer::new(

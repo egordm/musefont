@@ -6,12 +6,12 @@ edition = "2018"
 
 [dependencies]
 musescore = { path = "../musescore" }
-pathfinder_canvas = { git = "https://github.com/servo/pathfinder.git", features = ["pf-text"] }
-pathfinder_color = { git = "https://github.com/servo/pathfinder.git" }
-pathfinder_content = { git = "https://github.com/servo/pathfinder.git" }
-pathfinder_geometry = { git = "https://github.com/servo/pathfinder.git" }
-pathfinder_gl = { git = "https://github.com/servo/pathfinder.git" }
-pathfinder_gpu = { git = "https://github.com/servo/pathfinder.git" }
-pathfinder_renderer = { git = "https://github.com/servo/pathfinder.git" }
+pathfinder_canvas = { git = "https://github.com/servo/pathfinder.git", features = ["pf-text"], rev="9a2e4f0b6d8836a9beff190a66d7073e04a088d5" }
+pathfinder_color = { git = "https://github.com/servo/pathfinder.git", rev="9a2e4f0b6d8836a9beff190a66d7073e04a088d5"}
+pathfinder_content = { git = "https://github.com/servo/pathfinder.git" ,rev="9a2e4f0b6d8836a9beff190a66d7073e04a088d5"}
+pathfinder_geometry = { git = "https://github.com/servo/pathfinder.git", rev="9a2e4f0b6d8836a9beff190a66d7073e04a088d5"}
+pathfinder_gl = { git = "https://github.com/servo/pathfinder.git", rev="9a2e4f0b6d8836a9beff190a66d7073e04a088d5"}
+pathfinder_gpu = { git = "https://github.com/servo/pathfinder.git",rev="9a2e4f0b6d8836a9beff190a66d7073e04a088d5" }
+pathfinder_renderer = { git = "https://github.com/servo/pathfinder.git", rev="9a2e4f0b6d8836a9beff190a66d7073e04a088d5"}
 gl = "0.6"
 glutin = "0.21"

@@ -52,7 +52,7 @@ pub fn draw(painter: &mut PfPainter) {
 			//chord.set_duration_type(Duration::new(DurationType::Eighth, 0));
 			chord.set_duration_type(Duration::new(DurationType::D16th, 0));
 		});
-		//Measure::add_at(measure.clone(), chord.clone().into(), Fraction::new(i, 4));
+		// Measure::add_at(measure.clone(), chord.clone().into(), Fraction::new(i, 4));
 		Measure::add_at(measure.clone(), chord.clone().into(), Fraction::new(i, 8));
 
 		let note = Note::new(score.clone()).with_mut_i(|mut note| {
