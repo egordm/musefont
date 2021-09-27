@@ -1,6 +1,6 @@
 <!-- markdownlint-disable -->
 <div align="center">
-    <h1>Score Draw</h1>
+    <h1>MuseFont</h1>
     <p>
         <b>A sheet music layout and drawing library inspired by <a href="https://github.com/musescore/MuseScore">MuseScore.</a></b>
     </p>
@@ -8,9 +8,10 @@
 </div>
 <!-- markdownlint-enable -->
 
-## Example
-![16th notes with hooks](https://github.com/EgorDm/musefont/blob/master/assets/preview/demo1.png?raw=true)
-![16th notes with line](https://github.com/EgorDm/musefont/blob/master/assets/preview/demo2.png?raw=true)
+## Preview
+16th notes with hook       |  16th notes with line
+:-------------------------:|:-------------------------:
+![](https://github.com/EgorDm/musefont/blob/master/assets/preview/demo1.png?raw=true)  |  ![](https://github.com/EgorDm/musefont/blob/master/assets/preview/demo2.png?raw=true)
 
 ## Features
 * Code based score building interface
